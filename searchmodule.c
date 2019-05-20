@@ -1,8 +1,6 @@
 #include <stdio.h>
 
-char main(void) {
-  int x = 5;
-  int y = 6;
-  int z = x + y;
-  printf("Number: %i\n", z);
+int main(void) {
+  int x[1] = 5;
+  printf("%d\n", x);
 }
