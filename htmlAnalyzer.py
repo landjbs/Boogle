@@ -9,8 +9,18 @@ def txt_to_string(pageText):
 
 def find_meta(pageString):
     """ Returns the metadata of a page as a dict """
-    x = re.findall("<meta" + ".+" + ">", pageString)
-    print(x)
+    # find all meta tags in pageString
+    metaList = re.findall("(?<=<meta )" + ".+" + "(?=>)", pageString)
+    # find all individual tags within metaList
+    tagString = "(?<=<meta )" + ".+" + "=" + ".+" + '(?=<")' + '(?=")' + "." + "(?=>)"
+    tagList = re.findall(tagString, pageString)
+
+
+    print(tagList)
+
+    # def meta_to_dict(metaList):
+    #     """ Converts singmeta list to dict """
+
 
 
 sample_pageString = txt_to_string('samplePage.txt')
