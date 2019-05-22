@@ -1,5 +1,5 @@
 import urllib.request
-import htmlAnalyzer
+# import htmlAnalyzer
 
 def scrape_url(url):
     """ Converts string of url link to string of page contents """
@@ -7,7 +7,7 @@ def scrape_url(url):
         # get http.client.HTTPResponse object of url
         page = urllib.request.urlopen(url)
     except:
-        raise ValueError(f"Unable to access contents of '{url}''")
+        raise ValueError(f"Unable to access '{url}''")
 
     def decode_line(line):
         """ Helper to decode and consolidate line of html """
@@ -19,6 +19,7 @@ def scrape_url(url):
     page.close()
     return(outstr)
 
+sampleStr = scrape_url("https://stackoverflow.com/questions/16627227/http-error-403-in-python-3-web-scraping")
 
-
-scrape_url("https://stackoverflow.com/questions/16627227/http-error-403-in-python-3-web-scraping")
+print(sampleStr)
+# htmlAnalyzer.find_meta(sampleStr, [])

@@ -1,4 +1,12 @@
 def homepage(new=True):
-    print(f"{'-'*80}\n\t\tWelcome to Landon Search!\n{'-'*80}")
-    print("\t1 - Search\n\t2 - Add new page")
-    userResponse = input("")
+    print(f"{'-'*80}\n\t\tWelcome to Boogle!\n{'-'*80}")
+    userResponse = input("Search:\n")
+    searchOut = search(userResponse)
+    try:
+        renderTemplate(result.html, searchOut)
+    except:
+        raise ValueError("html render error")
+
+def returnHome(token):
+    userDB.remove(token)
+    renderTemplate(homepage())
