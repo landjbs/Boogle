@@ -1,10 +1,6 @@
-# def crawl(init):
-#     assert (isinstance(init, str)), "Usage: Crawler must be initialized with string"
-#
+import urllib
 
-import urllib.request
-
-u2 = urllib.request.urlopen('http://finance.yahoo.com/q?s=aapl&ql=1')
-
-for lines in u2.readlines():
-    print (lines)
+def scrape_url(url):
+    page = urllib.urlopen(url)
+    outstr = "".join([line for line in page])
+    page.close()
