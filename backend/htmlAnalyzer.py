@@ -29,7 +29,6 @@ def find_meta(pageString, paramList):
         """ Converts meta list to dict """
 
 
-
 sample_pageString = txt_to_string('samplePage.txt')
 
 print(sample_pageString)
