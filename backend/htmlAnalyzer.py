@@ -7,8 +7,11 @@ def txt_to_string(pageText):
         pageString = "".join(line for line in FileObj)
         return pageString
 
-def find_meta(pageString):
-    """ Returns the metadata of a page as a dict """
+def find_meta(pageString, metaParams):
+    """
+    Args: string of decoded page text, list of parameters to grab
+    Returns: metadata of pageString as a dict mapping metaParams to values
+    """
     # find all meta tags in pageString
     metaList = re.findall("(?<=<meta )" + ".+" + "(?=>)", pageString)
     # find all individual tags within metaList

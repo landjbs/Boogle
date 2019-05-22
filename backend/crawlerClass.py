@@ -1,4 +1,5 @@
 import urllib.request
+import htmlAnalyzer
 
 def scrape_url(url):
     """ Converts string of url link to string of page contents """
@@ -17,5 +18,7 @@ def scrape_url(url):
     outstr = "".join([decode_line(line) for line in page])
     page.close()
     return(outstr)
+
+
 
 scrape_url("https://stackoverflow.com/questions/16627227/http-error-403-in-python-3-web-scraping")
