@@ -1,1 +1,1 @@
-def tokenize():
+def tokenize(inputString):

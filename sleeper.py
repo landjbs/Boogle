@@ -18,7 +18,7 @@ def gen_rand():
     while True:
         print(gen_string())
         if np.random.randint(0,60)==30:
-            print('-'*40)
+            print('-'*60)
         time.sleep(np.random.uniform(0.01, 0.5))
 
 gen_rand()

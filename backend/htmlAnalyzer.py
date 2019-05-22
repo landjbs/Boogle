@@ -15,8 +15,11 @@ def find_meta(pageString):
     tagString = "(?<=<meta )" + ".+" + "=" + ".+" + '(?=<")' + '(?=")' + "." + "(?=>)"
     tagList = re.findall(tagString, pageString)
 
-
-    print(tagList)
+    # find_tag = lambda t : t
+    #
+    # tagList = list(map(find_tag, metaList))
+    #
+    # print(tagList)
 
     # def meta_to_dict(metaList):
     #     """ Converts singmeta list to dict """
@@ -25,4 +28,6 @@ def find_meta(pageString):
 
 sample_pageString = txt_to_string('samplePage.txt')
 
-find_meta(sample_pageString)
+print(sample_pageString)
+
+# find_meta(sample_pageString)
