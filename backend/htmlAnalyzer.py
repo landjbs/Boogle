@@ -6,6 +6,9 @@ def find_title(pageString):
     titleList = re.findall(title_matchString, pageString)
     return titleList
 
+def find_descriptions(pageString):
+    """ Find """
+
 def find_links(pageString):
     """ Find urls contained by all <a href=""> tags """
     # href_matchString = '(?<=href=")' + ".+" + '(?=")'
