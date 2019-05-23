@@ -2,6 +2,10 @@ from flask import Flask, flash, jsonify, redirect, render_template, request, ses
 
 app = Flask(__name__)
 
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 def index():
-	return render_template('index.html')
+    if request.method=='GET':
+        return render_template('index.html')
+    else:
+        query = request.form.get('home-search')
+        return(query)
