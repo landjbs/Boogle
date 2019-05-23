@@ -44,19 +44,25 @@
   border-color: rgba(0, 0, 0, 0); /* opaque black search box border */
 }
 
-/* reduce opacity when input clicked */
+/* reduce opacity when input hovered */
+input:hover {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* futher reduce opacity when input clicked */
 input:focus {
   background-color: rgba(0, 0, 0, 0.5);
   outline: none;
 }
 
-::placeholder {
+input::placeholder {
   text-align: center; /* placeholder aligned in center */
   color: rgb(211,211,211); /* placeholder is grey */
 }
 
-input {
-  background-color: grey;
+/* make placeholder disappear when bar is clicked */
+input:focus::placeholder {
+  color: rgba(0, 0, 0, 0);
 }
 
 @media (min-width: 768px) {
