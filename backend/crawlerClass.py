@@ -29,22 +29,22 @@ def scrape_url(url):
     return(outstr)
 
 
-def scrape_urlList(urlList):
+def scrape_urlList(urlList, maxNum):
     """ Iterate through list of URLs, adding title, url, and links to webDF """
     count, errors = 0, 0
     pageDictList = []
     # continue iterating until no more links can be found
-    while (urlList != []):
-        link = urlList[0]
+    while (urlList != []) and (count <= maxNum):
+        curURL = urlList[0]
         try:
             # scrape text from link
-            curPageString = scrape_url(link)
+            curPageString = scrape_url(curURL)
             # get title from pageString
             curTitle = htmlAnalyzer.find_title(curPageString)
             # get links from page string
             curLinks = htmlAnalyzer.find_links(curPageString)
             # create dict of page info
-            curPageDict = {'Title':curTitle, 'URL':link, 'Links':curLinks}
+            curPageDict = {'Title':curTitle, 'URL':curURL, 'Links':curLinks, 'Contents':curPageString}
             pageDictList.append(curPageDict)
             # add curLinks to urlList for analysis
             urlList += curLinks
@@ -56,11 +56,11 @@ def scrape_urlList(urlList):
         count += 1
         print(f"\t{count} URLs analyzed with {errors} errors!\r", end="")
     # create dataframe of scraped info
-    scrapedDF = pd.DataFrame(pageDictList, columns=["Title", "URL", "Links"])
-    print(scrapedDF)
+    scrapedDF = pd.DataFrame(pageDictList, columns=["Title", "URL", "Links", "Contents"])
+    return(scrapedDF)
 
 sampleStr = scrape_url("https://stackoverflow.com/questions/16627227/http-error-403-in-python-3-web-scraping")
 
 test = htmlAnalyzer.find_links(sampleStr)
 
-scrape_urlList(test)
+testDF = scrape_urlList(test, 300)
