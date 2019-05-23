@@ -1,20 +1,22 @@
 import urllib.request
 import htmlAnalyzer
 import pandas as pd
+import datetime
 import matplotlib.pyplot as plt
 
 class ParseError(Exception):
     """ Exception for errors while parsing a link """
     pass
 
+
 def decode_line(line):
     """ Helper to decode and consolidate line of html """
     try:
         decodedLine = line.decode("utf-8")
-        return decodedLine
-    # returns empty string if unable to decode
     except:
-        return("")
+        raise ParseError("Unable to decode line")
+    return decodedLine
+
 
 def scrape_url(url):
     """ Converts string of URL link to string of page contents """
@@ -46,9 +48,10 @@ def scrape_urlList(urlList, maxNum, disp=False):
             curTitle = htmlAnalyzer.find_title(curPageString)
             # get links from page string
             curLinks = htmlAnalyzer.find_links(curPageString)
+            # get time of loading
+            loadTime = datetime.datetime.now()
             # create dict of page info
-            # curPageDict = {'title':curTitle, 'url':curURL, 'links':curLinks, 'contents':curPageString}
-            curPageDict = {'title':curTitle, 'url':curURL, 'links':curLinks}
+            curPageDict = {'title':curTitle, 'url':curURL, 'links':curLinks, 'loadTime':loadTime}
             pageDictList.append(curPageDict)
             # add curLinks to urlList for analysis
             urlList += curLinks
@@ -77,8 +80,7 @@ def scrape_urlList(urlList, maxNum, disp=False):
 
 
     # create dataframe of scraped info
-    scrapedDF = pd.DataFrame(pageDictList, columns=["title", "url", "links", "contents"])
-    scrapedDF = pd.DataFrame(pageDictList, columns=["title", "url", "links"])
+    scrapedDF = pd.DataFrame(pageDictList)
     return(scrapedDF)
 
 
@@ -90,10 +92,10 @@ def homepage(scrapedDF):
     print(result)
 
 
-sampleStr = scrape_url("https://en.wikipedia.org/wiki/Python_(programming_language)")
+sampleStr = scrape_url("https://stackoverflow.com")
 
 test = htmlAnalyzer.find_links(sampleStr)
 
-testDF = scrape_urlList(test, 5000, True)
+testDF = scrape_urlList(test, 50, True)
 
 testDF.to_csv('testDF.csv', sep=',')
