@@ -76,10 +76,6 @@ def scrape_urlList(urlList, maxNum, disp=False):
     scrapedDF = pd.DataFrame(pageDictList, columns=["title", "url", "links"])
     return(scrapedDF)
 
-def df_to_txt(df, path):
-    """ Writes dataframe to CSV txt file delimited by 'Æ' under name 'path'"""
-    dfCSV = pd.DataFrame.to_csv(df, sep='Æ')
-
 
 def homepage(scrapedDF):
     """ Searches DF for page """
@@ -88,10 +84,10 @@ def homepage(scrapedDF):
     result = scrapedDF[scrapedDF['title'].str.contains(rawSearch)]
     print(result)
 
-sampleStr = scrape_url("https://stackoverflow.com/questions/16627227/http-error-403-in-python-3-web-scraping")
+sampleStr = scrape_url("https://en.wikipedia.org/wiki/Python_(programming_language)")
 
 test = htmlAnalyzer.find_links(sampleStr)
 
-testDF = scrape_urlList(test, 10, True)
+testDF = scrape_urlList(test, 100000, True)
 
-testDF.to_csv('hi', sep='Æ')
+testDF.to_csv('testDF.csv', sep=',')
