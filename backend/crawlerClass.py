@@ -33,7 +33,9 @@ def scrape_urlList(urlList):
     """ Iterate through list of URLs, adding title, url, and links to webDF """
     count, errors = 0, 0
     pageDictList = []
+    # continue iterating until no more links can be found
     while (urlList != []):
+        link = urlList[0]
         try:
             # scrape text from link
             curPageString = scrape_url(link)
@@ -44,9 +46,13 @@ def scrape_urlList(urlList):
             # create dict of page info
             curPageDict = {'Title':curTitle, 'URL':link, 'Links':curLinks}
             pageDictList.append(curPageDict)
+            # add curLinks to urlList for analysis
+            urlList += curLinks
         except:
             errors += 1
-        # increment count and give user feedback
+        # remove first item in urlList
+        del urlList[0]
+        # increment count and print progress
         count += 1
         print(f"\t{count} URLs analyzed with {errors} errors!\r", end="")
     # create dataframe of scraped info
