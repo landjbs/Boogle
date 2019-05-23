@@ -7,6 +7,15 @@ class ParseError(Exception):
     """ Exception for errors while parsing a link """
     pass
 
+def decode_line(line):
+    """ Helper to decode and consolidate line of html """
+    try:
+        decodedLine = line.decode("utf-8")
+        return decodedLine
+    # returns empty string if unable to decode
+    except:
+        return("")
+
 def scrape_url(url):
     """ Converts string of URL link to string of page contents """
     try:
@@ -14,16 +23,6 @@ def scrape_url(url):
         page = urllib.request.urlopen(url)
     except:
         raise ParseError(f"Unable to access '{url}''")
-
-    def decode_line(line):
-        """ Helper to decode and consolidate line of html """
-        try:
-            decodedLine = line.decode("utf-8")
-            return decodedLine
-        # returns empty string if unable to decode
-        except:
-            return("")
-
     # convert decoded lines of page to string
     outstr = "".join([decode_line(line) for line in page])
     page.close()
@@ -34,8 +33,8 @@ def scrape_urlList(urlList, maxNum, disp=False):
     """ Iterate through list of URLs, adding title, url, and links to webDF """
     count, errors = 0, 0
     pageDictList = []
-    # lists to store metrics l
-    lenList, errorList = []
+    # lists to store disp metrics
+    lenList, errorList = [], []
     # continue iterating until no more links can be found
     while (urlList != []) and (count <= maxNum):
         # curURL to analyze is the head of urlList
@@ -67,9 +66,9 @@ def scrape_urlList(urlList, maxNum, disp=False):
         plt.plot(lenList)
         plt.plot(errorList)
         plt.legend(['Number URLs to Analyze', 'Number Error URLs'])
-        plt.title("Number URLs")
+        plt.title("Scrape Metrics")
         plt.xlabel("Iterations")
-        plt.ylabel("Length of URL List")
+        plt.ylabel("Number URLs")
         plt.show()
     # create dataframe of scraped info
     scrapedDF = pd.DataFrame(pageDictList, columns=["title", "url", "links", "contents"])
@@ -79,7 +78,7 @@ def homepage(scrapedDF):
     """ Searches DF for page """
     rawSearch = input("Search: ")
     tokenSearch = rawSearch.split(" ")
-    result = scrapedDF.loc[scrapedDF['title'] == rawSearch]
+    result = scrapedDF[scrapedDF['title'].str.contains(rawSearch)]
     print(result)
 
 sampleStr = scrape_url("https://stackoverflow.com/questions/16627227/http-error-403-in-python-3-web-scraping")
