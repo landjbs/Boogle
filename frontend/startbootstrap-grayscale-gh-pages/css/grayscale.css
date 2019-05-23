@@ -94,20 +94,20 @@ input {
 }
 
 .btn-primary {
-  background-color: #64a19d;
+  background-color: rgba(211, 211, 211, 0.4);
 }
 
 .btn-primary:hover {
-  background-color: #4f837f;
+  background-color: rgba(211, 211, 211, 0.8);
 }
 
 .btn-primary:focus {
-  background-color: #4f837f;
+  background-color: rgba(211, 211, 211, 1);
   color: white;
 }
 
 .btn-primary:active {
-  background-color: #467370 !important;
+  background-color: rgba(211, 211, 211, 1) !important;
 }
 
 body {
