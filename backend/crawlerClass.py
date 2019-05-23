@@ -26,18 +26,19 @@ def scrape_url(url):
     page.close()
     return(outstr)
 
-def scrape_urlList(urlList):
-    errors = 0
-    for c, link in enumerate(urlList):
-        print(f"\t{c}\r", end="")
-        try:
-            scrape_url(link)
-        except:
-            errors += 1
-    print(f"{len(urlList)} urls analyzed with {errors} errors!")
-
 sampleStr = scrape_url("https://stackoverflow.com/questions/16627227/http-error-403-in-python-3-web-scraping")
 
 test = htmlAnalyzer.find_links(sampleStr)
+
+def scrape_urlList(urlList):
+    urlHolder = []
+    errors = 0
+    for count, link in enumerate(urlList):
+        print(f"\t{count} URLs analyzed with {errors} errors!\r", end="")
+        try:
+            urlHolder += scrape_url(link)
+        except:
+            errors += 1
+    scrape_urlList(urlHolder)
 
 scrape_urlList(test)
