@@ -1,6 +1,7 @@
 import urllib.request
 import htmlAnalyzer
 import pandas as pd
+import matplotlib.pyplot as plt
 
 class ParseError(Exception):
     """ Exception for errors while parsing a link """
@@ -17,7 +18,7 @@ def scrape_url(url):
     def decode_line(line):
         """ Helper to decode and consolidate line of html """
         try:
-            decodedLine = (line).decode("utf-8")
+            decodedLine = line.decode("utf-8")
             return decodedLine
         # returns empty string if unable to decode
         except:
@@ -29,10 +30,12 @@ def scrape_url(url):
     return(outstr)
 
 
-def scrape_urlList(urlList, maxNum):
+def scrape_urlList(urlList, maxNum, disp=False):
     """ Iterate through list of URLs, adding title, url, and links to webDF """
     count, errors = 0, 0
     pageDictList = []
+    # init disp store
+    lenList = []
     # continue iterating until no more links can be found
     while (urlList != []) and (count <= maxNum):
         curURL = urlList[0]
@@ -52,9 +55,16 @@ def scrape_urlList(urlList, maxNum):
             errors += 1
         # remove first item in urlList
         del urlList[0]
-        # increment count and print progress
+        # increment count and urList_len
         count += 1
+        lenList.append(len(urlList))
+        # print progress
         print(f"\t{count} URLs analyzed with {errors} errors!\r", end="")
+    # display metrics if asked
+    if disp:
+        plt.plot(lenList)
+        plt.title("")
+        plt.show()
     # create dataframe of scraped info
     scrapedDF = pd.DataFrame(pageDictList, columns=["Title", "URL", "Links", "Contents"])
     return(scrapedDF)
@@ -63,4 +73,4 @@ sampleStr = scrape_url("https://stackoverflow.com/questions/16627227/http-error-
 
 test = htmlAnalyzer.find_links(sampleStr)
 
-testDF = scrape_urlList(test, 300)
+testDF = scrape_urlList(test, 50)
