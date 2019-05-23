@@ -1,6 +1,6 @@
 import urllib.request
-import pandas as pd
 import htmlAnalyzer
+import pandas as pd
 
 class ParseError(Exception):
     """ Exception for errors while parsing a link """
@@ -28,15 +28,21 @@ def scrape_url(url):
     page.close()
     return(outstr)
 
+webDF = pd.DataFrame(index=["Title", "URL", "Links"])
+print(webDF)
 
 def scrape_urlList(urlList):
-    """ Iterate through list of URLs, """
-    urlHolder = []
+    """ Iterate through list of URLs, adding title, url, and links to webDF """
     errors = 0
     for count, link in enumerate(urlList):
         print(f"\t{count} URLs analyzed with {errors} errors!\r", end="")
         try:
-            urlHolder += htmlAnalyzer.find_links(scrape_url(link))
+            # scrape text from link
+            curPageString = scrape_url(link)
+            # get title from pageString
+            curTitle = htmlAnalyzer.find_title(curPageString)
+            # get links from page string
+            urlLinks = htmlAnalyzer.find_links(curPageString)
         except:
             errors += 1
     print(urlHolder)
