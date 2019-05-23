@@ -1,11 +1,13 @@
 import urllib.request
+import pandas as pd
 import htmlAnalyzer
 
 class ParseError(Exception):
+    """ Exception for errors while parsing a link """
     pass
 
 def scrape_url(url):
-    """ Converts string of url link to string of page contents """
+    """ Converts string of URL link to string of page contents """
     try:
         # get http.client.HTTPResponse object of url
         page = urllib.request.urlopen(url)
@@ -26,19 +28,22 @@ def scrape_url(url):
     page.close()
     return(outstr)
 
-sampleStr = scrape_url("https://stackoverflow.com/questions/16627227/http-error-403-in-python-3-web-scraping")
-
-test = htmlAnalyzer.find_links(sampleStr)
 
 def scrape_urlList(urlList):
+    """ Iterate through list of URLs, """
     urlHolder = []
     errors = 0
     for count, link in enumerate(urlList):
         print(f"\t{count} URLs analyzed with {errors} errors!\r", end="")
         try:
-            urlHolder += scrape_url(link)
+            urlHolder += htmlAnalyzer.find_links(scrape_url(link))
         except:
             errors += 1
-    scrape_urlList(urlHolder)
+    print(urlHolder)
+
+
+sampleStr = scrape_url("https://stackoverflow.com/questions/16627227/http-error-403-in-python-3-web-scraping")
+
+test = htmlAnalyzer.find_links(sampleStr)
 
 scrape_urlList(test)
