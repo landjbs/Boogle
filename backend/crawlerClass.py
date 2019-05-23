@@ -38,6 +38,7 @@ def scrape_urlList(urlList, maxNum, disp=False):
     lenList = []
     # continue iterating until no more links can be found
     while (urlList != []) and (count <= maxNum):
+        # curURL to analyze is the head of urlList
         curURL = urlList[0]
         try:
             # scrape text from link
@@ -63,7 +64,9 @@ def scrape_urlList(urlList, maxNum, disp=False):
     # display metrics if asked
     if disp:
         plt.plot(lenList)
-        plt.title("")
+        plt.title("Length of URL List Over Time")
+        plt.xlabel("Iterations")
+        plt.ylabel("Length of URL List")
         plt.show()
     # create dataframe of scraped info
     scrapedDF = pd.DataFrame(pageDictList, columns=["Title", "URL", "Links", "Contents"])
@@ -73,4 +76,4 @@ sampleStr = scrape_url("https://stackoverflow.com/questions/16627227/http-error-
 
 test = htmlAnalyzer.find_links(sampleStr)
 
-testDF = scrape_urlList(test, 50)
+testDF = scrape_urlList(test, 100, True)
