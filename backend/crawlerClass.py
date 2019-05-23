@@ -31,10 +31,9 @@ def scrape_url(url):
 
 def scrape_urlList(urlList):
     """ Iterate through list of URLs, adding title, url, and links to webDF """
-    errors = 0
+    count, errors = 0, 0
     pageDictList = []
-    for count, link in enumerate(urlList):
-        print(f"\t{count} URLs analyzed with {errors} errors!\r", end="")
+    while (urlList != []):
         try:
             # scrape text from link
             curPageString = scrape_url(link)
@@ -47,8 +46,12 @@ def scrape_urlList(urlList):
             pageDictList.append(curPageDict)
         except:
             errors += 1
+        # increment count and give user feedback
+        count += 1
+        print(f"\t{count} URLs analyzed with {errors} errors!\r", end="")
     # create dataframe of scraped info
-    scrapedDF = pd.DataFrame(pageDictList, index=["Title", "URL", "Links"])
+    scrapedDF = pd.DataFrame(pageDictList, columns=["Title", "URL", "Links"])
+    print(scrapedDF)
 
 sampleStr = scrape_url("https://stackoverflow.com/questions/16627227/http-error-403-in-python-3-web-scraping")
 
