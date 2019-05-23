@@ -47,7 +47,8 @@ def scrape_urlList(urlList, maxNum, disp=False):
             # get links from page string
             curLinks = htmlAnalyzer.find_links(curPageString)
             # create dict of page info
-            curPageDict = {'title':curTitle, 'url':curURL, 'links':curLinks, 'contents':curPageString}
+            # curPageDict = {'title':curTitle, 'url':curURL, 'links':curLinks, 'contents':curPageString}
+            curPageDict = {'title':curTitle, 'url':curURL, 'links':curLinks}
             pageDictList.append(curPageDict)
             # add curLinks to urlList for analysis
             urlList += curLinks
@@ -69,10 +70,16 @@ def scrape_urlList(urlList, maxNum, disp=False):
         plt.title("Scrape Metrics")
         plt.xlabel("Iterations")
         plt.ylabel("Number URLs")
-        plt.show()
+        plt.savefig("scrapeMetrics")
     # create dataframe of scraped info
     scrapedDF = pd.DataFrame(pageDictList, columns=["title", "url", "links", "contents"])
+    scrapedDF = pd.DataFrame(pageDictList, columns=["title", "url", "links"])
     return(scrapedDF)
+
+def df_to_txt(df, path):
+    """ Writes dataframe to CSV txt file delimited by 'Æ' under name 'path'"""
+    dfCSV = pd.DataFrame.to_csv(df, sep='Æ')
+
 
 def homepage(scrapedDF):
     """ Searches DF for page """
@@ -85,8 +92,6 @@ sampleStr = scrape_url("https://stackoverflow.com/questions/16627227/http-error-
 
 test = htmlAnalyzer.find_links(sampleStr)
 
-testDF = scrape_urlList(test, 100, True)
+testDF = scrape_urlList(test, 10, True)
 
-print(testDF)
-
-homepage(testDF)
+testDF.to_csv('hi', sep='Æ')
