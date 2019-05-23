@@ -34,8 +34,8 @@ def scrape_urlList(urlList, maxNum, disp=False):
     """ Iterate through list of URLs, adding title, url, and links to webDF """
     count, errors = 0, 0
     pageDictList = []
-    # init disp store
-    lenList = []
+    # lists to store metrics l
+    lenList, errorList = []
     # continue iterating until no more links can be found
     while (urlList != []) and (count <= maxNum):
         # curURL to analyze is the head of urlList
@@ -56,15 +56,18 @@ def scrape_urlList(urlList, maxNum, disp=False):
             errors += 1
         # remove first item in urlList
         del urlList[0]
-        # increment count and urList_len
+        # increment count, lenList, and errorList
         count += 1
         lenList.append(len(urlList))
+        errorList.append(errors)
         # print progress
         print(f"\t{count} URLs analyzed with {errors} errors!\r", end="")
     # display metrics if asked
     if disp:
         plt.plot(lenList)
-        plt.title("Length of URL List Over Time")
+        plt.plot(errorList)
+        plt.legend(['Number URLs to Analyze', 'Number Error URLs'])
+        plt.title("Number URLs")
         plt.xlabel("Iterations")
         plt.ylabel("Length of URL List")
         plt.show()
@@ -76,11 +79,15 @@ def homepage(scrapedDF):
     """ Searches DF for page """
     rawSearch = input("Search: ")
     tokenSearch = rawSearch.split(" ")
-    df.loc[df['Title']
-
+    result = scrapedDF.loc[scrapedDF['title'] == rawSearch]
+    print(result)
 
 sampleStr = scrape_url("https://stackoverflow.com/questions/16627227/http-error-403-in-python-3-web-scraping")
 
 test = htmlAnalyzer.find_links(sampleStr)
 
 testDF = scrape_urlList(test, 100, True)
+
+print(testDF)
+
+homepage(testDF)
