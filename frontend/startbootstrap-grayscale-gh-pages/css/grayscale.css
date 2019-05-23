@@ -41,7 +41,13 @@
   color: white; /* search text is white when typed */
   padding-left: 3rem;
   padding-right: 3rem;
-  border-color: rgba(0, 0, 0, 0);
+  border-color: rgba(0, 0, 0, 0); /* opaque black search box border */
+}
+
+/* reduce opacity when input clicked */
+input:focus {
+  background-color: rgba(0, 0, 0, 0.5);
+  outline: none;
 }
 
 ::placeholder {
