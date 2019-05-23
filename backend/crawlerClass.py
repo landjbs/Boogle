@@ -60,17 +60,22 @@ def scrape_urlList(urlList, maxNum, disp=False):
         count += 1
         lenList.append(len(urlList))
         errorList.append(errors)
+
         # print progress
         print(f"\t{count} URLs analyzed with {errors} errors!\r", end="")
-    # display metrics if asked
-    if disp:
-        plt.plot(lenList)
-        plt.plot(errorList)
-        plt.legend(['Number URLs to Analyze', 'Number Error URLs'])
-        plt.title("Scrape Metrics")
-        plt.xlabel("Iterations")
-        plt.ylabel("Number URLs")
-        plt.savefig("scrapeMetrics")
+
+        if ((count % 20) == 0):
+            # display metrics if asked
+            if disp:
+                plt.plot(lenList)
+                plt.plot(errorList)
+                plt.legend(['Number URLs to Analyze', 'Number Error URLs'])
+                plt.title("Scrape Metrics")
+                plt.xlabel("Iterations")
+                plt.ylabel("Number URLs")
+                plt.savefig("scrapeMetrics")
+
+
     # create dataframe of scraped info
     scrapedDF = pd.DataFrame(pageDictList, columns=["title", "url", "links", "contents"])
     scrapedDF = pd.DataFrame(pageDictList, columns=["title", "url", "links"])
@@ -84,10 +89,11 @@ def homepage(scrapedDF):
     result = scrapedDF[scrapedDF['title'].str.contains(rawSearch)]
     print(result)
 
+
 sampleStr = scrape_url("https://en.wikipedia.org/wiki/Python_(programming_language)")
 
 test = htmlAnalyzer.find_links(sampleStr)
 
-testDF = scrape_urlList(test, 100000, True)
+testDF = scrape_urlList(test, 5000, True)
 
 testDF.to_csv('testDF.csv', sep=',')

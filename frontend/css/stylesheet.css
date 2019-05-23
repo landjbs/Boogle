@@ -33,35 +33,40 @@
   font-size: 1rem;
 }
 
-.search-bar input {
-  font-size: 4rem; /* font size of search text */
+/* attributes of all input boxes */
+input {
   text-align: left; /* align search text to left */
-  background-color: rgba(0, 0, 0, 0.2); /* search box black and opaque */
+  color: white;
+  border-color: rgba(0, 0, 0, 0); /* opaque black search box border */
   border-radius: 10px; /* curvature of search box */
-  color: white; /* search text is white when typed */
+}
+
+/* attributes of the homepage search bar */
+.home-search input {
+  font-size: 4rem; /* font size of search text */
+  background-color: rgba(0, 0, 0, 0.2); /* search box black and opaque */
   padding-left: 3rem;
   padding-right: 3rem;
-  border-color: rgba(0, 0, 0, 0); /* opaque black search box border */
 }
 
 /* reduce opacity when input hovered */
-input:hover {
+.home-search input:hover {
   background-color: rgba(0, 0, 0, 0.4);
 }
 
 /* futher reduce opacity when input clicked */
-input:focus {
+.home-search input:focus {
   background-color: rgba(0, 0, 0, 0.5);
   outline: none;
 }
 
-input::placeholder {
+.home-search input::placeholder {
   text-align: center; /* placeholder aligned in center */
   color: rgb(211,211,211); /* placeholder is grey */
 }
 
 /* make placeholder disappear when bar is clicked */
-input:focus::placeholder {
+.home-search input:focus::placeholder {
   color: rgba(0, 0, 0, 0);
 }
 
