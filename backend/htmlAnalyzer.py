@@ -13,3 +13,9 @@ def find_links(pageString):
     href_matchString = 'https://' + "\S+" + '(?=")'
     urlList = re.findall(href_matchString, pageString)
     return urlList
+
+def find_images(pageString):
+    """ Find images contained in pageString """
+    img_matchString = '(?<=src=")' + "\S+" + '(?=")'
+    imgList = re.findall(img_matchString, pageString)
+    return imgList
