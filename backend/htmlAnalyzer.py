@@ -35,5 +35,9 @@ def txt_to_string(pageText):
 #
 # find_meta(sample_pageString)
 
-def find_links(pageString, paramList):
-    """ Find urls contained by all <a href=""> tags
+def find_links(pageString):
+    """ Find urls contained by all <a href=""> tags """
+    # href_matchString = '(?<=href=")' + ".+" + '(?=")'
+    href_matchString2 = 'https://' + "\S+" + '(?=")'
+    urlList = re.findall(href_matchString2, pageString)
+    return urlList
