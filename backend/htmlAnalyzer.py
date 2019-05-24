@@ -6,9 +6,6 @@ def find_title(pageString):
     titleList = re.findall(title_matchString, pageString)
     return titleList
 
-def find_descriptions(pageString):
-    """ Find """
-
 def find_links(pageString):
     """ Find urls contained by all <a href=""> tags """
     # href_matchString = '(?<=href=")' + ".+" + '(?=")'
@@ -16,6 +13,12 @@ def find_links(pageString):
     href_matchString = 'https://' + "\S+" + '(?=")'
     urlList = re.findall(href_matchString, pageString)
     return urlList
+
+def find_descriptions(pageString):
+    """ Find meta tags with description name """
+    description_matchString = '(?<=(name="description" content="))' + 'content="' + ".+" + '(?=")'
+    descriptionList = re.findall(description_matchString, pageString)
+    return descriptionList
 
 def find_images(pageString):
     """ Find images contained in pageString """

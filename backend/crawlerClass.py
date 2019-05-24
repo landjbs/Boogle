@@ -48,10 +48,12 @@ def scrape_urlList(urlList, maxNum, disp=False):
             curTitle = htmlAnalyzer.find_title(curPageString)
             # get links from page string
             curLinks = htmlAnalyzer.find_links(curPageString)
+            # get meta tag descriptions
+            curDescriptions = htmlAnalyzer.find_descriptions(curPageString)
             # get time of loading
             loadTime = datetime.datetime.now()
             # create dict of page info
-            curPageDict = {'title':curTitle, 'url':curURL, 'links':curLinks, 'loadTime':loadTime}
+            curPageDict = {'title':curTitle, 'url':curURL, 'links':curLinks, 'descriptions':curDescriptions,  'loadTime':loadTime}
             pageDictList.append(curPageDict)
             # add curLinks to urlList for analysis
             urlList += curLinks
@@ -77,7 +79,6 @@ def scrape_urlList(urlList, maxNum, disp=False):
                 plt.xlabel("Iterations")
                 plt.ylabel("Number URLs")
                 plt.savefig("scrapeMetrics")
-
 
     # create dataframe of scraped info
     scrapedDF = pd.DataFrame(pageDictList)
