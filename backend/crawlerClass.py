@@ -13,8 +13,9 @@ def decode_line(line):
     """ Helper to decode and consolidate line of html """
     try:
         decodedLine = line.decode("utf-8")
+    # return empty string if unable to decode byte
     except:
-        raise ParseError("Unable to decode line")
+        decodedLine = ""
     return decodedLine
 
 
