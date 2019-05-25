@@ -10,8 +10,7 @@
   height: auto;
   min-height: 35rem;
   padding: 15rem 0;
-  /* background: -webkit-gradient(linear, left top, left bottom, from(rgba(22, 22, 22, 0.3)), color-stop(75%, rgba(22, 22, 22, 0.7)), to(#161616)), url("../img/background_img.jpg"); */
-  background: linear-gradient(to bottom, rgba(22, 22, 22, 0.3) 0%, rgba(22, 22, 22, 0.7) 75%, #161616 100%), url("../img/background_img.jpg");
+  background: linear-gradient(to bottom, rgba(22, 22, 22, 0.3) 0%, rgba(22, 22, 22, 0.7) 75%, #161616 100%), url("../background_img.jpg");
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: scroll;
@@ -36,7 +35,6 @@
 /* attributes of all input boxes */
 input {
   text-align: left; /* align search text to left */
-  color: white;
   border-color: rgba(0, 0, 0, 0); /* opaque black search box border */
   border-radius: 10px; /* curvature of search box */
 }
@@ -51,7 +49,7 @@ input {
 
 /* reduce opacity when input hovered */
 .home-search input:hover {
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0);
 }
 
 /* futher reduce opacity when input clicked */
@@ -105,7 +103,8 @@ input {
 }
 
 .btn-primary {
-  background-color: rgba(211, 211, 211, 0.4);
+  /* background-color: rgba(211, 211, 211, 0.4); */
+  background-color: red;
 }
 
 .btn-primary:hover {

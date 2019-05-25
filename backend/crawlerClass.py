@@ -19,7 +19,7 @@ def decode_line(line):
     return decodedLine
 
 
-def scrape_url(url):
+def url_to_string(url):
     """ Converts string of URL link to string of page contents """
     try:
         # get http.client.HTTPResponse object of url
@@ -36,36 +36,41 @@ def scrape_urlList(urlList, maxNum, disp=False):
     """ Iterate through list of URLs, adding title, url, and links to webDF """
     count, errors = 0, 0
     pageDictList = []
+    searchedURLs = set()
     # lists to store disp metrics
     lenList, errorList = [], []
     # continue iterating until no more links can be found
     while (urlList != []) and (count <= maxNum):
         # curURL to analyze is the head of urlList
         curURL = urlList[0]
-        try:
-            # scrape text from link
-            curPageString = scrape_url(curURL)
-            # get title from pageString
-            curTitle = htmlAnalyzer.find_title(curPageString)
-            # get links from page string
-            curLinks = htmlAnalyzer.find_links(curPageString)
-            # get meta tag descriptions
-            curDescriptions = htmlAnalyzer.find_descriptions(curPageString)
-            # get time of loading
-            loadTime = datetime.datetime.now()
-            # create dict of page info
-            curPageDict = {'title':curTitle, 'url':curURL, 'links':curLinks, 'descriptions':curDescriptions,  'loadTime':loadTime}
-            pageDictList.append(curPageDict)
-            # add curLinks to urlList for analysis
-            urlList += curLinks
-        except:
-            errors += 1
-        # remove first item in urlList
-        del urlList[0]
-        # increment count, lenList, and errorList
-        count += 1
-        lenList.append(len(urlList))
-        errorList.append(errors)
+        if curULS not in searchedURLs:
+            searchedURLs.add(curURL)
+            try:
+                # scrape text from link
+                curPageString = url_to_string(curURL)
+                # get title from pageString
+                curTitle = htmlAnalyzer.find_title(curPageString)
+                # get links from page string
+                curLinks = htmlAnalyzer.find_links(curPageString)
+                # get meta tag descriptions
+                curDescriptions = htmlAnalyzer.find_descriptions(curPageString)
+                # get time of loading
+                loadTime = datetime.datetime.now()
+                # create dict of page info
+                curPageDict = {'title':curTitle, 'url':curURL, 'links':curLinks, 'descriptions':curDescriptions,  'loadTime':loadTime}
+                pageDictList.append(curPageDict)
+                # add curLinks to urlList for analysis
+                urlList += curLinks
+            except:
+                errors += 1
+            # remove first item in urlList
+            del urlList[0]
+            # increment count, lenList, and errorList
+            count += 1
+            lenList.append(len(urlList))
+            errorList.append(errors)
+        else:
+            pass
 
         # print progress
         print(f"\t{count} URLs analyzed with {errors} errors!\r", end="")
@@ -81,6 +86,7 @@ def scrape_urlList(urlList, maxNum, disp=False):
                 plt.ylabel("Number URLs")
                 plt.savefig("scrapeMetrics")
 
+    print(f"Accurate: {searchedURLs == }")
     # create dataframe of scraped info
     scrapedDF = pd.DataFrame(pageDictList)
     return(scrapedDF)
