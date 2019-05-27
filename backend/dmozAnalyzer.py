@@ -10,7 +10,7 @@ Features:
 
 """
 
-dmozMatrix = np.read_tsv("")
+dmozMatrix = np.read_csv("../outputs/dmoz_domain_category.tab.tsv", delimiter="\t")
 
-for url, bin in dmozMatrix:
-    pageString = crawlerClass.
+for url, path in dmozMatrix:
+    pageString = crawlerClass.url_to_string(url)
