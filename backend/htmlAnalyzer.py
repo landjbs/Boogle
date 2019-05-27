@@ -25,3 +25,8 @@ def find_images(pageString):
     img_matchString = '(?<=src=")' + "\S+" + '(?=")'
     imgList = re.findall(img_matchString, pageString)
     return imgList
+
+def vectorize_paragraph(pageString):
+    """ Converts page html into vector for modeling (inpsired by
+        https://cs.stanford.edu/~quocle/paragraph_vector.pdf)"""
+    

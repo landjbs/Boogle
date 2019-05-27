@@ -43,7 +43,7 @@ def scrape_urlList(urlList, maxNum, disp=False):
     while (urlList != []) and (count <= maxNum):
         # curURL to analyze is the head of urlList
         curURL = urlList[0]
-        if curULS not in searchedURLs:
+        if curURL not in searchedURLs:
             searchedURLs.add(curURL)
             try:
                 # scrape text from link
@@ -70,7 +70,8 @@ def scrape_urlList(urlList, maxNum, disp=False):
             lenList.append(len(urlList))
             errorList.append(errors)
         else:
-            pass
+            # if a url thats already been hit is found, finish scraping
+            urlList = []
 
         # print progress
         print(f"\t{count} URLs analyzed with {errors} errors!\r", end="")
@@ -86,7 +87,6 @@ def scrape_urlList(urlList, maxNum, disp=False):
                 plt.ylabel("Number URLs")
                 plt.savefig("scrapeMetrics")
 
-    print(f"Accurate: {searchedURLs == }")
     # create dataframe of scraped info
     scrapedDF = pd.DataFrame(pageDictList)
     return(scrapedDF)
@@ -100,10 +100,10 @@ def homepage(scrapedDF):
     print(result)
 
 
-sampleStr = scrape_url("https://stackoverflow.com")
+sampleStr = url_to_string("https://stackoverflow.com")
 
 test = htmlAnalyzer.find_links(sampleStr)
 
 testDF = scrape_urlList(test, 50, True)
 
-testDF.to_csv('testDF.csv', sep=',')
+# testDF.to_csv('testDF.csv', sep=',')
