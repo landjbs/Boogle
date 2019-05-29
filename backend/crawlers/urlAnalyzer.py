@@ -8,6 +8,19 @@ class ParseError(Exception):
     """ Exception for errors while parsing a link """
     pass
 
+def clean_url(url):
+    """ Add proper headings URLs for crawler analysis """
+    # cast url to string
+    urlString = str(url)
+    # check starts
+    if urlString.startswith('http'):
+        pass
+    elif urlString.startswith("www"):
+        urlString = "http://" + urlString
+    else:
+        urlString = "http://www." + urlString
+    return urlString
+
 def url_to_string(url):
     """ Converts string of URL link to string of page contents """
     try:
