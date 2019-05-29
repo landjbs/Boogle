@@ -2,6 +2,7 @@ import urllib.request
 import crawlers.htmlAnalyzer
 import pandas as pd
 import datetime
+import re
 import matplotlib.pyplot as plt
 
 
@@ -46,6 +47,7 @@ def urlList_to_stringList(urlList):
             urlString = url_to_string(url)
             stringList.append(url_to_string(url))
         except:
+            stringList.append("ERROR")
             errors += 1
         print(f"\t{count} urls analyzed with {errors} errors", end="\r")
     return stringList
