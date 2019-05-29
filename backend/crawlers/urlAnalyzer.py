@@ -35,8 +35,7 @@ def url_to_string(url):
     except:
         raise ParseError(f"Unable to access '{cleanedURL}''")
     pageString = page.read()
-    # pageString = ""
-    # page.close()
+    page.close()
     return(pageString)
 
 
