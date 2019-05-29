@@ -1,3 +1,5 @@
+# From http://mattmahoney.net/dc/textdata.html
+
 #!/usr/bin/perl
 
 # Program to filter Wikipedia XML dumps to "clean" text consisting only of lowercase

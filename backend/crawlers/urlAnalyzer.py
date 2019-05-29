@@ -8,17 +8,6 @@ class ParseError(Exception):
     """ Exception for errors while parsing a link """
     pass
 
-
-def decode_line(line):
-    """ Helper to decode and consolidate line of html """
-    try:
-        decodedLine = line.decode("utf-8")
-    # return empty string if unable to decode byte
-    except:
-        decodedLine = ""
-    return decodedLine
-
-
 def url_to_string(url):
     """ Converts string of URL link to string of page contents """
     try:
@@ -26,10 +15,20 @@ def url_to_string(url):
         page = urllib.request.urlopen(url)
     except:
         raise ParseError(f"Unable to access '{url}''")
-    # convert decoded lines of page to string
-    outstr = "".join([decode_line(line) for line in page])
+    pageString = page.read()
     page.close()
-    return(outstr)
+    return(pageString)
+
+def urlList_to_stringList(urlList):
+    errors = 0
+    stringList = []
+    for count, url in enumerate(urlList):
+        print(f"{count} urls analyzed with {errors} errors!", end="\r")
+        try:
+            stringList.append(url_to_string(url))
+        except:
+            errors += 1
+    return stringList
 
 
 def scrape_urlList(urlList, maxNum, disp=False):
@@ -99,11 +98,11 @@ def homepage(scrapedDF):
     result = scrapedDF[scrapedDF['title'].str.contains(rawSearch)]
     print(result)
 
-
-sampleStr = url_to_string("https://stackoverflow.com")
-
-test = htmlAnalyzer.find_links(sampleStr)
-
-testDF = scrape_urlList(test, 50, True)
-
-# testDF.to_csv('testDF.csv', sep=',')
+#
+# sampleStr = url_to_string("https://stackoverflow.com")
+#
+# test = htmlAnalyzer.find_links(sampleStr)
+#
+# testDF = scrape_urlList(test, 50, True)
+#
+# # testDF.to_csv('testDF.csv', sep=',')

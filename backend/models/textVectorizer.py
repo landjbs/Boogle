@@ -7,6 +7,6 @@ import re
 
 
 def tokenize(text):
-    """ Convert string to tokens with at least 1 letter """
+    """ Convert string to lowercased tokens with at least 1 letter """
     tokenMatch = re.compile(r'[A-Za-z]+[\w^\']*|[\w^\']*[A-Za-z]+[\w^\']*')
     return tokenMatch.findall(text.lower())
