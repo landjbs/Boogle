@@ -4,29 +4,12 @@ import pandas as pd
 import datetime
 import re
 import matplotlib.pyplot as plt
-from Queue import Queue
-from threading import Thread
 
 
 class ParseError(Exception):
     """ Exception for errors while parsing a link """
     pass
 
-#### URL QUEUE STUFF ####
-url_queue = Queue(10)
-
-def worker():
-    """ Worker to process pop url from url_queue """
-    while True:
-        url = url_queue.get()
-        x = url_to_string(url)
-        print("Done")
-        url_queue.tast_done()
-
-for i in xrange(20):
-    t = Thread(target=worker)
-    t.daemon = True
-    t.start()
 
 def clean_url(url):
     """ Add proper headings URLs for crawler analysis """
@@ -51,7 +34,8 @@ def url_to_string(url):
         page = urllib.request.urlopen(cleanedURL)
     except:
         raise ParseError(f"Unable to access '{cleanedURL}''")
-    pageString = page.read()
+    # pageString = page.read()
+    pageString = ""
     # page.close()
     return(pageString)
 
