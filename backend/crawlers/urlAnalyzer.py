@@ -1,12 +1,14 @@
 import urllib.request
-import htmlAnalyzer
+import crawlers.htmlAnalyzer
 import pandas as pd
 import datetime
 import matplotlib.pyplot as plt
 
+
 class ParseError(Exception):
     """ Exception for errors while parsing a link """
     pass
+
 
 def clean_url(url):
     """ Add proper headings URLs for crawler analysis """
@@ -21,16 +23,20 @@ def clean_url(url):
         urlString = "http://www." + urlString
     return urlString
 
+
 def url_to_string(url):
     """ Converts string of URL link to string of page contents """
+    # add proper header to url
+    cleanedURL = clean_url(cleanedURL)
     try:
         # get http.client.HTTPResponse object of url
-        page = urllib.request.urlopen(url)
+        page = urllib.request.urlopen(cleanedURL)
     except:
-        raise ParseError(f"Unable to access '{url}''")
+        raise ParseError(f"Unable to access '{cleanedURL}''")
     pageString = page.read()
-    page.close()
+    # page.close()
     return(pageString)
+
 
 def urlList_to_stringList(urlList):
     errors = 0
@@ -102,14 +108,6 @@ def scrape_urlList(urlList, maxNum, disp=False):
     # create dataframe of scraped info
     scrapedDF = pd.DataFrame(pageDictList)
     return(scrapedDF)
-
-
-def homepage(scrapedDF):
-    """ Searches DF for page """
-    rawSearch = input("Search: ")
-    tokenSearch = rawSearch.split(" ")
-    result = scrapedDF[scrapedDF['title'].str.contains(rawSearch)]
-    print(result)
 
 #
 # sampleStr = url_to_string("https://stackoverflow.com")
