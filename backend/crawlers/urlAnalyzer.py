@@ -25,9 +25,9 @@ def clean_url(url):
 
 
 def url_to_string(url):
-    """ Converts string of URL link to string of page contents """
-    # add proper header to url
-    cleanedURL = clean_url(cleanedURL)
+    """ Cleans and converts string of URL link to string of page contents """
+    # add proper headers to url
+    cleanedURL = clean_url(url)
     try:
         # get http.client.HTTPResponse object of url
         page = urllib.request.urlopen(cleanedURL)
@@ -42,11 +42,12 @@ def urlList_to_stringList(urlList):
     errors = 0
     stringList = []
     for count, url in enumerate(urlList):
-        print(f"{count} urls analyzed with {errors} errors!", end="\r")
         try:
+            urlString = url_to_string(url)
             stringList.append(url_to_string(url))
         except:
             errors += 1
+        print(f"\t{count} urls analyzed with {errors} errors", end="\r")
     return stringList
 
 
