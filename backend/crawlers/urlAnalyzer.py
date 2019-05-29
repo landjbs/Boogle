@@ -34,8 +34,8 @@ def url_to_string(url):
         page = urllib.request.urlopen(cleanedURL)
     except:
         raise ParseError(f"Unable to access '{cleanedURL}''")
-    # pageString = page.read()
-    pageString = ""
+    pageString = page.read()
+    # pageString = ""
     # page.close()
     return(pageString)
 

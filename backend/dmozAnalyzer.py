@@ -6,7 +6,7 @@ from threading import Thread
 
 import time
 
-dmozDF = pd.read_csv("data/dmoz_domain_category.tab.tsv", sep="\t", names=["url", "path"])
+dmozDF = pd.read_csv("data/test.tab.tsv", sep="\t", names=["url", "path"])
 
 dmoz_urlList = list(dmozDF["url"])
 
@@ -42,11 +42,12 @@ for count, url in enumerate(dmoz_urlList):
     print(f"\t{count} URLs analyzed with {errors} errors!", end="\r")
     url_queue.put(url)
 
-url_queue.join()
-
 end = time.time()
+
+print(f"Time: {end - start}")
+
+url_queue.join()
 
 dmozDF["pageString"] = dmoz_pageStrings
 
-print(f"Time: {end - start}")
 dmozDF.to_csv("data/dmoz.tab.tsv", sep='\t')
