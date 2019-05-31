@@ -9,8 +9,8 @@ linkString = r'https://\S+(?=")|http://\S+(?=")'
 linkMatcher = re.compile(linkString)
 
 # matcher for everything in <body></body> tags
-bodyString = r'(?=<body).+(?=</body>)'
-bodyMatcher = re.compile(bodyString)
+bodyString = r'(?<=<body).+(?=</body>)'
+bodyMatcher = re.compile(bodyString, re.IGNORECASE)
 
 
 
@@ -27,13 +27,9 @@ def find_images(pageString):
     return imgList
 
 
-text = "<title>Hi</TITLE>"
+with open('../data/practiceWeb.txt', 'r') as FileObj:
+    text = "".join(line for line in FileObj)
 
-print(titleMatcher.findall(text))
+x = titleMatcher.findall(text)
 
-# with open('practiceWeb.txt', 'r') as FileObj:
-#     text = "".join(line for line in FileObj)
-#
-# x = bodyMatcher.findall(text)
-#
-# print(x)
+print(x)
