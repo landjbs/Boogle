@@ -28,6 +28,7 @@ def get_links(soup):
     linkList = [link['href'] for link in a_list if parsable(link['href'])]
     return linkList
 
+
 def analyze_html(pageString):
     """
     Args: pageString to analyze (usually passed from urlAnalyzer)
@@ -39,4 +40,12 @@ def analyze_html(pageString):
     # get string in <title></title> tags
     title = curSoup.title.string
     # get all readable text on the page
-    pageText = soup.get_text()
+    pageText = curSoup.get_text()
+    # get list of valid links
+    linkList = get_links(curSoup)
+    # MORE HERE—loadTime should be last!
+    # time at which the url data was loaded into memory
+    loadTime = datetime.datetime.now()
+    # set outs
+    outDict = {'title':title, 'loadTime':loadTime}
+    return outDict
