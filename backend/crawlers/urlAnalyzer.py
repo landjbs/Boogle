@@ -1,7 +1,9 @@
+# Script responsible for building database of page data from list of URLs.
+# Outsources all HTML processing to htmlAnalyzer.
+
 import urllib.request
-import crawlers.htmlAnalyzer
+# import htmlAnalyzer
 import pandas as pd
-import datetime
 import re
 import matplotlib.pyplot as plt
 
