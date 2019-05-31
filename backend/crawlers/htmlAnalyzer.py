@@ -1,18 +1,15 @@
 import re
 
-def find_title(pageString):
-    """ Find title of an html page """
-    title_matchString = "(?<=<title>)" + ".+" + "(?=</title>)"
-    titleList = re.findall(title_matchString, pageString)
-    return titleList
+# matcher for text in <title></title> tags
+titleString = r'(?<=<title>).+(?=</title>)'
+titleMatcher = re.compile(titleString)
 
-def find_links(pageString):
-    """ Find urls contained by all <a href=""> tags """
-    # href_matchString = '(?<=href=")' + ".+" + '(?=")'
-    # match for https:// followed by anything but space followed by "
-    href_matchString = 'https://' + "\S+" + '(?=")'
-    urlList = re.findall(href_matchString, pageString)
-    return urlList
+# matcher for links denoted by https:// or http://
+linkString = r'https://\S+(?=")|http://\S+(?=")'
+linkMatcher = re.compile(linkString)
+
+# matcher for everything in <body></body> tags
+bodyString = r'(?=<body>).+(?=</body>)'
 
 def find_descriptions(pageString):
     """ Find meta tags with description name """
@@ -26,7 +23,17 @@ def find_images(pageString):
     imgList = re.findall(img_matchString, pageString)
     return imgList
 
-def vectorize_paragraph(pageString):
-    """ Converts page html into vector for modeling (inpsired by
-        https://cs.stanford.edu/~quocle/paragraph_vector.pdf)"""
-    
+
+text = '<title>Harvard University</title>'
+
+x = titleMatcher.findall(text)
+
+# x = re.match(r'.+', text)
+
+
+print(x)
+
+#
+# x = re.findall(testMatch, text)
+#
+# print(x)
