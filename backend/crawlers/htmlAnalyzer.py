@@ -36,8 +36,9 @@ def get_links():
 
     def validate_link(link):
         """ Helper to extract valid URLs from <a> tag list """
-        if parsable(link):
-            return link
+        curURL = link['href']
+        if parsable(curURL):
+            return curURL
         else:
             return None
 
