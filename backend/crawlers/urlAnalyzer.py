@@ -17,13 +17,14 @@ def clean_url(url):
     """ Add proper headings URLs for crawler analysis """
     # cast url to string
     urlString = str(url)
-    # check starts
-    if urlString.startswith('http'):
-        pass
-    elif urlString.startswith("www"):
-        urlString = "http://" + urlString
-    else:
-        urlString = "http://www." + urlString
+    if not ha.parsable(urlString)
+        # check starts
+        if urlString.startswith('http'):
+            pass
+        elif urlString.startswith("www"):
+            urlString = "http://" + urlString
+        else:
+            urlString = "http://www." + urlString
     return urlString
 
 

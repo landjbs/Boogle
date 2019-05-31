@@ -33,19 +33,11 @@ curSoup = BeautifulSoup(text, "html.parser")
 
 def get_links(soup):
     """ Returns list of all valid links from pageString """
-
-    def validate_link(link):
-        """ Helper to extract valid URLs from <a> tag list """
-        curURL = link['href']
-        if parsable(curURL):
-            return curURL
-
     # get list of all <a> tags in soup
     a_list = soup.find_all('a', href=True)
     # get list of validated urls from <a> tag list
-    linkList = [link['href'] for link in a_list if validate_link(link['href'])]
-
-    print(linkList)
+    linkList = [link['href'] for link in a_list if parsable(link['href'])]
+    return linkList
 
 get_links(curSoup)
 
