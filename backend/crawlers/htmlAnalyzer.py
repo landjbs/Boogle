@@ -1,15 +1,18 @@
 import re
 
-# matcher for text in <title></title> tags
+# matcher for text in <title></title> tags, ignoring case
 titleString = r'(?<=<title>).+(?=</title>)'
-titleMatcher = re.compile(titleString)
+titleMatcher = re.compile(titleString, re.IGNORECASE)
 
 # matcher for links denoted by https:// or http://
 linkString = r'https://\S+(?=")|http://\S+(?=")'
 linkMatcher = re.compile(linkString)
 
 # matcher for everything in <body></body> tags
-bodyString = r'(?=<body>).+(?=</body>)'
+bodyString = r'(?=<body).+(?=</body>)'
+bodyMatcher = re.compile(bodyString)
+
+
 
 def find_descriptions(pageString):
     """ Find meta tags with description name """
@@ -24,16 +27,13 @@ def find_images(pageString):
     return imgList
 
 
-text = '<title>Harvard University</title>'
+text = "<title>Hi</TITLE>"
 
-x = titleMatcher.findall(text)
+print(titleMatcher.findall(text))
 
-# x = re.match(r'.+', text)
-
-
-print(x)
-
+# with open('practiceWeb.txt', 'r') as FileObj:
+#     text = "".join(line for line in FileObj)
 #
-# x = re.findall(testMatch, text)
+# x = bodyMatcher.findall(text)
 #
 # print(x)
