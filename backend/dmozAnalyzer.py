@@ -10,8 +10,8 @@ dmoz_urlList = list(dmozDF["url"])
 
 start = time.time()
 
-testOut = ua.scrape_urlList(dmoz_urlList)
+testOut = ua.scrape_urlList(dmoz_urlList, workerNum=50)
 
 end = time.time()
 
-print(testOut.get())
+print(f"Process Complete!\nURLs analyzed in {end-start} seconds!")

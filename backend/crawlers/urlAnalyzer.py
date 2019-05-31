@@ -4,8 +4,6 @@
 
 import urllib.request
 import crawlers.htmlAnalyzer as ha
-import matplotlib.pyplot as plt
-
 
 class ParseError(Exception):
     """ Exception for errors while parsing a link """
@@ -65,8 +63,9 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20):
     Args: urlList to scrape, depth of url_queue, number of workers to spawn
     Returns: wide column store of data from each url
     """
-    # initialize url_queue
+    # queue to hold urlList
     urlQueue = Queue(queueDepth)
+    # queue to hold scraped data
     outQueue = Queue()
 
     def worker():
@@ -74,21 +73,16 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20):
         # pop url from queue and analyze
         while True:
             url = urlQueue.get()
-            # convert url to string of html contents
-            # pageString = url_to_pageString(url)
-            # grab data from html
-            # pageDict = ha.analyze_html(pageString)
-            # print(f"{url}: {pageDict}")
-            outQueue.put(url)
-            # try:
-            #     # convert url to string of html contents
-            #     pageString = url_to_string(url)
-            #     # grab data from html
-            #     pageDict = ha.analyze_html(pageString)
-            #     # print(f"{url}: {pageDict}")
-            #     outQueue.put(pageDict)
-            # except:
-            #     print(f"ERROR: {url}")
+            try:
+                # convert url to string of html contents
+                pageString = url_to_pageString(url)
+                # grab data from html
+                pageDict = ha.analyze_html(pageString)
+                # print(f"{url}: {pageDict}")
+                print(f"SUCCESS: {url}")
+                outQueue.put(pageDict)
+            except:
+                print(f"ERROR: {url}")
             urlQueue.task_done()
 
     # spawn workerNum workers
