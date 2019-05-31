@@ -1,28 +1,11 @@
-# Script responsible for building database of page data from list of URLs.
+# Responsible for building database of page data from list of URLs.
 # Outsources URL processing to urlAnalyzer.
 # Outsources HTML processing to htmlAnalyzer.
 # Outsoucres database definitions to thicctable.py
 
 from queue import Queue
 from threading import Thread
-
-class Store():
-    """ Test class composed of list to which pageDicts are added """
-    def __init__(self):
-        self.data = []
-    def add(self, elt):
-        self.data += [(elt)]
-
-class Metrics():
-    """ Class to keep track of scrape progress """
-    def __init__(self):
-        self.count = 0
-        self.errors = 0
-
-    def add(self, error=False):
-        self.count += 1
-        if error:
-            self.errors += 1
+import thicctable as db
 
 def scrape_urlList(urlList, queueDepth=10, workerNum=20):
     """
@@ -33,9 +16,9 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20):
     # queue to hold urlList
     urlQueue = Queue(queueDepth)
     # struct to hold scraped data
-    outStore = Store()
+    outStore = db.Store()
     # struct to keep track of metrics
-    scrapeMetrics = Metrics()
+    scrapeMetrics = db.Metrics()
 
     def worker():
         """ Worker to process popped URL from URL Queue """
@@ -44,16 +27,19 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20):
             url = urlQueue.get()
             try:
                 # convert url to string of html contents
-                pageString = url_to_pageString(url)
+                pageString = ua.url_to_pageString(url)
                 # grab data from html
                 pageDict = ha.analyze_html(pageString)
-                # print(f"{url}: {pageDict}")
-                # print(f"SUCCESS: {url}")
+                # add pageDict to outStore
                 outStore.add(pageDict)
-                scrapeMetrics.add()
+                # update scrape metrics
+                scrapeMetrics.add(error=False)
             except:
+                # update scrape metrics
                 scrapeMetrics.add(error=True)
+            # log progress
             print(f"\t{scrapeMetrics.count} URLs analyzed with {scrapeMetrics.errors} errors!", end="\r")
+            # signal completion
             urlQueue.task_done()
 
     # spawn workerNum workers
@@ -61,9 +47,10 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20):
         t = Thread(target=worker)
         t.daemon = True
         t.start()
+
     # load cleaned urls into url_queue
     for url in urlList:
-        cleanedURL = clean_url(url)
+        cleanedURL = ua.clean_url(url)
         urlQueue.put(url)
     # ensure all url_queue processes are complete before proceeding
     urlQueue.join()

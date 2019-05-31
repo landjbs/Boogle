@@ -1,6 +1,4 @@
-# Script responsible for building database of page data from list of URLs.
-# Outsources all HTML processing to htmlAnalyzer. Handels url requesting and
-# Thread/Queue model for distributed parsing
+
 
 import urllib.request
 import crawlers.htmlAnalyzer as ha

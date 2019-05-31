@@ -1,4 +1,4 @@
-# Script responsible for returning processed data from HTML pageString
+# Responsible for gathering and processing data from HTML pageString
 # passed from urlAnalyzer. Outsources all NLP and ML to backend/models.
 
 import re
