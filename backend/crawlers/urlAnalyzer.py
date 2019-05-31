@@ -57,11 +57,22 @@ from queue import Queue
 from threading import Thread
 
 class Store():
+    """ Test class composed of list to which pageDicts are added """
     def __init__(self):
         self.data = []
-
     def add(self, elt):
         self.data += [(elt)]
+
+class Metrics():
+    """ Class to keep track of scrape progress """
+    def __init__(self):
+        self.count = 0
+        self.errors = 0
+
+    def add(self, error=False):
+        self.count += 1
+        if error:
+            self.errors += 1
 
 def scrape_urlList(urlList, queueDepth=10, workerNum=20):
     """
@@ -71,9 +82,10 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20):
     """
     # queue to hold urlList
     urlQueue = Queue(queueDepth)
-    # queue to hold scraped data
-    # outQueue = Queue()
+    # struct to hold scraped data
     outStore = Store()
+    # struct to keep track of metrics
+    scrapeMetrics = Metrics()
 
     def worker():
         """ Worker to process popped URL from URL Queue """
@@ -86,10 +98,12 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20):
                 # grab data from html
                 pageDict = ha.analyze_html(pageString)
                 # print(f"{url}: {pageDict}")
-                print(f"SUCCESS: {url}")
+                # print(f"SUCCESS: {url}")
                 outStore.add(pageDict)
+                scrapeMetrics.add()
             except:
-                print(f"ERROR: {url}")
+                scrapeMetrics.add(error=True)
+            print(f"\t{scrapeMetrics.count} URLs analyzed with {scrapeMetrics.errors} errors!", end="\r")
             urlQueue.task_done()
 
     # spawn workerNum workers
