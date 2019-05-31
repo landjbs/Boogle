@@ -1,5 +1,6 @@
-# Responsible for gathering and processing data from HTML pageString
-# passed from urlAnalyzer. Outsources all NLP and ML to backend/models.
+# Responsible for gathering and processing data from HTML pageStrings.
+# pageStrings generally passed from crawler.py after being cleaned by
+# urlAnalyzer.py. Outsources all NLP and ML to backend/models.
 
 import re
 import datetime # to find the loadTime of a page
