@@ -56,6 +56,12 @@ def urlList_to_stringList(urlList):
 from queue import Queue
 from threading import Thread
 
+class Store():
+    def __init__(self):
+        self.data = []
+
+    def add(self, elt):
+        self.data += [(elt)]
 
 def scrape_urlList(urlList, queueDepth=10, workerNum=20):
     """
@@ -66,7 +72,8 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20):
     # queue to hold urlList
     urlQueue = Queue(queueDepth)
     # queue to hold scraped data
-    outQueue = Queue()
+    # outQueue = Queue()
+    outStore = Store()
 
     def worker():
         """ Worker to process popped URL from URL Queue """
@@ -80,7 +87,7 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20):
                 pageDict = ha.analyze_html(pageString)
                 # print(f"{url}: {pageDict}")
                 print(f"SUCCESS: {url}")
-                outQueue.put(pageDict)
+                outStore.add(pageDict)
             except:
                 print(f"ERROR: {url}")
             urlQueue.task_done()
@@ -96,7 +103,7 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20):
         urlQueue.put(url)
     # ensure all url_queue processes are complete before proceeding
     urlQueue.join()
-    return outQueue
+    return outStore
 
 
 
