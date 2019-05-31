@@ -77,6 +77,7 @@ def worker():
 
 def scrape_urlList(urlList, queueDepth, workerNum):
     """
+    Builds wide column store of url data from urlList with no depth search
     Args: urlList to scrape, depth of url_queue, number of workers to spawn
     Returns: wide column store of data from each url
     """
@@ -90,8 +91,11 @@ def scrape_urlList(urlList, queueDepth, workerNum):
         t = Thread(target=worker)
         t.daemon = True
         t.start()
-
-
+    # load urls into url_queue
+    for count, url in enumerate(urlList):
+        url_queue.put(url)
+    # ensure all url_queue processes are complete before proceeding
+    url_queue.join()
 
 
 def scrape_urlList_deep(urlList, maxNum, disp=False):
