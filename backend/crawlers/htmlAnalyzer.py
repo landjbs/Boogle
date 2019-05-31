@@ -4,7 +4,6 @@
 import re
 import datetime # to find the loadTime of a page
 from bs4 import BeautifulSoup
-import urllib.request
 
 # image string
 imageString = '(?<=src=")' + "\S+" + '(?=")'

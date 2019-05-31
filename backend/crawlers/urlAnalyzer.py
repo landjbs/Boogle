@@ -4,7 +4,6 @@
 
 import urllib.request
 import htmlAnalyzer as ha
-import re
 import matplotlib.pyplot as plt
 
 
@@ -55,8 +54,47 @@ def urlList_to_stringList(urlList):
         print(f"\t{count} urls analyzed with {errors} errors", end="\r")
     return stringList
 
+### CRAWLING STUFF ##
+from queue import Queue
+from threading import Thread
 
-def scrape_urlList(urlList, maxNum, disp=False):
+def worker():
+    """ Worker to process popped URL from URL Queue """
+    # set globals
+    global test_parseList
+    global test_errors
+    # pop url from queue and analyze
+    while True:
+        url = url_queue.get()
+        try:
+            # convert url to string of html contents
+            pageString = ua.url_to_string(url)
+            # grab data from html
+            pageDict = ha.analyze_html(pageString)
+            print(pageDict)
+        except:
+            print(f"ERROR: {url}")
+
+def scrape_urlList(urlList, queueDepth, workerNum):
+    """
+    Args: urlList to scrape, depth of url_queue, number of workers to spawn
+    Returns: wide column store of data from each url
+    """
+    # initialize globals
+    test_parseList = []
+    test_errors = []
+    # initialize url_queue
+    url_queue = Queue(10)
+    # spawn workerNum workers
+    for _ in range(20):
+        t = Thread(target=worker)
+        t.daemon = True
+        t.start()
+
+
+
+
+def scrape_urlList_deep(urlList, maxNum, disp=False):
     """ Iterate through list of URLs, adding title, url, and links to webDF """
     count, errors = 0, 0
     pageDictList = []

@@ -4,7 +4,6 @@ import crawlers.urlAnalyzer as ua
 from queue import Queue
 from threading import Thread
 
-import time
 
 dmozDF = pd.read_csv("data/test.tab.tsv", sep="\t", names=["url", "path"])
 
