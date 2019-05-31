@@ -27,7 +27,6 @@ with open('../data/practiceWeb.txt', 'r') as FileObj:
 
 curSoup = BeautifulSoup(text, "html.parser")
 
-# print(soup.title.string)
 #
 # print(soup.get_text())
 
@@ -39,13 +38,14 @@ def get_links(soup):
     linkList = [link['href'] for link in a_list if parsable(link['href'])]
     return linkList
 
-get_links(curSoup)
-
-# def analyze_html(pageString):
-#     """
-#     Args: pageString to analyze (usually passed from urlAnalyzer)
-#     Returns: TO DO
-#     """
+def analyze_html(pageString):
+    """
+    Args: pageString to analyze (usually passed from urlAnalyzer)
+    Returns: TO DO
+    """
     # create a soup object for parsing pageString
-    # curSoup = BeautifulSoup(pageString, "html.parser")
-    #
+    curSoup = BeautifulSoup(pageString, "html.parser")
+    ## strip data from curSoup
+    # get string in <title></title> tags
+    title = curSoup.title.string
+    pageText = soup.get_text()
