@@ -5,7 +5,7 @@ import re
 import datetime # to find the loadTime of a page
 from bs4 import BeautifulSoup
 import urllib.request
-import urlAnalyzer as ua
+# import urlAnalyzer as ua
 
 # matcher for url denoted by https:// or http://
 urlString = r'https://\S+|http://\S+'
@@ -25,13 +25,13 @@ imageMatcher = re.compile(imageString)
 with open('../data/practiceWeb.txt', 'r') as FileObj:
     text = "".join(line for line in FileObj)
 
-soup = BeautifulSoup(text, "html.parser")
+curSoup = BeautifulSoup(text, "html.parser")
 
 # print(soup.title.string)
 #
 # print(soup.get_text())
 
-def get_links():
+def get_links(soup):
     """ Returns list of all valid links from pageString """
 
     def validate_link(link):
@@ -39,13 +39,21 @@ def get_links():
         curURL = link['href']
         if parsable(curURL):
             return curURL
-        else:
-            return None
 
+    # get list of all <a> tags in soup
     a_list = soup.find_all('a', href=True)
+    # get list of validated urls from <a> tag list
+    linkList = [link['href'] for link in a_list if validate_link(link['href'])]
 
-    test = list(map(lambda link : validate_link(link), a_list))
+    print(linkList)
 
-    print(test)
+get_links(curSoup)
 
-get_links()
+# def analyze_html(pageString):
+#     """
+#     Args: pageString to analyze (usually passed from urlAnalyzer)
+#     Returns: TO DO
+#     """
+    # create a soup object for parsing pageString
+    # curSoup = BeautifulSoup(pageString, "html.parser")
+    #
