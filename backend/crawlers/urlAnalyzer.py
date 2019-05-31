@@ -1,9 +1,9 @@
 # Script responsible for building database of page data from list of URLs.
-# Outsources all HTML processing to htmlAnalyzer.
+# Outsources all HTML processing to htmlAnalyzer. Handels url requesting and
+# Thread/Queue model for distributed parsing
 
 import urllib.request
-# import htmlAnalyzer
-import pandas as pd
+import htmlAnalyzer as ha
 import re
 import matplotlib.pyplot as plt
 

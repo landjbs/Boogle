@@ -7,36 +7,44 @@ from bs4 import BeautifulSoup
 import urllib.request
 import urlAnalyzer as ua
 
-# matcher for text in <title></title> tags, ignoring case
-titleString = r'(?<=<title>).+(?=</title>)'
-titleMatcher = re.compile(titleString, re.IGNORECASE)
+# matcher for url denoted by https:// or http://
+urlString = r'https://\S+|http://\S+'
+urlMatcher = re.compile(urlString)
 
-# matcher for links denoted by https:// or http://
-linkString = r'https://\S+(?=")|http://\S+(?=")'
-linkMatcher = re.compile(linkString)
-
-# matcher for everything in <body...></body> tags
-bodyString = r'(?<=<body).+(?=</body>)'
-bodyMatcher = re.compile(bodyString)
+def parsable(url):
+    """ Returns true if url follows urlMatcher pattern """
+    # canParse = False if not urlMatcher.match(url) else False
+    canParse = True if urlMatcher.fullmatch(url) else False
+    return canParse
 
 # image string
 imageString = '(?<=src=")' + "\S+" + '(?=")'
 imageMatcher = re.compile(imageString)
 
-# text = '<body>Hi</body>'
-# x = bodyMatcher.findall(text)
-# print(x)
-
-# url = "https://www.harvard.edu/"
-#
-# pageString = ua.url_to_string(url)
 
 with open('../data/practiceWeb.txt', 'r') as FileObj:
     text = "".join(line for line in FileObj)
 
 soup = BeautifulSoup(text, "html.parser")
 
-one_a_tag = soup.findAll('a')[36]
-link = one_a_tag['href']
+# print(soup.title.string)
+#
+# print(soup.get_text())
 
-print(link)
+def get_links():
+    """ Returns list of all valid links from pageString """
+
+    def validate_link(link):
+        """ Helper to extract valid URLs from <a> tag list """
+        if parsable(link):
+            return link
+        else:
+            return None
+
+    a_list = soup.find_all('a', href=True)
+
+    test = list(map(lambda link : validate_link(link), a_list))
+
+    print(test)
+
+get_links()
