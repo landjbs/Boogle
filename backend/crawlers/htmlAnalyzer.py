@@ -5,7 +5,10 @@ import re
 import datetime # to find the loadTime of a page
 from bs4 import BeautifulSoup
 import urllib.request
-# import urlAnalyzer as ua
+
+# image string
+imageString = '(?<=src=")' + "\S+" + '(?=")'
+imageMatcher = re.compile(imageString)
 
 # matcher for url denoted by https:// or http://
 urlString = r'https://\S+|http://\S+'
@@ -17,18 +20,6 @@ def parsable(url):
     canParse = True if urlMatcher.fullmatch(url) else False
     return canParse
 
-# image string
-imageString = '(?<=src=")' + "\S+" + '(?=")'
-imageMatcher = re.compile(imageString)
-
-
-with open('../data/practiceWeb.txt', 'r') as FileObj:
-    text = "".join(line for line in FileObj)
-
-curSoup = BeautifulSoup(text, "html.parser")
-
-#
-# print(soup.get_text())
 
 def get_links(soup):
     """ Returns list of all valid links from pageString """
@@ -48,4 +39,5 @@ def analyze_html(pageString):
     ## strip data from curSoup
     # get string in <title></title> tags
     title = curSoup.title.string
+    # get all readable text on the page
     pageText = soup.get_text()
