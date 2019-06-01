@@ -5,6 +5,7 @@
 import re # to match for patterns in pageStrings
 import datetime # to find the loadTime of a page
 from langdetect import detect # classify language of pageString
+import langid
 from bs4 import BeautifulSoup
 
 # image string
@@ -44,8 +45,9 @@ def get_links(soup):
 
 
 def detect_language(pageString):
-
-
+    """ Detects language of a pageString """
+    lang = langid.classify(pageString)
+    return(lang)
 
 def analyze_html(pageString):
     """
