@@ -14,6 +14,7 @@ imageMatcher = re.compile(imageString)
 urlString = r'https://\S+|http://\S+'
 urlMatcher = re.compile(urlString)
 
+
 def parsable(url):
     """ Returns true if url follows urlMatcher pattern """
     # canParse = False if not urlMatcher.match(url) else False

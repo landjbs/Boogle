@@ -1,10 +1,12 @@
 # Responsible for building database of page data from list of URLs.
-# Outsources URL processing to urlAnalyzer.
-# Outsources HTML processing to htmlAnalyzer.
+# Outsources URL processing to urlAnalyzer.py
+# Outsources HTML processing to htmlAnalyzer.py
 # Outsoucres database definitions to thicctable.py
 
 from queue import Queue
 from threading import Thread
+import crawlers.urlAnalyzer as ua
+import crawlers.htmlAnalyzer as ha
 import thicctable as db
 
 def scrape_urlList(urlList, queueDepth=10, workerNum=20):
@@ -21,9 +23,9 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20):
     scrapeMetrics = db.Metrics()
 
     def worker():
-        """ Worker to process popped URL from URL Queue """
-        # pop url from queue and analyze
+        """ Scrapes popped URL from urlQueue and stores data in outStore()"""
         while True:
+            # pop top url from queue
             url = urlQueue.get()
             try:
                 # convert url to string of html contents
@@ -34,16 +36,18 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20):
                 outStore.add(pageDict)
                 # update scrape metrics
                 scrapeMetrics.add(error=False)
+                print(f"SUCCESS: {url}")
             except:
                 # update scrape metrics
                 scrapeMetrics.add(error=True)
+                print(f"\tERROR: {url}")
             # log progress
             print(f"\t{scrapeMetrics.count} URLs analyzed with {scrapeMetrics.errors} errors!", end="\r")
             # signal completion
             urlQueue.task_done()
 
     # spawn workerNum workers
-    for _ in range(workerNum):
+    for i in range(workerNum):
         t = Thread(target=worker)
         t.daemon = True
         t.start()

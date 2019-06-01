@@ -5,6 +5,7 @@
 import urllib.request
 import crawlers.htmlAnalyzer as ha
 
+
 class ParseError(Exception):
     """ Exception for errors while parsing a link """
     pass
@@ -16,9 +17,9 @@ def clean_url(url):
     urlString = str(url)
     if not ha.parsable(urlString):
         # check starts
-        if urlString.startswith('http'):
-            pass
-        elif urlString.startswith("www"):
+        # if urlString.startswith('http'):
+        #     pass
+        if urlString.startswith("www"):
             urlString = "http://" + urlString
         else:
             urlString = "http://www." + urlString

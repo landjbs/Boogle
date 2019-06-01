@@ -5,6 +5,7 @@ class Store():
     """ Test class composed of list to which pageDicts are added """
     def __init__(self):
         self.data = []
+
     def add(self, elt):
         self.data += [(elt)]
 
