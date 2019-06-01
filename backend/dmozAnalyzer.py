@@ -46,7 +46,9 @@ def scrape_dmoz_file(file, queueDepth=10, workerNum=20):
     """
     # queue to hold lines of file
     lineQueue = Queue(queueDepth)
-
+    # struct (list) to hold scraped data
+    outStore = Simple()
+    # struct to keep track of metrics
     scrapeMetrics = Metrics()
 
     def worker():
@@ -56,7 +58,7 @@ def scrape_dmoz_file(file, queueDepth=10, workerNum=20):
             try:
                 # call helper to scrape line
                 pageDict = scrape_dmoz_line(line)
-                # outStore.add(pageDict)
+                outStore.add(pageDict)
                 scrapeMetrics.add(error=False)
             except:
                 scrapeMetrics.add(error=True)
@@ -76,7 +78,9 @@ def scrape_dmoz_file(file, queueDepth=10, workerNum=20):
     # ensure all lineQueue processes are complete before proceeding
     lineQueue.join()
     print("DONE!")
+    return(outStore.data)
 
 
 
-scrape_dmoz_file("inData/test.tab.tsv")
+
+print(scrape_dmoz_file("inData/test.tab.tsv"))
