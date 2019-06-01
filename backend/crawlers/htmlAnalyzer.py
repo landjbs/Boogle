@@ -4,13 +4,14 @@
 
 import re # to match for patterns in pageStrings
 import datetime # to find the loadTime of a page
-from langdetect import detect # classify language of pageString
-import langid
+import langid # to classify language of pageString
 from bs4 import BeautifulSoup
+
 
 # image string
 imageString = '(?<=src=")' + "\S+" + '(?=")'
 imageMatcher = re.compile(imageString)
+
 
 # matcher for url denoted by https:// or http://
 urlString = r'https://\S+|http://\S+'
@@ -46,8 +47,9 @@ def get_links(soup):
 
 def detect_language(pageString):
     """ Detects language of a pageString """
-    lang = langid.classify(pageString)
+    lang, score = langid.classify(pageString)
     return(lang)
+
 
 def analyze_html(pageString):
     """

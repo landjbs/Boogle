@@ -4,7 +4,6 @@ import re
 import crawlers.urlAnalyzer as ua
 import crawlers.htmlAnalyzer as ha
 
-
 # matcher for url in dmozDF line
 urlString = r'(?<=").+(?="\t)'
 urlMatcher = re.compile(urlString)
@@ -28,24 +27,28 @@ def scrape_dmoz_line(line):
     pageString = ua.url_to_pageString(url[0])
     # get rendered text on pageString
     pageText = ha.get_pageText(pageString)
-    return{'url':url, 'folder':folder, 'top':top, 'pageText':pageText}
+    # skip page if not in english
+    if not (ha.detect_language(pageText) == 'en'):
+        raise ua.ParseError("Page is not in English")
+    # create dict of training data to append to list
+    outDict = {'url':url, 'folder':folder, 'top':top, 'pageText':pageText}
+    return outDict
 
 
-def scrape_dmoz_file():
+def scrape_dmoz_file(file):
     """ Scrapes dmoz tsv file of urls and folders to return dataframe of
     url, folder path, top folder, and readable pageText """
 
-    with open("data/test.tab.tsv", 'r') as FileObj:
+    with open(file, 'r') as FileObj:
         for i, line in enumerate(FileObj):
             if i > 3:
                 line = str(line)
-                print(scrape_dmoz_line(line))
-                # try:
-                #     print(scrape_dmoz_line(line))
-                # # print()
-                # except:
-                #     print(f"\t{i}", end="\r")
+                try:
+                    print(scrape_dmoz_line(line))
+                # print()
+                except:
+                    print(f"\t{i}", end="\r")
 
 
 
-scrape_dmoz()
+scrape_dmoz_file("data/test.tab.tsv")
