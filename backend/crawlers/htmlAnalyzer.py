@@ -31,6 +31,16 @@ def get_links(soup):
     return linkList
 
 
+def get_pageText(pageString):
+    """
+    Wrapper for soup.get_text() to avoid importing into other Python files.
+    Requires recreation of BeautifulSoup() object so don't call in htmlAnalyzer.py.
+    """
+    curSoup = BeautifulSoup(pageString, "html.parser")
+    pageText = curSoup.get_text()
+    return pageText
+
+
 def analyze_html(pageString):
     """
     Args: pageString to analyze (usually passed from urlAnalyzer)
