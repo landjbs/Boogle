@@ -2,8 +2,9 @@
 # pageStrings generally passed from crawler.py after being cleaned by
 # urlAnalyzer.py. Outsources all NLP and ML to backend/models.
 
-import re
+import re # to match for patterns in pageStrings
 import datetime # to find the loadTime of a page
+from langdetect import detect # classify language of pageString
 from bs4 import BeautifulSoup
 
 # image string
@@ -13,6 +14,17 @@ imageMatcher = re.compile(imageString)
 # matcher for url denoted by https:// or http://
 urlString = r'https://\S+|http://\S+'
 urlMatcher = re.compile(urlString)
+
+
+def get_pageText(pageString):
+    """
+    Gets only pageText from pageString using BeautifulSoup.
+    Requires recreation of BeautifulSoup() object so don't call in
+    htmlAnalyzer.py.
+    """
+    curSoup = BeautifulSoup(pageString, "html.parser")
+    pageText = curSoup.get_text()
+    return pageText
 
 
 def parsable(url):
@@ -31,15 +43,8 @@ def get_links(soup):
     return linkList
 
 
-def get_pageText(pageString):
-    """
-    Gets only pageText from pageString using BeautifulSoup.
-    Requires recreation of BeautifulSoup() object so don't call in
-    htmlAnalyzer.py.
-    """
-    curSoup = BeautifulSoup(pageString, "html.parser")
-    pageText = curSoup.get_text()
-    return pageText
+def detect_language(pageString):
+
 
 
 def analyze_html(pageString):

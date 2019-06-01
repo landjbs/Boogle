@@ -31,9 +31,9 @@ def scrape_dmoz_line(line):
     return{'url':url, 'folder':folder, 'top':top, 'pageText':pageText}
 
 
-def scrape_dmoz():
+def scrape_dmoz_file():
     """ Scrapes dmoz tsv file of urls and folders to return dataframe of
-    readable pageText"""
+    url, folder path, top folder, and readable pageText """
 
     with open("data/test.tab.tsv", 'r') as FileObj:
         for i, line in enumerate(FileObj):
