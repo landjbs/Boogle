@@ -39,6 +39,10 @@ def scrape_dmoz_file(file):
     """ Scrapes dmoz tsv file of urls and folders to return dataframe of
     url, folder path, top folder, and readable pageText """
 
+    def worker():
+        """ Analyzes popped line from lineQueue and stores data in outStore() """
+        
+
     with open(file, 'r') as FileObj:
         for i, line in enumerate(FileObj):
             if i > 3:
