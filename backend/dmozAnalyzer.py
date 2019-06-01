@@ -3,7 +3,11 @@ import crawlers.crawler as crawler
 import re
 import crawlers.urlAnalyzer as ua
 import crawlers.htmlAnalyzer as ha
+from threading import Thread
+from queue import Queue
 
+
+### Match object compiled for quick calls in functions ###
 # matcher for url in dmozDF line
 urlString = r'(?<=").+(?="\t)'
 urlMatcher = re.compile(urlString)
@@ -17,27 +21,31 @@ topString = r'(?<="Top/)[a-z|A-Z]+(?=/)'
 topMatcher = re.compile(folderString)
 
 
+### Functions to scrape dmoz tsv file into dataframe for model training ###
 def scrape_dmoz_line(line):
-    """ Converts line dmoz tsv file to tuple of pageText and top folder """
+    """ Helper to convert line dmoz tsv file to dict of url, folder path,  """
     # find url, top, and folder with re
-    url = urlMatcher.findall(line)
-    folder = folderMatcher.findall(line)
-    top = topMatcher.findall(line)
+    url = (urlMatcher.findall(line))[0]
+    folder = (folderMatcher.findall(line))[0]
+    top = (topMatcher.findall(line))[0]
     # fetch pageString from url
-    pageString = ua.url_to_pageString(url[0])
+    pageString = ua.url_to_pageString(url)
     # get rendered text on pageString
     pageText = ha.get_pageText(pageString)
     # skip page if not in english
-    if not (ha.detect_language(pageText) == 'en'):
-        raise ua.ParseError("Page is not in English")
-    # create dict of training data to append to list
+    assert (ha.detect_language(pageText) == 'en'), f"{url} not in English"
+    # create dict of training data to append to list (index because re returns list)
     outDict = {'url':url, 'folder':folder, 'top':top, 'pageText':pageText}
     return outDict
 
 
 def scrape_dmoz_file(file, queueDepth=10, workerNum=20):
-    """ Scrapes dmoz tsv file of urls and folders to return dataframe of
-    url, folder path, top folder, and readable pageText """
+    """
+    Scrapes dmoz tsv file of urls and folders to return dataframe of
+    url, folder path, top folder, and readable pageText
+    """
+    # queue to hold lines of file
+    lineQueue = Queue(queueDepth)
 
     def worker():
         """ Analyzes popped line from lineQueue and stores data in outStore() """
@@ -45,24 +53,25 @@ def scrape_dmoz_file(file, queueDepth=10, workerNum=20):
             line = lineQueue.get()
             try:
                 pageDict = scrape_dmoz_line(line)
-                outStore.add(pageDict)
+                # outStore.add(pageDict)
                 print(f"SUCCESS: {line}")
             except:
                 print(f"\tERROR: {line}")
-            urlQueue.task_done()
+            lineQueue.task_done()
 
     # spawn workerNum workers
-    for i in range(w)
+    for _ in range(workerNum):
+        t = Thread(target=worker)
+        t.daemon = True
+        t.start()
 
+    # load lines from file into lineQueue
     with open(file, 'r') as FileObj:
-        for i, line in enumerate(FileObj):
-            if i > 3:
-                line = str(line)
-                try:
-                    print(scrape_dmoz_line(line))
-                # print()
-                except:
-                    print(f"\t{i}", end="\r")
+        for line in (FileObj):
+            lineQueue.put(line)
+    # ensure all lineQueue processes are complete before proceeding
+    lineQueue.join()
+    print("DONE!")
 
 
 
