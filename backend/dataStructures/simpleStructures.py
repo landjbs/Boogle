@@ -1,13 +1,13 @@
 # Defines class for wide column store of web data gathered in crawler.py
 ####### TO BE UPDATED ########
 
-class Store():
-    """ Test class composed of list to which pageDicts are added """
+class Simple():
+    """ Class reimplementing list for easy threading """
     def __init__(self):
         self.data = []
 
     def add(self, elt):
-        self.data += [(elt)]
+        self.data.append(elt)
 
 class Metrics():
     """ Class to keep track of scrape progress """

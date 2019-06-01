@@ -1,13 +1,13 @@
 import pandas as pd
-import crawlers.crawler as crawler
-import re
 import crawlers.urlAnalyzer as ua
 import crawlers.htmlAnalyzer as ha
+import re
 from threading import Thread
 from queue import Queue
+from dataStructures.simpleStructures import Simple, Metrics
 
 
-### Match object compiled for quick calls in functions ###
+### Match objects compiled for quick calls in functions ###
 # matcher for url in dmozDF line
 urlString = r'(?<=").+(?="\t)'
 urlMatcher = re.compile(urlString)
@@ -47,16 +47,20 @@ def scrape_dmoz_file(file, queueDepth=10, workerNum=20):
     # queue to hold lines of file
     lineQueue = Queue(queueDepth)
 
+    scrapeMetrics = Metrics()
+
     def worker():
         """ Analyzes popped line from lineQueue and stores data in outStore() """
         while True:
             line = lineQueue.get()
             try:
+                # call helper to scrape line
                 pageDict = scrape_dmoz_line(line)
                 # outStore.add(pageDict)
-                print(f"SUCCESS: {line}")
+                scrapeMetrics.add(error=False)
             except:
-                print(f"\tERROR: {line}")
+                scrapeMetrics.add(error=True)
+            print(f"\t{scrapeMetrics.count} URLs analyzed with {scrapeMetrics.errors} errors!", end="\r")
             lineQueue.task_done()
 
     # spawn workerNum workers
@@ -75,4 +79,4 @@ def scrape_dmoz_file(file, queueDepth=10, workerNum=20):
 
 
 
-scrape_dmoz_file("data/test.tab.tsv")
+scrape_dmoz_file("inData/test.tab.tsv")

@@ -7,7 +7,6 @@ from queue import Queue
 from threading import Thread
 import crawlers.urlAnalyzer as ua
 import crawlers.htmlAnalyzer as ha
-import thicctable as db
 
 def scrape_urlList(urlList, queueDepth=10, workerNum=20):
     """
@@ -47,7 +46,7 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20):
             urlQueue.task_done()
 
     # spawn workerNum workers
-    for i in range(workerNum):
+    for _ in range(workerNum):
         t = Thread(target=worker)
         t.daemon = True
         t.start()
@@ -56,7 +55,7 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20):
     for url in urlList:
         cleanedURL = ua.clean_url(url)
         urlQueue.put(url)
-    # ensure all url_queue processes are complete before proceeding
+    # ensure all urlQueue processes are complete before proceeding
     urlQueue.join()
     return outStore
 
