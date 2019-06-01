@@ -35,13 +35,24 @@ def scrape_dmoz_line(line):
     return outDict
 
 
-def scrape_dmoz_file(file):
+def scrape_dmoz_file(file, queueDepth=10, workerNum=20):
     """ Scrapes dmoz tsv file of urls and folders to return dataframe of
     url, folder path, top folder, and readable pageText """
 
     def worker():
         """ Analyzes popped line from lineQueue and stores data in outStore() """
-        
+        while True:
+            line = lineQueue.get()
+            try:
+                pageDict = scrape_dmoz_line(line)
+                outStore.add(pageDict)
+                print(f"SUCCESS: {line}")
+            except:
+                print(f"\tERROR: {line}")
+            urlQueue.task_done()
+
+    # spawn workerNum workers
+    for i in range(w)
 
     with open(file, 'r') as FileObj:
         for i, line in enumerate(FileObj):
