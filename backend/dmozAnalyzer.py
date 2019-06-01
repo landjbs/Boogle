@@ -17,8 +17,8 @@ folderString = r'(?<=Top/)\S+(?=")'
 folderMatcher = re.compile(folderString)
 
 # matcher for top folder in dmozDF line
-topString = r'(?<="Top/)[a-z|A-Z]+(?=/)'
-topMatcher = re.compile(folderString)
+topString = r'(?<="Top/)[^/]+'
+topMatcher = re.compile(topString)
 
 
 ### Functions to scrape dmoz tsv file into dataframe for model training ###
@@ -83,4 +83,4 @@ def scrape_dmoz_file(file, queueDepth=10, workerNum=20):
 
 
 
-print(scrape_dmoz_file("inData/test.tab.tsv"))
+# print(scrape_dmoz_file("inData/test.tab.tsv"))
