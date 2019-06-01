@@ -4,19 +4,19 @@ import re
 import crawlers.urlAnalyzer as ua
 import crawlers.htmlAnalyzer as ha
 
+
 # matcher for url in dmozDF line
 urlString = r'(?<=").+(?="\t)'
 urlMatcher = re.compile(urlString)
 
+
 # matcher for top folder in dmozDF line
-folderString = r'(?<="Top/).+(?=/)'
+folderString = r'(?<="Top/)[a-z|A-Z]+(?=/)'
 folderMatcher = re.compile(folderString)
 
-# import dmoz data
-dmozDF = pd.read_csv("data/test.tab.tsv", sep="\t", names=["url", "path"])
 
 def scrape_dmoz_line(line):
-    """ Converts line of dmoz dataframe to tuple of pageText and top folder """
+    """ Converts line dmoz tsv file to tuple of pageText and top folder """
     # find url and top folder with re
     url = urlMatcher.findall(line)
     folder = folderMatcher.findall(line)
@@ -24,16 +24,21 @@ def scrape_dmoz_line(line):
     pageString = ua.url_to_pageString(url)
     # get rendered text on pageString
     pageText = ha.get_pageText(pageString)
-    # get top folder
+    return (folder)
 
 
-def scrape_dmoz(df):
-    """ Scrapes dmoz dataframe of urls and folders to return dataframe of
+def scrape_dmoz():
+    """ Scrapes dmoz tsv file of urls and folders to return dataframe of
     readable pageText"""
 
-    for index, row in df.iterrows():
-        row['url'] = 0
+    with open("data/test.tab.tsv", 'r') as FileObj:
+        for line in FileObj:
+            line = str(line)
+            try:
+                print(scrape_dmoz_line(line))
+            except:
+                print("\r", end="\r")
 
-scrape_dmoz(dmozDF)
 
-print(dmozDF)
+
+scrape_dmoz()
