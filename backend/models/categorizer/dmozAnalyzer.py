@@ -78,9 +78,12 @@ def scrape_dmoz_file(file, queueDepth=10, workerNum=20):
     # ensure all lineQueue processes are complete before proceeding
     lineQueue.join()
     print("DONE!")
-    return(outStore.data)
+
+    outDF = pd.DataFrame(outStore.data)
+
+    return(outDF)
 
 
 
 
-# print(scrape_dmoz_file("inData/test.tab.tsv"))
+print(scrape_dmoz_file("inData/test.tab.tsv").head)
