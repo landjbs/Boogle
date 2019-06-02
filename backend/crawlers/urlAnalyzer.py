@@ -26,13 +26,13 @@ def clean_url(url):
     return urlString
 
 
-def url_to_pageString(url):
+def url_to_pageString(url, timeout=5):
     """ Cleans and converts string of URL link to string of page contents """
     # add proper headers to url
     cleanedURL = clean_url(url)
     try:
-        # get http.client.HTTPResponse object of url
-        page = urllib.request.urlopen(cleanedURL, timeout=5)
+        # get response object of url, failing after timeout seconds
+        page = urllib.request.urlopen(cleanedURL, timeout=timeout)
     except:
         raise ParseError(f"Unable to access '{cleanedURL}''")
     pageString = page.read()

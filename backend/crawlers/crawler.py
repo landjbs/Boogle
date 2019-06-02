@@ -7,19 +7,20 @@ from queue import Queue
 from threading import Thread
 import crawlers.urlAnalyzer as ua
 import crawlers.htmlAnalyzer as ha
+from dataStructures.simpleStructures import Simple, Metrics
 
-def scrape_urlList(urlList, queueDepth=10, workerNum=20):
+def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath=""):
     """
-    Builds wide column store of url data from urlList with no recursive search
+    Builds wide column store of url data from urlList with recursive search
     Args: urlList to scrape, depth of url_queue, number of workers to spawn
     Returns: wide column store of data from each url
     """
     # queue to hold urlList
     urlQueue = Queue(queueDepth)
     # struct to hold scraped data
-    outStore = db.Store()
+    outStore = Simple()
     # struct to keep track of metrics
-    scrapeMetrics = db.Metrics()
+    scrapeMetrics = Metrics()
 
     def worker():
         """ Scrapes popped URL from urlQueue and stores data in outStore()"""
@@ -28,7 +29,7 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20):
             url = urlQueue.get()
             try:
                 # convert url to string of html contents
-                pageString = ua.url_to_pageString(url)
+                pageString = ua.url_to_pageString(url, timeout=5)
                 # grab data from html
                 pageDict = ha.analyze_html(pageString)
                 # add pageDict to outStore
@@ -55,7 +56,7 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20):
     for url in urlList:
         cleanedURL = ua.clean_url(url)
         urlQueue.put(url)
-        
+
     # ensure all urlQueue processes are complete before proceeding
     urlQueue.join()
     return outStore
