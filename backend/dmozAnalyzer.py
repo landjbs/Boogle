@@ -34,9 +34,8 @@ def scrape_dmoz_line(line):
     # pageText = get_pageText(pageString)
     # skip page if not in english
     # assert (detect_language(pageText) == 'en'), f"{url} not in English"
-    # create dict of training data to append to list (index because re returns list)
-    # outDict = {'url':url, 'folder':folder, 'top':top} #'pageText':pageText
-    outList = [url, folder, top]
+    # create list of training data to append to Simple struct
+    outList = [url, top, folder] #pageText
     return outList
 
 
@@ -89,7 +88,7 @@ def scrape_dmoz_file(file, queueDepth=10, workerNum=20, outPath=""):
     print(f"\nAnalysis complete! Data scraped from {len(outStore.data)} URLs.")
     # save dataframe to csv in outPath if specifed
     if not (outPath == ""):
-        outStore.to_csv(outPath, sep="\t")
+        outStore.to_csv(outPath, sep="X_A_B_Z_OTOKENTNE_SADFSFASD") #"X_Z_//sep_A_B"
     return(outStore)
 
 
@@ -99,6 +98,6 @@ def scrape_dmoz_file(file, queueDepth=10, workerNum=20, outPath=""):
 scrape_dmoz_file(file="data/inData/test.tab.tsv", queueDepth=15, workerNum=25,
     outPath="data/outData/scrapedDMOZ.tab.tsv")
 
-test = pd.read_csv("data/outData/scrapedDMOZ.tab.tsv", sep="\t", names=["url", "top", "path"], usecols=[0, 1, 2])
+test = pd.read_csv("data/outData/scrapedDMOZ.tab.tsv", sep="X_A_B_Z_OTOKENTNE_SADFSFASD", names=["url", "top", "path", "pageText"], usecols=[0, 1, 2, 3])
 
 print(test)

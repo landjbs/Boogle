@@ -4,6 +4,7 @@
 # https://towardsdatascience.com/word2vec-from-scratch-with-numpy-8786ddd49e72
 
 import re
+import numpy as np
 
 # matcher for tokenizing words
 tokenString = r'[A-Za-z]+[\w^\']*|[\w^\']*[A-Za-z]+[\w^\']*'
@@ -14,4 +15,10 @@ def tokenize(text):
     tokenList = tokenMatcher.finall(text.lower())
     return tokenList
 
-def build_wordVector(token)
+def build_wordVector(tokenList):
+    """ Creates n-length vector for binary representation of words where n=numWords """
+    wordSet = set()
+    for token in tokenList:
+        wordSet.add(token)
+    wordVector = list(wordSet)
+    return wordVector
