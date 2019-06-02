@@ -98,4 +98,4 @@ def scrape_dmoz_file(file, queueDepth=10, workerNum=20, outPath=""):
 #     outPath="data/outData/scrapeDMOZ.tab.tsv")
 
 scrape_dmoz_file(file="data/inData/test.tab.tsv", queueDepth=15, workerNum=25,
-    outPath="data/outData/scrapeDMOZ.tab.tsv")
+    outPath="data/outData/scrapedDMOZ.tab.tsv")
