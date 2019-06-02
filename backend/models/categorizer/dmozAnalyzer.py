@@ -58,11 +58,16 @@ def scrape_dmoz_file(file, queueDepth=10, workerNum=20):
             try:
                 # call helper to scrape line
                 pageDict = scrape_dmoz_line(line)
+                # add scraped pageDict to outStore list
                 outStore.add(pageDict)
+                # update scrape metrics
                 scrapeMetrics.add(error=False)
             except:
+                # update scrape metrics
                 scrapeMetrics.add(error=True)
+            # log progress
             print(f"\t{scrapeMetrics.count} URLs analyzed with {scrapeMetrics.errors} errors!", end="\r")
+            # signal completion
             lineQueue.task_done()
 
     # spawn workerNum workers
@@ -77,7 +82,6 @@ def scrape_dmoz_file(file, queueDepth=10, workerNum=20):
             lineQueue.put(line)
     # ensure all lineQueue processes are complete before proceeding
     lineQueue.join()
-    print("DONE!")
 
     outDF = pd.DataFrame(outStore.data)
 
