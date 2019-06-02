@@ -39,10 +39,11 @@ def scrape_dmoz_line(line):
     return outDict
 
 
-def scrape_dmoz_file(file, queueDepth=10, workerNum=20):
+def scrape_dmoz_file(file, queueDepth=10, workerNum=20, outPath=""):
     """
     Scrapes dmoz tsv file of urls and folders to return dataframe of
-    url, folder path, top folder, and readable pageText
+    url, folder path, top folder, and readable pageText. Saves dataframe as
+    tsv in outPath if specifed.
     """
     # queue to hold lines of file
     lineQueue = Queue(queueDepth)
@@ -84,14 +85,13 @@ def scrape_dmoz_file(file, queueDepth=10, workerNum=20):
     lineQueue.join()
     # convert dict list to dataframe for easy visualization and training
     outDF = pd.DataFrame(outStore.data)
-    # save dataframe to tsv in data/outData path
-    outDF.to_csv("data/outData/scraped_dmozData", sep="\t", index=False)
+    print(f"\nScraping complete!\nData gathered on {len(outStore.data)} URLs.")
+    # save dataframe to tsv in outPath if specifed
+    if not (outPath == ""):
+        outDF.to_csv(outPath, sep="\t", index=False)
+        print(f"File saved as .tsv in {outPath}")
     return(outDF)
 
-test = url_to_pageString("https://www.harvard.edu")
-print(get_pageText(test))
 
-# scrape_dmoz_file("data/inData/test.tab.tsv")
-#
-# test = pd.read_csv("data/outData/scraped_dmozData", sep="\t")
-# print(test)
+scrape_dmoz_file(file="data/inData/test.tab.tsv", queueDepth=15, workerNum=25,
+    outPath="data/outData/scrapeDMOZ.tab.tsv")

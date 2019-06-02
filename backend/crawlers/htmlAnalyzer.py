@@ -21,6 +21,7 @@ urlMatcher = re.compile(urlString)
 def clean_pageText(rawText):
     """ Removes junk from output of soup.get_text() """
     cleanText = rawText.replace("\n","")
+    # cleanText = cleanText.replace("\t","")
     return cleanText
 
 
