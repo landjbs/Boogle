@@ -99,6 +99,6 @@ def scrape_dmoz_file(file, queueDepth=10, workerNum=20, outPath=""):
 scrape_dmoz_file(file="data/inData/test.tab.tsv", queueDepth=15, workerNum=25,
     outPath="data/outData/scrapedDMOZ.tab.tsv")
 
-test = pd.read_csv("data/outData/scrapedDMOZ.tab.tsv", sep="\t", names=["url", "top", "path"])
+test = pd.read_csv("data/outData/scrapedDMOZ.tab.tsv", sep="\t", names=["url", "top", "path"], usecols=[0, 1, 2])
 
 print(test)

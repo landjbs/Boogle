@@ -5,8 +5,13 @@
 
 import re
 
+# matcher for tokenizing words
+tokenString = r'[A-Za-z]+[\w^\']*|[\w^\']*[A-Za-z]+[\w^\']*'
+tokenMatcher = re.compile(tokenString)
 
 def tokenize(text):
     """ Convert string to lowercased tokens with at least 1 letter """
-    tokenMatch = re.compile(r'[A-Za-z]+[\w^\']*|[\w^\']*[A-Za-z]+[\w^\']*')
-    return tokenMatch.findall(text.lower())
+    tokenList = tokenMatcher.finall(text.lower())
+    return tokenList
+
+def build_wordVector(token)
