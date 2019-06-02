@@ -111,11 +111,23 @@ dmozSimple = scrape_dmoz_file(file="data/inData/test.tab.tsv")
 
 dmozDF = pd.DataFrame(dmozSimple.data, columns=["url", "top", "path", "pageText"])
 
-print("DMOZ HEAD:\n\n:", dmozDF.head, end=f"{'-'*40}")
+print("DMOZ HEAD:\n\n:", dmozDF.head, end=f"\n{'-'*40}\n")
 
-dmozDF['pageText'] = dmozDF['pageText'].appy(lambda text : tv.tokenize(text))
+dmozDF['pageText'] = dmozDF['pageText'].apply(lambda text : tv.tokenize(text))
+
+dmozDF['pageText'] = dmozDF['pageText'].apply(lambda tokenList : tv.vectorize(tokenList))
+
+#### MODEL STUFF ####
+from keras.utils import to_categorical
+from keras.models import Sequential
+
+dmozDF['top'] = to_categorical(dmozDF['top'], num_classes=15)
 
 print(f"\n\n{'-'*60}\nDMOZ MODIFIED: {dmozDF.head}\n{'-'*60}")
+
+
+
+
 
 
 
