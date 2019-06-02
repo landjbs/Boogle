@@ -18,6 +18,12 @@ urlString = r'https://\S+|http://\S+'
 urlMatcher = re.compile(urlString)
 
 
+def clean_pageText(rawText):
+    """ Removes junk from output of soup.get_text() """
+    cleanText = rawText.replace("\n","")
+    return cleanText
+
+
 def get_pageText(pageString):
     """
     Gets only pageText from pageString using BeautifulSoup.
@@ -25,8 +31,9 @@ def get_pageText(pageString):
     htmlAnalyzer.py.
     """
     curSoup = BeautifulSoup(pageString, "html.parser")
-    pageText = curSoup.get_text()
-    return pageText
+    rawText = curSoup.get_text()
+    cleanText = clean_pageText(rawText)
+    return cleanText
 
 
 def parsable(url):
@@ -62,7 +69,7 @@ def analyze_html(pageString):
     # get string in <title></title> tags
     title = curSoup.title.string
     # get all readable text on the page
-    pageText = curSoup.get_text()
+    raw_pageText = curSoup.get_text()
     # get list of valid links
     linkList = get_links(curSoup)
     # MORE HERE—loadTime should be last!

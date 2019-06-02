@@ -88,6 +88,8 @@ def scrape_dmoz_file(file, queueDepth=10, workerNum=20):
     outDF.to_csv("data/outData/scraped_dmozData", sep="\t", index=False)
     return(outDF)
 
+test = url_to_pageString("https://www.harvard.edu")
+print(get_pageText(test))
 
 # scrape_dmoz_file("data/inData/test.tab.tsv")
 #
