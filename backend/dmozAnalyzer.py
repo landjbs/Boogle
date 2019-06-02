@@ -29,13 +29,13 @@ def scrape_dmoz_line(line):
     folder = (folderMatcher.findall(line))[0]
     top = (topMatcher.findall(line))[0]
     # fetch pageString from url
-    # pageString = url_to_pageString(url)
+    pageString = url_to_pageString(url)
     # get rendered text on pageString
-    # pageText = get_pageText(pageString)
+    pageText = get_pageText(pageString)
     # skip page if not in english
-    # assert (detect_language(pageText) == 'en'), f"{url} not in English"
+    assert (detect_language(pageText) == 'en'), f"{url} not in English"
     # create list of training data to append to Simple struct
-    outList = [url, top, folder] #pageText
+    outList = [url, top, folder, pageText]
     return outList
 
 
@@ -92,12 +92,26 @@ def scrape_dmoz_file(file, queueDepth=10, workerNum=20, outPath=""):
     return(outStore)
 
 
+def read_dmoz_csv(file, sep):
+    """ Wrapper for pd.read_csv to fit specifics of dmoz data """
+    df = pd.read_csv("data/outData/scrapedDMOZ.tab.tsv",
+                        sep="X_A_B_Z_OTOKENTNE_SADFSFASD",
+                        skip_blank_lines=True,
+                        names=["url", "top", "path", "pageText"],
+                        usecols=[0, 1, 2, 3],
+                        engine="python")
+    return df
+
+
 # scrape_dmoz_file(file="data/inData/dmoz_domain_category.tab.tsv", queueDepth=15, workerNum=25,
 #     outPath="data/outData/scrapeDMOZ.tab.tsv")
 
 scrape_dmoz_file(file="data/inData/test.tab.tsv", queueDepth=15, workerNum=25,
     outPath="data/outData/scrapedDMOZ.tab.tsv")
 
-test = pd.read_csv("data/outData/scrapedDMOZ.tab.tsv", sep="X_A_B_Z_OTOKENTNE_SADFSFASD", names=["url", "top", "path", "pageText"], usecols=[0, 1, 2, 3])
-
-print(test)
+# test = pd.read_csv("data/outData/scrapedDMOZ.tab.tsv",
+#                     sep="X_A_B_Z_OTOKENTNE_SADFSFASD",
+#                     skip_blank_lines=True,
+#                     names=["url", "top", "path", "pageText"],
+#                     usecols=[0, 1, 2, 3],
+#                     engine="python")
