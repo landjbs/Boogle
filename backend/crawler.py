@@ -17,10 +17,24 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
     """
     # queue to hold urlList
     urlQueue = Queue(queueDepth)
+    # set to hold unclean, previously scraped URLs
+    scrapedSet = set()
     # struct to hold scraped data
     outStore = Simple()
     # struct to keep track of metrics
     scrapeMetrics = Metrics()
+
+    def enqueue_urlList(urlList):
+        """
+        Cleans and enqueues URLs contained in urlList, checking if
+        previously scraped
+        """
+        for url in urlList:
+            print(len(scrapedSet))
+            if not url in scrapedSet:
+                scrapedSet.add(url)
+                # clean url and add to urlQueue
+                urlQueue.put(ua.clean_url(url))
 
     def worker():
         """ Scrapes popped URL from urlQueue and stores data in outStore()"""
@@ -34,13 +48,13 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
                 pageDict = ha.analyze_html(pageString)
                 # add pageDict to outStore
                 outStore.add(pageDict)
+                # pull list of links from pageDict and enqueue
+                enqueue_urlList(pageDict['linkList'])
                 # update scrape metrics
                 scrapeMetrics.add(error=False)
-                print(f"SUCCESS: {url}")
             except:
                 # update scrape metrics
                 scrapeMetrics.add(error=True)
-                print(f"\tERROR: {url}")
             # log progress
             print(f"\t{scrapeMetrics.count} URLs analyzed with {scrapeMetrics.errors} errors!", end="\r")
             # signal completion
@@ -59,12 +73,14 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
 
     # ensure all urlQueue processes are complete before proceeding
     urlQueue.join()
+
     return outStore
 
 
 
+testList = ['www.harvard.edu']
 
-
+scrape_urlList(testList)
 
 
 

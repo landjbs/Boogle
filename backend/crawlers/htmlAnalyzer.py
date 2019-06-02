@@ -77,5 +77,5 @@ def analyze_html(pageString):
     # time at which the url data was loaded into memory
     loadTime = datetime.datetime.now()
     # set outs
-    outDict = {'title':title, 'loadTime':loadTime}
+    outDict = {'title':title, 'linkList':linkList, 'loadTime':loadTime}
     return outDict
