@@ -7,7 +7,17 @@ class Simple():
         self.data = []
 
     def add(self, elt):
+        """ Adds element to data list """
         self.data.append(elt)
+
+    def to_csv(self, path, sep=","):
+        """ Saves dict list as csv in path """
+        file = open(path, "w+")
+        for line in self.data:
+            for attribute in line:
+                file.write(attribute + sep)
+            file.write("\n")
+        print(f"File saved to {path} | Delimeter: '{sep}'")
 
 class Metrics():
     """ Class to keep track of scrape progress """

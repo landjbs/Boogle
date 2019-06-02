@@ -29,14 +29,15 @@ def scrape_dmoz_line(line):
     folder = (folderMatcher.findall(line))[0]
     top = (topMatcher.findall(line))[0]
     # fetch pageString from url
-    pageString = url_to_pageString(url)
+    # pageString = url_to_pageString(url)
     # get rendered text on pageString
-    pageText = get_pageText(pageString)
+    # pageText = get_pageText(pageString)
     # skip page if not in english
-    assert (detect_language(pageText) == 'en'), f"{url} not in English"
+    # assert (detect_language(pageText) == 'en'), f"{url} not in English"
     # create dict of training data to append to list (index because re returns list)
-    outDict = {'url':url, 'folder':folder, 'top':top, 'pageText':pageText}
-    return outDict
+    # outDict = {'url':url, 'folder':folder, 'top':top} #'pageText':pageText
+    outList = [url, folder, top]
+    return outList
 
 
 def scrape_dmoz_file(file, queueDepth=10, workerNum=20, outPath=""):
@@ -85,13 +86,11 @@ def scrape_dmoz_file(file, queueDepth=10, workerNum=20, outPath=""):
     # ensure all lineQueue processes are complete before proceeding
     lineQueue.join()
     # convert dict list to dataframe for easy visualization and training
-    outDF = pd.DataFrame(outStore.data)
     print(f"\nAnalysis complete! Data scraped from {len(outStore.data)} URLs.")
-    # save dataframe to tsv in outPath if specifed
+    # save dataframe to csv in outPath if specifed
     if not (outPath == ""):
-        outDF.to_csv(outPath, sep="\t", index=False)
-        print(f"File saved as .tsv to {outPath}")
-    return(outDF)
+        outStore.to_csv(outPath, sep="\t")
+    return(outStore)
 
 
 # scrape_dmoz_file(file="data/inData/dmoz_domain_category.tab.tsv", queueDepth=15, workerNum=25,
@@ -99,3 +98,7 @@ def scrape_dmoz_file(file, queueDepth=10, workerNum=20, outPath=""):
 
 scrape_dmoz_file(file="data/inData/test.tab.tsv", queueDepth=15, workerNum=25,
     outPath="data/outData/scrapedDMOZ.tab.tsv")
+
+test = pd.read_csv("data/outData/scrapedDMOZ.tab.tsv", sep="\t", names=["url", "top", "path"])
+
+print(test)
