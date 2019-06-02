@@ -5,7 +5,7 @@ import re
 from threading import Thread
 from queue import Queue
 from dataStructures.simpleStructures import Simple, Metrics
-import dataStructures.objectSaver
+from dataStructures.objectSaver import save, load
 import models.categorizer.textVectorizer as tv
 
 
@@ -96,45 +96,39 @@ def scrape_dmoz_file(file, queueDepth=15, workerNum=25, outPath=""):
 
     # ensure all lineQueue processes are complete before proceeding
     lineQueue.join()
-    # convert dict list to dataframe for easy visualization and training
     print(f"\nAnalysis complete! Data scraped from {len(outStore.data)} URLs.")
-    # save dataframe to csv in outPath if specifed
+    # save Simple() object in outPath if specifed
     if not (outPath == ""):
-        outStore.to_csv(outPath, sep="X_A_B_Z_OTOKENTNE_SADFSFASD")
+        save(outStore, outPath)
     return(outStore)
-
-
-def read_dmoz_csv(file, sep):
-    """ Wrapper for pd.read_csv to fit specifics of dmoz data """
-    df = pd.read_csv("data/outData/scrapedDMOZ.tab.tsv",
-                        sep=sep,
-                        skip_blank_lines=True,
-                        names=["url", "top", "path", "pageText"],
-                        usecols=[0, 1, 2, 3],
-                        engine="python")
-    return df
 
 
 # scrape_dmoz_file(file="data/inData/dmoz_domain_category.tab.tsv", queueDepth=15, workerNum=25,
 #     outPath="data/outData/scrapeDMOZ.tab.csv")
 
-dmozSimple = scrape_dmoz_file(file="data/inData/test.tab.tsv")
+scrape_dmoz_file(file="data/inData/test.tab.tsv", outPath="data/outData/outStore.obj")
 
-dmozDF = pd.DataFrame(dmozSimple.data, columns=["url", "top", "path", "pageText"])
+testLoad = load("data/outData/outStore.obj")
 
-print("DMOZ HEAD:\n:", dmozDF.head, end=f"\n{'-'*40}\n")
+dmozDF = pd.DataFrame(testLoad.data, columns=["url", "top", "path", "pageText"])
 
-dmozDF['pageText'] = dmozDF['pageText'].apply(lambda text : tv.tokenize(text))
+print(dmozDF)
 
-dmozDF['pageText'] = dmozDF['pageText'].apply(lambda tokenList : tv.vectorize(tokenList))
-
-dmozDF['top'] = dmozDF['top'].apply(lambda top : encode_top(top))
-
-from keras.utils import to_categorical
-
-dmozDF['top'] = to_categorical(dmozDF['top'])
-
-print(dmozDF['top'])
+# dmozDF = pd.DataFrame(dmozSimple.data, columns=["url", "top", "path", "pageText"])
+#
+# print("DMOZ HEAD:\n:", dmozDF.head, end=f"\n{'-'*40}\n")
+#
+# dmozDF['pageText'] = dmozDF['pageText'].apply(lambda text : tv.tokenize(text))
+#
+# dmozDF['pageText'] = dmozDF['pageText'].apply(lambda tokenList : tv.vectorize(tokenList))
+#
+# dmozDF['top'] = dmozDF['top'].apply(lambda top : encode_top(top))
+#
+# from keras.utils import to_categorical
+#
+# dmozDF['top'] = to_categorical(dmozDF['top'])
+#
+# print(dmozDF['top'])
 
 
 #### MODEL STUFF ####
