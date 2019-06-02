@@ -33,6 +33,22 @@ frequencyDF = pd.read_csv("frequencyData.csv", sep=",",
                                     'Dispersion':np.float32},
                             skiprows=[0,1])
 
+# convert frequency to relative frequency
+useSum = np.sum(frequencyDF['Frequency'])
+frequencyDF['Frequency'] = frequencyDF['Frequency'].apply(lambda curFreq : curFreq/useSum)
 
-for i in list(frequencyDF['Word']):
-    assert isinstance(i, str), "noppe"
+print(frequencyDF.head)
+
+
+
+
+
+
+
+
+
+
+
+
+
+pass
