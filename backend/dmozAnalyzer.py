@@ -1,6 +1,6 @@
 import pandas as pd
-import backend.crawlers.urlAnalyzer as ua
-import crawlers.htmlAnalyzer as ha
+from crawlers.urlAnalyzer import url_to_pageString
+from crawlers.htmlAnalyzer import get_pageText, detect_language
 import re
 from threading import Thread
 from queue import Queue
@@ -24,16 +24,16 @@ topMatcher = re.compile(topString)
 ### Functions to scrape dmoz tsv file into dataframe for model training ###
 def scrape_dmoz_line(line):
     """ Helper to convert line dmoz tsv file to dict of url, folder path,  """
-    # find url, top, and folder with re
+    # find url, top, and folder with regexp match
     url = (urlMatcher.findall(line))[0]
     folder = (folderMatcher.findall(line))[0]
     top = (topMatcher.findall(line))[0]
     # fetch pageString from url
-    pageString = ua.url_to_pageString(url)
+    pageString = url_to_pageString(url)
     # get rendered text on pageString
-    pageText = ha.get_pageText(pageString)
+    pageText = get_pageText(pageString)
     # skip page if not in english
-    assert (ha.detect_language(pageText) == 'en'), f"{url} not in English"
+    assert (detect_language(pageText) == 'en'), f"{url} not in English"
     # create dict of training data to append to list (index because re returns list)
     outDict = {'url':url, 'folder':folder, 'top':top, 'pageText':pageText}
     return outDict
@@ -82,12 +82,14 @@ def scrape_dmoz_file(file, queueDepth=10, workerNum=20):
             lineQueue.put(line)
     # ensure all lineQueue processes are complete before proceeding
     lineQueue.join()
-    print("DONE")
+    # convert dict list to dataframe for easy visualization and training
     outDF = pd.DataFrame(outStore.data)
-
+    # save dataframe to tsv in data/outData path
+    outDF.to_csv("data/outData/scraped_dmozData", sep="\t", index=False)
     return(outDF)
 
 
-
-
-print(scrape_dmoz_file("../../data/inData/test.tab.tsv").head)
+# scrape_dmoz_file("data/inData/test.tab.tsv")
+#
+# test = pd.read_csv("data/outData/scraped_dmozData", sep="\t")
+# print(test)
