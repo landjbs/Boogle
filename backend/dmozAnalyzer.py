@@ -81,16 +81,16 @@ def scrape_dmoz_file(file, queueDepth=10, workerNum=20, outPath=""):
     with open(file, 'r') as FileObj:
         for line in (FileObj):
             lineQueue.put(line)
-            
+
     # ensure all lineQueue processes are complete before proceeding
     lineQueue.join()
     # convert dict list to dataframe for easy visualization and training
     outDF = pd.DataFrame(outStore.data)
-    print(f"\nScraping complete!\nData gathered on {len(outStore.data)} URLs.")
+    print(f"\nAnalysis complete! Data scraped from {len(outStore.data)} URLs.")
     # save dataframe to tsv in outPath if specifed
     if not (outPath == ""):
         outDF.to_csv(outPath, sep="\t", index=False)
-        print(f"File saved as .tsv in {outPath}")
+        print(f"File saved as .tsv to {outPath}")
     return(outDF)
 
 

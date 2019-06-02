@@ -32,7 +32,7 @@ def url_to_pageString(url):
     cleanedURL = clean_url(url)
     try:
         # get http.client.HTTPResponse object of url
-        page = urllib.request.urlopen(cleanedURL, timeout=10)
+        page = urllib.request.urlopen(cleanedURL, timeout=5)
     except:
         raise ParseError(f"Unable to access '{cleanedURL}''")
     pageString = page.read()
