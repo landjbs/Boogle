@@ -23,6 +23,9 @@ topMatcher = re.compile(topString)
 
 
 ### Functions to scrape dmoz tsv file into dataframe for model training ###
+def encode_top(top):
+    """ Helper to one-hot encode top folder of path """
+
 def scrape_dmoz_line(line):
     """ Helper to convert line dmoz tsv file to dict of url, folder path,  """
     # find url, top, and folder with regexp match
@@ -118,13 +121,17 @@ dmozDF['pageText'] = dmozDF['pageText'].apply(lambda text : tv.tokenize(text))
 dmozDF['pageText'] = dmozDF['pageText'].apply(lambda tokenList : tv.vectorize(tokenList))
 
 #### MODEL STUFF ####
-from keras.utils import to_categorical
-from keras.models import Sequential
+# from keras.models import Sequential
+from sklearn.preprocessing import OneHotEncoder
 
-dmozDF['top'] = to_categorical(dmozDF['top'], num_classes=15)
+# dmozDF['dummies'] = pd.get_dummies(dmozDF['top'])
 
-print(f"\n\n{'-'*60}\nDMOZ MODIFIED: {dmozDF.head}\n{'-'*60}")
+dmozDF['dummies'] = pd.get_dummies(pd.Series(list(dmozDF['top'])))
 
+# print(f"\n\n{'-'*60}\nDMOZ MODIFIED: {dmozDF.head}\n{'-'*60}")
+print(dmozDF['dummies'])
+
+print(f"{'-'*40}Top:\n{dmozDF['top']}")
 
 
 
