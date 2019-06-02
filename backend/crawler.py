@@ -7,7 +7,7 @@ from queue import Queue
 from threading import Thread
 import crawlers.urlAnalyzer as ua
 import crawlers.htmlAnalyzer as ha
-from dataStructures.simpleStructures import Simple, Metrics
+from dataStructures.simpleStructures import Simple_List, Metrics
 
 def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath=""):
     """
@@ -20,7 +20,7 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
     # set to hold unclean, previously scraped URLs
     scrapedSet = set()
     # struct to hold scraped data
-    outStore = Simple()
+    outStore = Simple_List()
     # struct to keep track of metrics
     scrapeMetrics = Metrics()
 
@@ -38,12 +38,12 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
 
     def worker():
         """ Scrapes popped URL from urlQueue and stores data in outStore()"""
-        while scrapeMetrics.count < 100:
+        while True:
             # pop top url from queue
             url = urlQueue.get()
             try:
                 # convert url to string of html contents
-                pageString = ua.url_to_pageString(url, timeout=5)
+                pageString = ua.url_to_pageString(url, timeout=0.5)
                 # grab data from html
                 pageDict = ha.analyze_html(pageString)
                 # add pageDict to outStore
@@ -67,9 +67,7 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
         t.start()
 
     # load cleaned urls into url_queue
-    for url in urlList:
-        cleanedURL = ua.clean_url(url)
-        urlQueue.put(url)
+    enqueue_urlList(urlList)
 
     # ensure all urlQueue processes are complete before proceeding
     urlQueue.join()
@@ -78,7 +76,7 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
 
 
 
-testList = ['www.harvard.edu']
+testList = ['https://soundcloud.com/discover', 'https://www.imdb.com/interfaces/']
 
 scrape_urlList(testList)
 

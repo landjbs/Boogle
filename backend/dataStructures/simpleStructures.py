@@ -1,7 +1,7 @@
 # Defines class for wide column store of web data gathered in crawler.py
 ####### TO BE UPDATED ########
 
-class Simple():
+class Simple_List():
     """ Class reimplementing list for easy threading """
     def __init__(self):
         self.data = []
@@ -18,6 +18,7 @@ class Simple():
                 file.write(attribute + sep)
             file.write("\n")
         print(f"File saved to {path} | Delimeter: '{sep}'")
+
 
 class Metrics():
     """ Class to keep track of scrape progress """

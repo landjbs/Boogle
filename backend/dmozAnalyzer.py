@@ -4,7 +4,7 @@ from crawlers.htmlAnalyzer import get_pageText, detect_language
 import re
 from threading import Thread
 from queue import Queue
-from dataStructures.simpleStructures import Simple, Metrics
+from dataStructures.simpleStructures import Simple_List, Metrics
 from dataStructures.objectSaver import save, load
 import models.categorizer.textVectorizer as tv
 
@@ -60,7 +60,7 @@ def scrape_dmoz_file(file, queueDepth=15, workerNum=25, outPath=""):
     # queue to hold lines of file
     lineQueue = Queue(queueDepth)
     # struct (list) to hold scraped data
-    outStore = Simple()
+    outStore = Simple_List()
     # struct to keep track of metrics
     scrapeMetrics = Metrics()
 
@@ -97,7 +97,7 @@ def scrape_dmoz_file(file, queueDepth=15, workerNum=25, outPath=""):
     # ensure all lineQueue processes are complete before proceeding
     lineQueue.join()
     print(f"\nAnalysis complete! Data scraped from {len(outStore.data)} URLs.")
-    # save Simple() object in outPath if specifed
+    # save Simple_List() object in outPath if specifed
     if not (outPath == ""):
         save(outStore, outPath)
     return(outStore)
@@ -106,7 +106,7 @@ def scrape_dmoz_file(file, queueDepth=15, workerNum=25, outPath=""):
 # scrape_dmoz_file(file="data/inData/dmoz_domain_category.tab.tsv", queueDepth=15, workerNum=25,
 #     outPath="data/outData/scrapeDMOZ.tab.csv")
 
-scrape_dmoz_file(file="data/inData/test.tab.tsv", outPath="data/outData/outStore.obj")
+scrape_dmoz_file(file="data/inData/dmoz_domain_category.tab.tsv", outPath="data/outData/outStore.obj")
 
 testLoad = load("data/outData/outStore.obj")
 
