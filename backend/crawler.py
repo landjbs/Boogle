@@ -43,7 +43,7 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
             url = urlQueue.get()
             try:
                 # convert url to string of html contents
-                pageString = ua.url_to_pageString(url, timeout=0.5)
+                pageString = ua.url_to_pageString(url, timeout=5)
                 # grab data from html
                 pageDict = ha.analyze_html(pageString)
                 # add pageDict to outStore

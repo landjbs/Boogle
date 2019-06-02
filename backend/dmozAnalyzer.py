@@ -99,20 +99,17 @@ def scrape_dmoz_file(file, queueDepth=15, workerNum=25, outPath=""):
     print(f"\nAnalysis complete! Data scraped from {len(outStore.data)} URLs.")
     # save Simple_List() object in outPath if specifed
     if not (outPath == ""):
-        save(outStore, outPath)
+        save(outStore.data, outPath)
+
     return(outStore)
 
 
-# scrape_dmoz_file(file="data/inData/dmoz_domain_category.tab.tsv", queueDepth=15, workerNum=25,
-#     outPath="data/outData/scrapeDMOZ.tab.csv")
+scrape_dmoz_file(file="data/inData/test.tab.tsv", outPath="data/outData/outStore2.obj")
 
-scrape_dmoz_file(file="data/inData/dmoz_domain_category.tab.tsv", outPath="data/outData/outStore.obj")
 
-testLoad = load("data/outData/outStore.obj")
+#### MODEL STUFF ####
 
-dmozDF = pd.DataFrame(testLoad.data, columns=["url", "top", "path", "pageText"])
-
-print(dmozDF)
+# from keras.models import Sequential
 
 # dmozDF = pd.DataFrame(dmozSimple.data, columns=["url", "top", "path", "pageText"])
 #
@@ -129,12 +126,6 @@ print(dmozDF)
 # dmozDF['top'] = to_categorical(dmozDF['top'])
 #
 # print(dmozDF['top'])
-
-
-#### MODEL STUFF ####
-
-# from keras.models import Sequential
-
 
 
 # print(f"\n\n{'-'*60}\nDMOZ MODIFIED:\n{dmozDF.head}\n{'-'*60}")
