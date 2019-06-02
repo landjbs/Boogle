@@ -5,6 +5,7 @@ import re
 from threading import Thread
 from queue import Queue
 from dataStructures.simpleStructures import Simple, Metrics
+import models.categorizer.textVectorizer as tv
 
 
 ### Match objects compiled for quick calls in functions ###
@@ -39,7 +40,7 @@ def scrape_dmoz_line(line):
     return outList
 
 
-def scrape_dmoz_file(file, queueDepth=10, workerNum=20, outPath=""):
+def scrape_dmoz_file(file, queueDepth=15, workerNum=25, outPath=""):
     """
     Scrapes dmoz tsv file of urls and folders to return dataframe of
     url, folder path, top folder, and readable pageText. Saves dataframe as
@@ -88,14 +89,14 @@ def scrape_dmoz_file(file, queueDepth=10, workerNum=20, outPath=""):
     print(f"\nAnalysis complete! Data scraped from {len(outStore.data)} URLs.")
     # save dataframe to csv in outPath if specifed
     if not (outPath == ""):
-        outStore.to_csv(outPath, sep="X_A_B_Z_OTOKENTNE_SADFSFASD") #"X_Z_//sep_A_B"
+        outStore.to_csv(outPath, sep="X_A_B_Z_OTOKENTNE_SADFSFASD")
     return(outStore)
 
 
 def read_dmoz_csv(file, sep):
     """ Wrapper for pd.read_csv to fit specifics of dmoz data """
     df = pd.read_csv("data/outData/scrapedDMOZ.tab.tsv",
-                        sep="X_A_B_Z_OTOKENTNE_SADFSFASD",
+                        sep=sep,
                         skip_blank_lines=True,
                         names=["url", "top", "path", "pageText"],
                         usecols=[0, 1, 2, 3],
@@ -104,14 +105,20 @@ def read_dmoz_csv(file, sep):
 
 
 # scrape_dmoz_file(file="data/inData/dmoz_domain_category.tab.tsv", queueDepth=15, workerNum=25,
-#     outPath="data/outData/scrapeDMOZ.tab.tsv")
+#     outPath="data/outData/scrapeDMOZ.tab.csv")
 
-scrape_dmoz_file(file="data/inData/test.tab.tsv", queueDepth=15, workerNum=25,
-    outPath="data/outData/scrapedDMOZ.tab.tsv")
+dmozSimple = scrape_dmoz_file(file="data/inData/test.tab.tsv")
 
-# test = pd.read_csv("data/outData/scrapedDMOZ.tab.tsv",
-#                     sep="X_A_B_Z_OTOKENTNE_SADFSFASD",
-#                     skip_blank_lines=True,
-#                     names=["url", "top", "path", "pageText"],
-#                     usecols=[0, 1, 2, 3],
-#                     engine="python")
+dmozDF = pd.DataFrame(dmozSimple.data, columns=["url", "top", "path", "pageText"])
+
+print("DMOZ HEAD:\n\n:", dmozDF.head, end=f"{'-'*40}")
+
+dmozDF['pageText'] = dmozDF['pageText'].appy(lambda text : tv.tokenize(text))
+
+print(f"\n\n{'-'*60}\nDMOZ MODIFIED: {dmozDF.head}\n{'-'*60}")
+
+
+
+
+
+pass
