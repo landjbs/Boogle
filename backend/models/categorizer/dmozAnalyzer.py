@@ -1,5 +1,5 @@
 import pandas as pd
-import crawlers.urlAnalyzer as ua
+import backend.crawlers.urlAnalyzer as ua
 import crawlers.htmlAnalyzer as ha
 import re
 from threading import Thread
@@ -82,7 +82,7 @@ def scrape_dmoz_file(file, queueDepth=10, workerNum=20):
             lineQueue.put(line)
     # ensure all lineQueue processes are complete before proceeding
     lineQueue.join()
-
+    print("DONE")
     outDF = pd.DataFrame(outStore.data)
 
     return(outDF)
@@ -90,4 +90,4 @@ def scrape_dmoz_file(file, queueDepth=10, workerNum=20):
 
 
 
-print(scrape_dmoz_file("inData/test.tab.tsv").head)
+print(scrape_dmoz_file("../../data/inData/test.tab.tsv").head)
