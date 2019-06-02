@@ -93,5 +93,5 @@ def scrape_dmoz_file(file, queueDepth=10, workerNum=20, outPath=""):
     return(outDF)
 
 
-scrape_dmoz_file(file="data/inData/test.tab.tsv", queueDepth=15, workerNum=25,
+scrape_dmoz_file(file="data/inData/dmoz_domain_category.tab.tsv", queueDepth=15, workerNum=25,
     outPath="data/outData/scrapeDMOZ.tab.tsv")
