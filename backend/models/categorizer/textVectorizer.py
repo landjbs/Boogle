@@ -22,11 +22,3 @@ def build_wordVector(tokenList):
         wordSet.add(token)
     wordVector = list(wordSet)
     return wordVector
-
-def vectorize(tokenList):
-    for i, token in enumerate(tokenList):
-        if token == "free":
-            tokenList[i] = 1
-        else:
-            tokenList[i] = 0
-    return tokenList
