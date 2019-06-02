@@ -55,6 +55,7 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20):
     for url in urlList:
         cleanedURL = ua.clean_url(url)
         urlQueue.put(url)
+        
     # ensure all urlQueue processes are complete before proceeding
     urlQueue.join()
     return outStore

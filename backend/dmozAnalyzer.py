@@ -81,6 +81,7 @@ def scrape_dmoz_file(file, queueDepth=10, workerNum=20, outPath=""):
     with open(file, 'r') as FileObj:
         for line in (FileObj):
             lineQueue.put(line)
+            
     # ensure all lineQueue processes are complete before proceeding
     lineQueue.join()
     # convert dict list to dataframe for easy visualization and training
@@ -93,5 +94,8 @@ def scrape_dmoz_file(file, queueDepth=10, workerNum=20, outPath=""):
     return(outDF)
 
 
-scrape_dmoz_file(file="data/inData/dmoz_domain_category.tab.tsv", queueDepth=15, workerNum=25,
+# scrape_dmoz_file(file="data/inData/dmoz_domain_category.tab.tsv", queueDepth=15, workerNum=25,
+#     outPath="data/outData/scrapeDMOZ.tab.tsv")
+
+scrape_dmoz_file(file="data/inData/test.tab.tsv", queueDepth=15, workerNum=25,
     outPath="data/outData/scrapeDMOZ.tab.tsv")
