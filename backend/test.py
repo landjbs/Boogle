@@ -1,15 +1,22 @@
-from sklearn.preprocessing import OneHotEncoder
+import pickle
+from dataStructures.simpleStructures import Simple
 
-enc = OneHotEncoder(n_values=15)
+test = Simple()
 
-testList = ['Computers', 'World', 'Business']
+test.add(5)
 
-testList = testList.transform([['Computers', 1],
-                                ['World', 2],
-                                ['Business, 2']])
+test.add(4)
 
-print(testList)
+file = open('test.obj', 'wb')
 
-testVector = enc.fit_transform(testList)
+pickle.dump(test, file)
 
-print(testVector)
+file.close()
+
+# revive
+filehandler = open("test.obj", 'rb')
+object = pickle.load(filehandler)
+
+print(object)
+
+print(object.data)

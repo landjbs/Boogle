@@ -5,6 +5,7 @@ import re
 from threading import Thread
 from queue import Queue
 from dataStructures.simpleStructures import Simple, Metrics
+import dataStructures.objectSaver
 import models.categorizer.textVectorizer as tv
 
 
@@ -21,10 +22,17 @@ folderMatcher = re.compile(folderString)
 topString = r'(?<="Top/)[^/]+'
 topMatcher = re.compile(topString)
 
+# indexed list of top of path for mapping to number
+topList = ['Arts', 'Business', 'Computers', 'Games', 'Health', 'Home', 'News',
+            'Recreation', 'Reference', 'Regional', 'Science', 'Shopping',
+            'Society', 'Sports', 'Kids_and_school']
+
 
 ### Functions to scrape dmoz tsv file into dataframe for model training ###
 def encode_top(top):
-    """ Helper to one-hot encode top folder of path """
+    """ Helper to convert top folder of path to index in topList """
+    return topList.index(top)
+
 
 def scrape_dmoz_line(line):
     """ Helper to convert line dmoz tsv file to dict of url, folder path,  """
@@ -114,24 +122,30 @@ dmozSimple = scrape_dmoz_file(file="data/inData/test.tab.tsv")
 
 dmozDF = pd.DataFrame(dmozSimple.data, columns=["url", "top", "path", "pageText"])
 
-print("DMOZ HEAD:\n\n:", dmozDF.head, end=f"\n{'-'*40}\n")
+print("DMOZ HEAD:\n:", dmozDF.head, end=f"\n{'-'*40}\n")
 
 dmozDF['pageText'] = dmozDF['pageText'].apply(lambda text : tv.tokenize(text))
 
 dmozDF['pageText'] = dmozDF['pageText'].apply(lambda tokenList : tv.vectorize(tokenList))
 
+dmozDF['top'] = dmozDF['top'].apply(lambda top : encode_top(top))
+
+from keras.utils import to_categorical
+
+dmozDF['top'] = to_categorical(dmozDF['top'])
+
+print(dmozDF['top'])
+
+
 #### MODEL STUFF ####
+
 # from keras.models import Sequential
-from sklearn.preprocessing import OneHotEncoder
 
-# dmozDF['dummies'] = pd.get_dummies(dmozDF['top'])
 
-dmozDF['dummies'] = pd.get_dummies(pd.Series(list(dmozDF['top'])))
 
-# print(f"\n\n{'-'*60}\nDMOZ MODIFIED: {dmozDF.head}\n{'-'*60}")
-print(dmozDF['dummies'])
+# print(f"\n\n{'-'*60}\nDMOZ MODIFIED:\n{dmozDF.head}\n{'-'*60}")
 
-print(f"{'-'*40}Top:\n{dmozDF['top']}")
+# print(f"{'-'*40}Top:\n{dmozDF['top']}")
 
 
 
