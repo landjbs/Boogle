@@ -30,15 +30,15 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
         previously scraped
         """
         for url in urlList:
-            print(len(scrapedSet))
             if not url in scrapedSet:
+                # add unclean url to set of scraped urls
                 scrapedSet.add(url)
                 # clean url and add to urlQueue
                 urlQueue.put(ua.clean_url(url))
 
     def worker():
         """ Scrapes popped URL from urlQueue and stores data in outStore()"""
-        while True:
+        while scrapeMetrics.count < 100:
             # pop top url from queue
             url = urlQueue.get()
             try:
