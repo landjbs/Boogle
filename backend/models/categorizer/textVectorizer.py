@@ -7,6 +7,7 @@ import re
 import numpy as np
 import pandas as pd
 import os # for navigating training data
+import pickle
 
 # matcher for tokenizing words
 tokenString = r'[A-Za-z]+[\w^\']*|[\w^\']*[A-Za-z]+[\w^\']*'
@@ -53,7 +54,7 @@ def vectorize_pageText(pageText):
         return normalizedFreq
 
     # create vector of normalized scalars for each word in freqDict
-    pageVector = [word_to_scalar(word, freqDict[word]) for word in freqDict]
+    pageVector = {word:(word_to_scalar(word, freqDict[word])) for word in freqDict}
 
     return pageVector
 
@@ -83,7 +84,7 @@ for count, file in enumerate(os.listdir(path)):
     print(f"\t{count}", end="\r")
 
 
-testDF = pd.DataFrame(dataList, columns=['pageVector', 'sentiment'])
+testDF = pd.DataFrame(dataList)
 
 print(testDF.head(), end=f"\n{'-'*60}")
 
@@ -98,8 +99,32 @@ def save(object, path):
 save(testDF, 'testDF.obj')
 
 
-
-
+# # MODEL STUFF #
+# # open testDF from saved object
+# def load(path):
+#     """ Loads object from path. Wraps pickle for consolidated codebase. """
+#     file = open(path, "rb")
+#     object = pickle.load(file)
+#     return object
+#
+# testDF = load('testDF.obj')
+#
+# from keras.models import Sequential
+# from keras.layers import Dense, Activation
+#
+#
+# model = Sequential([
+#     Dense(300, input_shape=(len(testDF['sentiment']),)),
+#     Activation('relu'),
+#     Dense(2),
+#     Activation('softmax'),
+# ])
+#
+# model.compile(optimizer='rmsprop',
+#               loss='binary_crossentropy',
+#               metrics=['accuracy'])
+#
+# model.fit(testDF['pageVector'], to_categorical(friend_vector), epochs=3)
 
 
 
