@@ -71,8 +71,11 @@ for count, file in enumerate(os.listdir(path)):
     FileObj =  open(f"{path}/{file}", 'r')
     pageText = "".join([line for line in FileObj])
     pageVector = vectorize_pageText(pageText)
-    dataList.append({'pageVector':pageVector, 'sentiment':0})
+    pageVector.update({'sentiment':0})
+    dataList.append(pageVector)
     print(f"\t{count}", end="\r")
+    if count > 10:
+        break
 
 path = 'aclImdb/train/neg'
 
@@ -80,8 +83,11 @@ for count, file in enumerate(os.listdir(path)):
     FileObj =  open(f"{path}/{file}", 'r')
     pageText = "".join([line for line in FileObj])
     pageVector = vectorize_pageText(pageText)
-    dataList.append({'pageVector':pageVector, 'sentiment':1})
+    pageVector.update({'sentiment':1})
+    dataList.append(pageVector)
     print(f"\t{count}", end="\r")
+    if count > 10:
+        break
 
 
 testDF = pd.DataFrame(dataList)
@@ -97,7 +103,6 @@ def save(object, path):
     print(f"Object successfully saved to {path}.")
 
 save(testDF, 'testDF.obj')
-
 
 # # MODEL STUFF #
 # # open testDF from saved object
