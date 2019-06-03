@@ -42,22 +42,22 @@ def vectorize_document(doc, modelPath="d2v.model"):
     """ Vectorizes document with d2v model stored at modelPath """
     # load saved model
     model= Doc2Vec.load("d2v.model")
-    # # to find the vector of a document which is not in training data
-    # test_data = nltk.tokenize.word_tokenize("apple pie".lower())
-    # v1 = model.infer_vector(test_data)
-    # # # print("V1_infer", v1)
-    # #
-    # # # to find most similar doc using tags
-    # # similar_doc = model.docvecs.most_similar('0')
-    # # print(similar_doc)
-    # #
-    # #
-    # # # to find vector of doc in training data using tags or in other words, printing the vector of document at index 1 in training data
-    # # # print(model.docvecs['1'])
+    # tokenize input doc
+    tokenizedDoc = nltk.tokenize.word_tokenize(doc.lower())
+    # create document vector for tokenizedDoc
+    docVector = model.infer_vector(tokenizedDoc)
+
+    #
+    # # to find most similar doc using tags
+    # similar_doc = model.docvecs.most_similar('0')
+    # print(similar_doc)
+    #
+    #
+    # # to find vector of doc in training data using tags or in other words, printing the vector of document at index 1 in training data
+    # # print(model.docvecs['1'])
 
 
-
-
+vectorize_document("hi how are you?")
 
 
 
