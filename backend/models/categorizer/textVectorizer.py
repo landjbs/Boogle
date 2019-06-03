@@ -62,46 +62,48 @@ def vectorize_pageText(pageText):
 ## test vector method for sentiment analysis ##
 # 0 = positive
 # 1 = negative
+def gen_data():
+    dataList = []
 
-dataList = []
+    path = 'aclImdb/train/pos'
 
-path = 'aclImdb/train/pos'
+    for count, file in enumerate(os.listdir(path)):
+        FileObj =  open(f"{path}/{file}", 'r')
+        pageText = "".join([line for line in FileObj])
+        pageVector = vectorize_pageText(pageText)
+        pageVector.update({'sentiment':0})
+        dataList.append(pageVector)
+        print(f"\tAnalyzing {path}: {count}", end="\r")
+        if count > 1000:
+            print("\n")
+            break
 
-for count, file in enumerate(os.listdir(path)):
-    FileObj =  open(f"{path}/{file}", 'r')
-    pageText = "".join([line for line in FileObj])
-    pageVector = vectorize_pageText(pageText)
-    pageVector.update({'sentiment':0})
-    dataList.append(pageVector)
-    print(f"\tAnalyzing {path}: {count}", end="\r")
-    if count > 10:
-        print("\n")
-        break
+    path = 'aclImdb/train/neg'
 
-path = 'aclImdb/train/neg'
+    for count, file in enumerate(os.listdir(path)):
+        FileObj =  open(f"{path}/{file}", 'r')
+        pageText = "".join([line for line in FileObj])
+        pageVector = vectorize_pageText(pageText)
+        pageVector.update({'sentiment':1})
+        dataList.append(pageVector)
+        print(f"\tAnalyzing {path}: {count}", end="\r")
+        if count > 1000:
+            print("\n")
+            break
 
-for count, file in enumerate(os.listdir(path)):
-    FileObj =  open(f"{path}/{file}", 'r')
-    pageText = "".join([line for line in FileObj])
-    pageVector = vectorize_pageText(pageText)
-    pageVector.update({'sentiment':1})
-    dataList.append(pageVector)
-    print(f"\tAnalyzing {path}: {count}", end="\r")
-    if count > 10:
-        print("\n")
-        break
+    testDF = pd.DataFrame(dataList)
 
-testDF = pd.DataFrame(dataList)
+    print(testDF.head(), end=f"\n{'-'*60}\n")
 
-print(testDF.head(), end=f"\n{'-'*60}\n")
+    def save(object, path):
+        """ Saves object to path. Wraps pickle for consolidated codebase. """
+        file = open(path, "wb")
+        pickle.dump(object, file)
+        print(f"Object successfully saved to {path}.")
 
-def save(object, path):
-    """ Saves object to path. Wraps pickle for consolidated codebase. """
-    file = open(path, "wb")
-    pickle.dump(object, file)
-    print(f"Object successfully saved to {path}.")
+    save(testDF, 'testDF.obj')
 
-save(testDF, 'testDF.obj')
+gen_data()
 
 # MODEL STUFF #
 # open testDF from saved object
@@ -125,13 +127,13 @@ model = Sequential([
 ])
 
 model.compile(optimizer='rmsprop',
-              loss='binary_crossentropy',
+              loss='categorical_crossentropy',
               metrics=['accuracy'])
 
 trainDF = testDF.copy()
-print(trainDF['sentiment'])
+trainDF.drop("sentiment",axis=1)
 
-model.fit(trainDF, to_categorical(testDF['sentiment']), epochs=3)
+model.fit(trainDF, to_categorical(testDF['sentiment']), epochs=10)
 
 
 
