@@ -8,17 +8,19 @@ data = ["peach pie", "berry cake", "small man"]
 # list mapping list of document tokens to unique integer tag
 tagged_data = [TaggedDocument(words=nltk.tokenize.word_tokenize(_d.lower()), tags=[str(i)]) for i, _d in enumerate(data)]
 
-
+# set hyperparams for model training
 max_epochs = 100
 vec_size = 20
 alpha = 0.025
 
+# initialize model
 model = Doc2Vec(size=vec_size,
                 alpha=alpha,
                 min_alpha=0.00025,
                 min_count=1,
                 dm =1)
 
+#
 model.build_vocab(tagged_data)
 
 print(model)
