@@ -14,26 +14,27 @@ vec_size = 20
 alpha = 0.025
 
 # initialize model
-model = Doc2Vec(size=vec_size,
+model = Doc2Vec(vector_size=vec_size,
                 alpha=alpha,
                 min_alpha=0.00025,
                 min_count=1,
                 dm =1)
 
-#
+# build vector of all words contained in tagged data
 model.build_vocab(tagged_data)
 
-print(model)
-#
-# for epoch in range(max_epochs):
-#     print(f'\tIteration {epoch}', end="\r")
-#     model.train(tagged_data,
-#                 total_examples=model.corpus_count,
-#                 epochs=model.iter)
-#     # decrease the learning rate
-#     model.alpha -= 0.0002
-#     # fix the learning rate, no decay
-#     model.min_alpha = model.alpha
+# train model for max_epochs
+for epoch in range(max_epochs):
+    print(f'\tIteration {epoch}', end="\r")
+    model.train(tagged_data,
+                # signify that tagged_data is what was used to build vocab
+                total_examples=model.corpus_count,
+                # signify that train is only called once for efficiency
+                epochs=model.iter)
+    # decrease the learning rate
+    model.alpha -= 0.0002
+    # fix the learning rate, no decay
+    model.min_alpha = model.alpha
 #
 # model.save("d2v.model")
 # print("Model Saved")
