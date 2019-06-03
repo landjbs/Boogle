@@ -31,12 +31,16 @@ frequencyDF = pd.read_csv("frequencyData.csv", sep=",",
 useSum = np.sum(frequencyDF['Frequency'])
 frequencyDF['Frequency'] = frequencyDF['Frequency'].apply(lambda curFreq : curFreq/useSum)
 
-# create initial_freqVector: the expected frequency of a word
-initial_freqVector = frequencyDF['Frequency']
+# remove \xa0\xa0\xa0 (non-break space) from word starts
+frequencyDF['Word'] = frequencyDF['Word'].apply(lambda word : word.replace(u'\xa0', u''))
 
-# create wordVector: list of words to search for; same index as initial_freqVector
-wordVector = frequencyDF['Word']
+# create freqDict: maps words to expected frequency
+freqDict = dict(zip(frequencyDF['Word'], frequencyDF['Frequency']))
 
+print(freqDict)
+
+# def vectorize_pageText(pageText):
+#     """ Converts words in pageText into vector of probabilities """
 
 
 
