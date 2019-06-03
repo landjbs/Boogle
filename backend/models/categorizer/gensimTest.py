@@ -1,6 +1,11 @@
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 import nltk
 nltk.download('punkt')
+import os
+import smart_open
+
+import warnings
+warnings.simplefilter("ignore")
 
 
 data = ["peach pie", "berry cake", "small man"]
@@ -57,7 +62,34 @@ def vectorize_document(doc, modelPath="d2v.model"):
     # # print(model.docvecs['1'])
 
 
-vectorize_document("hi how are you?")
+dataList = []
+
+path = 'aclImdb/train/pos'
+
+for count, file in enumerate(os.listdir(path)):
+    FileObj =  smart_open.open(f"{path}/{file}", 'r')
+    pageText = "".join([line for line in FileObj])
+    pageVector = vectorize_document(pageText)
+    dataList.append(pageVector)
+    print(f"\tAnalyzing {path}: {count}", end="\r")
+    if count > 10:
+        print("\n")
+        break
+
+path = 'aclImdb/train/neg'
+
+for count, file in enumerate(os.listdir(path)):
+    FileObj =  smart_open.open(f"{path}/{file}", 'r')
+    pageText = "".join([line for line in FileObj])
+    pageVector = vectorize_document(pageText)
+    dataList.append(pageVector)
+    print(f"\tAnalyzing {path}: {count}", end="\r")
+    if count > 10:
+        print("\n")
+        break
+
+print(dataList)
+
 
 
 

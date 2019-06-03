@@ -6,7 +6,7 @@
 import re
 import numpy as np
 import pandas as pd
-import os # for navigating training data
+from os import listdir # for navigating training data
 import pickle
 
 # matcher for tokenizing words
