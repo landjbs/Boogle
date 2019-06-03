@@ -37,15 +37,21 @@ frequencyDF['Word'] = frequencyDF['Word'].apply(lambda word : word.replace(u'\xa
 # create freqDict: maps words to expected frequency
 freqDict = dict(zip(frequencyDF['Word'], frequencyDF['Frequency']))
 
-print(freqDict)
+def vectorize_pageText(pageText):
+    """ Converts words in pageText into vector of probabilities """
 
-# def vectorize_pageText(pageText):
-#     """ Converts words in pageText into vector of probabilities """
+    def vectorize_word(pageText, word, frequency):
+        """ Helper to scan page text for word occurences and normalize by frequency """
+        numOccurences = len(re.findall(word, pageText))
+        normalizedOccurences = numOccurences / frequency
+        return normalizedOccurences
+
+    pageVector = [vectorize_word(pageText, word, freqDict[word]) for word in freqDict]
+
+    return pageVector
 
 
-
-
-
+print(vectorize_pageText('the man ran to the car'))
 
 
 
