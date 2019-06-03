@@ -73,8 +73,9 @@ for count, file in enumerate(os.listdir(path)):
     pageVector = vectorize_pageText(pageText)
     pageVector.update({'sentiment':0})
     dataList.append(pageVector)
-    print(f"\t{count}", end="\r")
+    print(f"\tAnalyzing {path}: {count}", end="\r")
     if count > 10:
+        print("\n")
         break
 
 path = 'aclImdb/train/neg'
@@ -85,16 +86,14 @@ for count, file in enumerate(os.listdir(path)):
     pageVector = vectorize_pageText(pageText)
     pageVector.update({'sentiment':1})
     dataList.append(pageVector)
-    print(f"\t{count}", end="\r")
+    print(f"\tAnalyzing {path}: {count}", end="\r")
     if count > 10:
+        print("\n")
         break
-
 
 testDF = pd.DataFrame(dataList)
 
-print(testDF.head(), end=f"\n{'-'*60}")
-
-print(testDF.describe())
+print(testDF.head(), end=f"\n{'-'*60}\n")
 
 def save(object, path):
     """ Saves object to path. Wraps pickle for consolidated codebase. """
@@ -104,32 +103,35 @@ def save(object, path):
 
 save(testDF, 'testDF.obj')
 
-# # MODEL STUFF #
-# # open testDF from saved object
-# def load(path):
-#     """ Loads object from path. Wraps pickle for consolidated codebase. """
-#     file = open(path, "rb")
-#     object = pickle.load(file)
-#     return object
-#
-# testDF = load('testDF.obj')
-#
-# from keras.models import Sequential
-# from keras.layers import Dense, Activation
-#
-#
-# model = Sequential([
-#     Dense(300, input_shape=(len(testDF['sentiment']),)),
-#     Activation('relu'),
-#     Dense(2),
-#     Activation('softmax'),
-# ])
-#
-# model.compile(optimizer='rmsprop',
-#               loss='binary_crossentropy',
-#               metrics=['accuracy'])
-#
-# model.fit(testDF['pageVector'], to_categorical(friend_vector), epochs=3)
+# MODEL STUFF #
+# open testDF from saved object
+def load(path):
+    """ Loads object from path. Wraps pickle for consolidated codebase. """
+    file = open(path, "rb")
+    object = pickle.load(file)
+    return object
+
+testDF = load('testDF.obj')
+
+from keras.models import Sequential
+from keras.layers import Dense, Activation
+from keras.utils import to_categorical
+
+model = Sequential([
+    Dense(300, input_shape=(4352,)),
+    Activation('relu'),
+    Dense(2),
+    Activation('softmax'),
+])
+
+model.compile(optimizer='rmsprop',
+              loss='binary_crossentropy',
+              metrics=['accuracy'])
+
+trainDF = testDF.copy()
+print(trainDF['sentiment'])
+
+model.fit(trainDF, to_categorical(testDF['sentiment']), epochs=3)
 
 
 
