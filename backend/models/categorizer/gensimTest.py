@@ -1,11 +1,11 @@
-#Import all the dependencies
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 import nltk
 nltk.download('punkt')
 
+
 data = ["peach pie", "berry cake", "small man"]
 
-def train_d2v(data, path='docVec.model', max_epochs=100, vec_size=20, alpha=0.025):
+def train_d2v(data, path='d2v.model', max_epochs=100, vec_size=20, alpha=0.025):
     """ Trains doc vectorization model on iterable of doc and saves model to path """
     # list mapping list of document tokens to unique integer tag
     tagged_data = [TaggedDocument(words=nltk.tokenize.word_tokenize(_d.lower()), tags=[str(i)]) for i, _d in enumerate(data)]
@@ -15,7 +15,7 @@ def train_d2v(data, path='docVec.model', max_epochs=100, vec_size=20, alpha=0.02
                     alpha=alpha,
                     min_alpha=0.00025,
                     min_count=1,
-                    dm =1)
+                    dm=1)
 
     # build vector of all words contained in tagged data
     model.build_vocab(tagged_data)
@@ -38,13 +38,10 @@ def train_d2v(data, path='docVec.model', max_epochs=100, vec_size=20, alpha=0.02
     print(f"Model saved to {path}.")
 
 
-
-
-def vectorize_document(doc, model):
-
-    #
-    #
-    # model= Doc2Vec.load("d2v.model")
+def vectorize_document(doc, modelPath="d2v.model"):
+    """ Vectorizes document with d2v model stored at modelPath """
+    # load saved model
+    model= Doc2Vec.load("d2v.model")
     # # to find the vector of a document which is not in training data
     # test_data = nltk.tokenize.word_tokenize("apple pie".lower())
     # v1 = model.infer_vector(test_data)
