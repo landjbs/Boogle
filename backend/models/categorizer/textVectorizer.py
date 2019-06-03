@@ -6,6 +6,7 @@
 import re
 import numpy as np
 import pandas as pd
+import os # for navigating training data
 
 # matcher for tokenizing words
 tokenString = r'[A-Za-z]+[\w^\']*|[\w^\']*[A-Za-z]+[\w^\']*'
@@ -52,10 +53,49 @@ def vectorize_pageText(pageText):
         return normalizedFreq
 
     # create vector of normalized scalars for each word in freqDict
-    pageVector = [vectorize_word(word, freqDict[word]) for word in freqDict]
+    pageVector = [word_to_scalar(word, freqDict[word]) for word in freqDict]
 
     return pageVector
 
+
+## test vector method for sentiment analysis ##
+# 0 = positive
+# 1 = negative
+
+dataList = []
+
+path = 'aclImdb/train/pos'
+
+for count, file in enumerate(os.listdir(path)):
+    FileObj =  open(f"{path}/{file}", 'r')
+    pageText = "".join([line for line in FileObj])
+    pageVector = vectorize_pageText(pageText)
+    dataList.append({'pageVector':pageVector, 'sentiment':0})
+    print(f"\t{count}", end="\r")
+
+path = 'aclImdb/train/neg'
+
+for count, file in enumerate(os.listdir(path)):
+    FileObj =  open(f"{path}/{file}", 'r')
+    pageText = "".join([line for line in FileObj])
+    pageVector = vectorize_pageText(pageText)
+    dataList.append({'pageVector':pageVector, 'sentiment':1})
+    print(f"\t{count}", end="\r")
+
+
+testDF = pd.DataFrame(dataList, columns=['pageVector', 'sentiment'])
+
+print(testDF.head(), end=f"\n{'-'*60}")
+
+print(testDF.describe())
+
+def save(object, path):
+    """ Saves object to path. Wraps pickle for consolidated codebase. """
+    file = open(path, "wb")
+    pickle.dump(object, file)
+    print(f"Object successfully saved to {path}.")
+
+save(testDF, 'testDF.obj')
 
 
 
