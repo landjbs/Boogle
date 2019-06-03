@@ -39,19 +39,23 @@ freqDict = dict(zip(frequencyDF['Word'], frequencyDF['Frequency']))
 
 def vectorize_pageText(pageText):
     """ Converts words in pageText into vector of probabilities """
+    # convert pageText to list of tokens
+    pageTokens = tokenize(pageText)
+    # store number of tokens for normalization
+    numTokens = len(pageTokens)
+    # convert tokens back into string for vectorization
+    tokenText = " ".join(pageTokens)
 
-    def vectorize_word(pageText, word, frequency):
+    def word_to_scalar(word, frequency):
         """ Helper to scan page text for word occurences and normalize by frequency """
-        numOccurences = len(re.findall(word, pageText))
-        normalizedOccurences = numOccurences / frequency
-        return normalizedOccurences
+        normalizedFreq = len(re.findall(word, tokenText)) / (numTokens * frequency)
+        return normalizedFreq
 
-    pageVector = [vectorize_word(pageText, word, freqDict[word]) for word in freqDict]
+    # create vector of normalized scalars for each word in freqDict
+    pageVector = [vectorize_word(word, freqDict[word]) for word in freqDict]
 
     return pageVector
 
-
-print(vectorize_pageText('the man ran to the car'))
 
 
 
