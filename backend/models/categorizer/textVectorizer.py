@@ -16,14 +16,8 @@ def tokenize(text):
     tokenList = tokenMatcher.findall(text.lower())
     return tokenList
 
-def build_wordVector(tokenList):
-    """ Creates n-length vector for binary representation of words where n=numWords """
-    wordSet = set()
-    for token in tokenList:
-        wordSet.add(token)
-    wordVector = list(wordSet)
-    return wordVector
 
+### FREQUENCY-BASED BOW MODEL ###
 # read int frequency df and convert datatypes
 frequencyDF = pd.read_csv("frequencyData.csv", sep=",",
                             names=['Rank', 'Word', 'Part of speech',
@@ -37,7 +31,11 @@ frequencyDF = pd.read_csv("frequencyData.csv", sep=",",
 useSum = np.sum(frequencyDF['Frequency'])
 frequencyDF['Frequency'] = frequencyDF['Frequency'].apply(lambda curFreq : curFreq/useSum)
 
-print(frequencyDF.head)
+# create initial_freqVector: the expected frequency of a word
+initial_freqVector = frequencyDF['Frequency']
+
+# create wordVector: list of words to search for; same index as initial_freqVector
+wordVector = frequencyDF['Word']
 
 
 
