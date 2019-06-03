@@ -51,7 +51,7 @@ def vectorize_document(doc, modelPath="d2v.model"):
     docVector = model.infer_vector(tokenizedDoc)
     #
     # to find most similar doc using tags
-    similar_doc = model.docvecs.most_similar()
+    # similar_doc = model.docvecs.most_similar()
     #
     #
     # # to find vector of doc in training data using tags or in other words, printing the vector of document at index 1 in training data
@@ -59,34 +59,62 @@ def vectorize_document(doc, modelPath="d2v.model"):
     return docVector
 
 
-dataList = []
+# dataList = []
+#
+# path = 'aclImdb/train/pos'
+#
+# for count, file in enumerate(os.listdir(path)):
+#     FileObj =  smart_open.open(f"{path}/{file}", 'r')
+#     pageText = "".join([line for line in FileObj])
+#     dataList.append(pageText)
+#     print(f"\tAnalyzing {path}: {count}", end="\r")
+#     if count > 10:
+#         print("\n")
+#         break
+#
+# path = 'aclImdb/train/neg'
+#
+# for count, file in enumerate(os.listdir(path)):
+#     FileObj =  smart_open.open(f"{path}/{file}", 'r')
+#     pageText = "".join([line for line in FileObj])
+#     dataList.append(pageText)
+#     print(f"\tAnalyzing {path}: {count}", end="\r")
+#     if count > 10:
+#         print("\n")
+#         break
 
-path = 'aclImdb/train/pos'
-
-for count, file in enumerate(os.listdir(path)):
-    FileObj =  smart_open.open(f"{path}/{file}", 'r')
-    pageText = "".join([line for line in FileObj])
-    dataList.append(pageText)
-    print(f"\tAnalyzing {path}: {count}", end="\r")
-    if count > 10:
-        print("\n")
-        break
-
-path = 'aclImdb/train/neg'
-
-for count, file in enumerate(os.listdir(path)):
-    FileObj =  smart_open.open(f"{path}/{file}", 'r')
-    pageText = "".join([line for line in FileObj])
-    dataList.append(pageText)
-    print(f"\tAnalyzing {path}: {count}", end="\r")
-    if count > 10:
-        print("\n")
-        break
+dataList = ['hi man', 'hi man', 'hello man', 'hi dog', 'dog runs']
 
 train_d2v(dataList, path='test.model')
 
+
+docVectors = []
+
 for doc in dataList:
-    (vectorize_document(doc, modelPath='test.model'))
+    docVectors.append(vectorize_document(doc, modelPath='test.model'))
+
+from scipy.spatial import distance
+
+import numpy as np
+
+distMatrix = np.zeros((24, 24))
+
+for i, curVector in enumerate(docVectors):
+    for j, otherVector in enumerate(docVectors):
+        dist = distance.euclidean(curVector, otherVector)
+        distMatrix[i,j] = dist
+
+import matplotlib.pyplot as plt
+
+plt.imshow(distMatrix)
+plt.show()
+
+
+
+
+
+
+
 
 
 
