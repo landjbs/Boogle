@@ -3,12 +3,10 @@ import nltk
 nltk.download('punkt')
 import os
 import smart_open
-
+# ignore warnings
 import warnings
 warnings.simplefilter("ignore")
 
-
-data = ["peach pie", "berry cake", "small man"]
 
 def train_d2v(data, path='d2v.model', max_epochs=100, vec_size=20, alpha=0.025):
     """ Trains doc vectorization model on iterable of doc and saves model to path """
@@ -51,15 +49,14 @@ def vectorize_document(doc, modelPath="d2v.model"):
     tokenizedDoc = nltk.tokenize.word_tokenize(doc.lower())
     # create document vector for tokenizedDoc
     docVector = model.infer_vector(tokenizedDoc)
-
     #
-    # # to find most similar doc using tags
-    # similar_doc = model.docvecs.most_similar('0')
-    # print(similar_doc)
+    # to find most similar doc using tags
+    similar_doc = model.docvecs.most_similar()
     #
     #
     # # to find vector of doc in training data using tags or in other words, printing the vector of document at index 1 in training data
     # # print(model.docvecs['1'])
+    return docVector
 
 
 dataList = []
@@ -69,8 +66,7 @@ path = 'aclImdb/train/pos'
 for count, file in enumerate(os.listdir(path)):
     FileObj =  smart_open.open(f"{path}/{file}", 'r')
     pageText = "".join([line for line in FileObj])
-    pageVector = vectorize_document(pageText)
-    dataList.append(pageVector)
+    dataList.append(pageText)
     print(f"\tAnalyzing {path}: {count}", end="\r")
     if count > 10:
         print("\n")
@@ -81,14 +77,22 @@ path = 'aclImdb/train/neg'
 for count, file in enumerate(os.listdir(path)):
     FileObj =  smart_open.open(f"{path}/{file}", 'r')
     pageText = "".join([line for line in FileObj])
-    pageVector = vectorize_document(pageText)
-    dataList.append(pageVector)
+    dataList.append(pageText)
     print(f"\tAnalyzing {path}: {count}", end="\r")
     if count > 10:
         print("\n")
         break
 
-print(dataList)
+train_d2v(dataList, path='test.model')
+
+for doc in dataList:
+    (vectorize_document(doc, modelPath='test.model'))
+
+
+
+
+
+
 
 
 
