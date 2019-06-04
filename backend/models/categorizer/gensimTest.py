@@ -1,18 +1,23 @@
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 import nltk
-nltk.download('punkt')
-import os
-import smart_open
+from os import listdir # for
+import smart_open # for opening documents
 # ignore warnings
 import warnings
 warnings.simplefilter("ignore")
+import re
 
+def clean_tokenize(inStr, stopWords=[]):
+    """ Converts string to clean, lowercase list of tokens """
+    lowerTokens = nltk.tokenize(inStr.lower())
 
-def train_d2v(data, path='d2v.model', max_epochs=100, vec_size=20, alpha=0.025):
-    """ Trains doc vectorization model on iterable of doc and saves model to path """
+clean_tokenize()
+
+def train_d2v(data, path='d2v.model', max_epochs=100, vec_size=300, alpha=0.025):
+    """ Trains doc vectorization model on iterable of docs and saves model to path """
     # list mapping list of document tokens to unique integer tag
     tagged_data = [TaggedDocument(words=nltk.tokenize.word_tokenize(_d.lower()), tags=[str(i)]) for i, _d in enumerate(data)]
-
+    print("\nData Tagged")
     # initialize model
     model = Doc2Vec(vector_size=vec_size,
                     alpha=alpha,
@@ -22,7 +27,7 @@ def train_d2v(data, path='d2v.model', max_epochs=100, vec_size=20, alpha=0.025):
 
     # build vector of all words contained in tagged data
     model.build_vocab(tagged_data)
-
+    print("Vocab Built")
     # train model for max_epochs
     for epoch in range(max_epochs):
         print(f'\tTraining: {epoch}', end="\r")
@@ -49,44 +54,37 @@ def vectorize_document(doc, modelPath="d2v.model"):
     tokenizedDoc = nltk.tokenize.word_tokenize(doc.lower())
     # create document vector for tokenizedDoc
     docVector = model.infer_vector(tokenizedDoc)
-    #
-    # to find most similar doc using tags
-    # similar_doc = model.docvecs.most_similar()
-    #
-    #
-    # # to find vector of doc in training data using tags or in other words, printing the vector of document at index 1 in training data
-    # # print(model.docvecs['1'])
     return docVector
 
 
-# dataList = []
-#
-# path = 'aclImdb/train/pos'
-#
-# for count, file in enumerate(os.listdir(path)):
-#     FileObj =  smart_open.open(f"{path}/{file}", 'r')
-#     pageText = "".join([line for line in FileObj])
-#     dataList.append(pageText)
-#     print(f"\tAnalyzing {path}: {count}", end="\r")
-#     if count > 10:
-#         print("\n")
-#         break
-#
-# path = 'aclImdb/train/neg'
-#
-# for count, file in enumerate(os.listdir(path)):
-#     FileObj =  smart_open.open(f"{path}/{file}", 'r')
-#     pageText = "".join([line for line in FileObj])
-#     dataList.append(pageText)
-#     print(f"\tAnalyzing {path}: {count}", end="\r")
-#     if count > 10:
-#         print("\n")
-#         break
+dataList = []
 
-dataList = ['hi man', 'hi man', 'hello man', 'hi dog', 'dog runs']
+path = 'aclImdb/train/pos'
+
+print("Positive")
+for count, file in enumerate(listdir(path)):
+    FileObj =  smart_open.open(f"{path}/{file}", 'r')
+    pageText = "".join([line for line in FileObj])
+    dataList.append(pageText)
+    print(f"\tAnalyzing {path}: {count}", end="\r")
+    if count > 10:
+        print("\n")
+        break
+
+path = 'aclImdb/train/neg'
+print("Negative")
+for count, file in enumerate(listdir(path)):
+    FileObj =  smart_open.open(f"{path}/{file}", 'r')
+    pageText = "".join([line for line in FileObj])
+    dataList.append(pageText)
+    print(f"\tAnalyzing {path}: {count}", end="\r")
+    if count > 10:
+        print("\n")
+        break
 
 train_d2v(dataList, path='test.model')
 
+dataList = ['good', 'great', 'fine', 'amazing', 'awful', 'bad', 'terrible', 'king', 'queen']
 
 docVectors = []
 
@@ -97,12 +95,13 @@ from scipy.spatial import distance
 
 import numpy as np
 
-distMatrix = np.zeros((24, 24))
+distMatrix = np.zeros((len(dataList), len(dataList)))
 
 for i, curVector in enumerate(docVectors):
     for j, otherVector in enumerate(docVectors):
         dist = distance.euclidean(curVector, otherVector)
         distMatrix[i,j] = dist
+    print(f"\t{i}", end='\r')
 
 import matplotlib.pyplot as plt
 
