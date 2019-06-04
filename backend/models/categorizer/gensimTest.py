@@ -8,7 +8,6 @@ import warnings
 warnings.simplefilter("ignore")
 import re
 import multiprocessing
-<<<<<<< HEAD
 import matplotlib.pyplot as plt
 import pandas as pd
 # model stuff
@@ -16,11 +15,10 @@ from keras.models import Sequential
 from keras.layers import Dense, Activation
 from keras.utils import to_categorical
 
+sys.path.append(os.path.abspath(os.path.join('..', '..', 'dataStructures')))
+from objectSaver import save, load
 
-=======
 
-
->>>>>>> 52bc8d980de9d95826339680aedaa6e4c9951d35
 def clean_tokenize(inStr):
     """ Converts string to clean, lowercase list of tokens """
     # lowercase inStr, filter out common stop words and numerics
@@ -87,29 +85,6 @@ def docVec_to_dict(docVec):
     docDict = {i:scalar for i, scalar in enumerate(docVec)}
     return docDict
 
-<<<<<<< HEAD
-=======
-print("Positive")
-for count, file in enumerate(listdir(path)):
-    FileObj =  smart_open.open(f"{path}/{file}", 'r')
-    pageText = "".join([line for line in FileObj])
-    dataList.append(pageText)
-    print(f"\tAnalyzing {path}: {count}", end="\r")
-    if count > 1000:
-        print("\n")
-        break
-
-path = 'aclImdb/train/neg'
-print("Negative")
-for count, file in enumerate(listdir(path)):
-    FileObj =  smart_open.open(f"{path}/{file}", 'r')
-    pageText = "".join([line for line in FileObj])
-    dataList.append(pageText)
-    print(f"\tAnalyzing {path}: {count}", end="\r")
-    if count > 10000:
-        print("\n")
-        break
->>>>>>> 52bc8d980de9d95826339680aedaa6e4c9951d35
 
 def visualize_docVecs(vecList):
     """ Plots list of docVecs to determine differences """
@@ -137,7 +112,7 @@ def file_to_dict(file, filePath, modelPath, score):
     return docDict
 
 
-def genData(pathDict, numSamples=100, outPath=""):
+def genData(pathDict, numSamples=100000, outPath=""):
     """
     Generates dataframe of text vectors and corresponding score from
     dict mapping path to score. Saves to outPath if given. Reads
@@ -152,20 +127,20 @@ def genData(pathDict, numSamples=100, outPath=""):
     df = pd.DataFrame(dataList)
     print(f"Dataframe of size {df.shape} generated")
     if not (outPath==""):
-        df.save(outPath)
+        save(df, outPath)
         print(f"Saved to {outPath}")
     return(df)
 
 ###### MODEL STUFF ######
 # read train data from pathDict
-trainDF = genData({'aclImdb/train/pos':1, 'aclImdb/train/neg':0})
+trainDF = genData({'aclImdb/train/pos':1, 'aclImdb/train/neg':0}, outPath="trainDF.obj")
 # split train df into vecs and encoded scores
 trainVecs = trainDF.copy()
 trainVecs = trainVecs.drop('score', axis=1)
 trainScores = to_categorical(trainDF['score'])
 
 # read test data from pathDict
-testDF = genData({'aclImdb/train/pos':1, 'aclImdb/train/neg':0}, numSamples=20)
+testDF = genData({'aclImdb/train/pos':1, 'aclImdb/train/neg':0}, outPath="testDF.obj")
 # split test df into vecs and encoded scores
 testVecs = testDF.copy()
 testVecs = testVecs.drop('score', axis=1)
@@ -186,14 +161,13 @@ model.compile(optimizer='rmsprop',
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
-print(f"\n{'-'*40}\n{trainVecs}")
-
 model.fit(trainVecs, trainScores, epochs=10)
 
-
+# evaluate model
 print(model.metrics_names)
 print(model.evaluate(testVecs, testScores))
 
+save(model, "imdbClassifier.model")
 
 
 
