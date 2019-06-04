@@ -12,7 +12,6 @@ from queue import Queue
 from simpleStructures import Simple_List, Metrics
 from objectSaver import save, load
 
-
 ### Match objects compiled for quick calls in functions ###
 # matcher for url in dmozDF line
 urlString = r'(?<=").+(?="\t)'
