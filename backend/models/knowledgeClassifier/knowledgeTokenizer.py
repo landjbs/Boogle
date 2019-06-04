@@ -35,19 +35,12 @@ def build_knowledgeSet(knowledgeFile, outPath):
         save(knowledgeSet, outPath)
     return knowledgeSet
 
-def get_knowledgeTokens(inStr, knowledgeSet):
-    """ Scans all possible combinations """
+def knowledgeTokenize_search(inStr, knowledgeSet):
+    """ Checks if inStr is in knowledgeSet. TO IMPROVE!!!!!!!! """
     if (inStr in knowledgeSet):
-        print(inStr)
+        return inStr
 
-build_knowledgeSet("enwiki-latest-all-titles-in-ns0", outPath="knowledgeTokens.set")
-
-
-x = load("knowledgeTokens.set")
-
-while True:
-    search = input("Search: ")
-    get_knowledgeTokens(search, x)
+# build_knowledgeSet("enwiki-latest-all-titles-in-ns0", outPath="knowledgeTokens.set")
 
 
 
