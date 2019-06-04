@@ -8,6 +8,7 @@ import warnings
 warnings.simplefilter("ignore")
 import re
 import multiprocessing
+<<<<<<< HEAD
 import matplotlib.pyplot as plt
 import pandas as pd
 # model stuff
@@ -16,6 +17,10 @@ from keras.layers import Dense, Activation
 from keras.utils import to_categorical
 
 
+=======
+
+
+>>>>>>> 52bc8d980de9d95826339680aedaa6e4c9951d35
 def clean_tokenize(inStr):
     """ Converts string to clean, lowercase list of tokens """
     # lowercase inStr, filter out common stop words and numerics
@@ -82,6 +87,29 @@ def docVec_to_dict(docVec):
     docDict = {i:scalar for i, scalar in enumerate(docVec)}
     return docDict
 
+<<<<<<< HEAD
+=======
+print("Positive")
+for count, file in enumerate(listdir(path)):
+    FileObj =  smart_open.open(f"{path}/{file}", 'r')
+    pageText = "".join([line for line in FileObj])
+    dataList.append(pageText)
+    print(f"\tAnalyzing {path}: {count}", end="\r")
+    if count > 1000:
+        print("\n")
+        break
+
+path = 'aclImdb/train/neg'
+print("Negative")
+for count, file in enumerate(listdir(path)):
+    FileObj =  smart_open.open(f"{path}/{file}", 'r')
+    pageText = "".join([line for line in FileObj])
+    dataList.append(pageText)
+    print(f"\tAnalyzing {path}: {count}", end="\r")
+    if count > 10000:
+        print("\n")
+        break
+>>>>>>> 52bc8d980de9d95826339680aedaa6e4c9951d35
 
 def visualize_docVecs(vecList):
     """ Plots list of docVecs to determine differences """
