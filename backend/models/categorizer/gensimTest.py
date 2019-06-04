@@ -1,4 +1,5 @@
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
+from gensim.parsing.preprocessing import remove_stopwords, strip_numeric
 import nltk
 from os import listdir # for
 import smart_open # for opening documents
@@ -7,21 +8,24 @@ import warnings
 warnings.simplefilter("ignore")
 import re
 
-def clean_tokenize(inStr, stopWords=[]):
+
+def clean_tokenize(inStr):
     """ Converts string to clean, lowercase list of tokens """
-    # lowercase inStr and split by white space
-    lowerTokens = nltk.tokenize.word_tokenize(inStr.lower())
-    # filter out tokens contained in stopWords
-    cleanTokens = list(filter(lambda token : token not in stopWords, lowerTokens))
+    # lowercase inStr, filter out common stop words and numerics
+    cleanStr = strip_numeric(remove_stopwords(inStr.lower()))
+    # tokenize cleanStr by whitespace
+    tokens = nltk.tokenize.word_tokenize(cleaStr))
     return cleanTokens
 
 
 def train_d2v(data, path='d2v.model', max_epochs=100, vec_size=300, alpha=0.025):
     """ Trains doc vectorization model on iterable of docs and saves model to path """
     print(f"\n{'-'*40}\nTraining '{path}' model:")
+
     # list mapping list of document tokens to unique integer tag
     tagged_data = [TaggedDocument(words=clean_tokenize(_d), tags=[str(i)]) for i, _d in enumerate(data)]
     print(f"\tData Tagged (length={len(tagged_data)})")
+
     # initialize model
     model = Doc2Vec(vector_size=vec_size,
                     alpha=alpha,
@@ -31,10 +35,11 @@ def train_d2v(data, path='d2v.model', max_epochs=100, vec_size=300, alpha=0.025)
 
     # build vector of all words contained in tagged data
     model.build_vocab(tagged_data)
-    print("\tVocab Built")
+    print(f"\tVocab Built\n\tModel Training for {max_epochs} epochs")
+
     # train model for max_epochs
     for epoch in range(max_epochs):
-        print(f'\tEpoch: {epoch}', end="\r")
+        print(f'\t\tEpoch: {epoch}', end="\r")
         model.train(tagged_data,
                     # signify that tagged_data is what was used to build vocab
                     total_examples=model.corpus_count,
@@ -47,7 +52,7 @@ def train_d2v(data, path='d2v.model', max_epochs=100, vec_size=300, alpha=0.025)
 
     # save model to path
     model.save(path)
-    print(f"Model saved to {path}.")
+    print(f"Model saved to '{path}'.\n{'-'*40}")
 
 
 def vectorize_document(doc, modelPath="d2v.model"):
