@@ -9,9 +9,10 @@ import re
 
 def clean_tokenize(inStr, stopWords=[]):
     """ Converts string to clean, lowercase list of tokens """
-    lowerTokens = nltk.tokenize(inStr.lower())
+    lowerTokens = nltk.tokenize.word_tokenize(inStr.lower())
+    cleanTokens = list(filter(lambda token : token not in stopWords, lowerTokens))
+    return cleanTokens
 
-clean_tokenize()
 
 def train_d2v(data, path='d2v.model', max_epochs=100, vec_size=300, alpha=0.025):
     """ Trains doc vectorization model on iterable of docs and saves model to path """
