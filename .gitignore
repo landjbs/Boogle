@@ -4,3 +4,6 @@
 *.png
 *.model
 *.npy
+*.set
+*.pyc
+*ns0

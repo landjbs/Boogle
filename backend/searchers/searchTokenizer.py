@@ -2,6 +2,8 @@
 import sys, os
 
 sys.path.append(os.path.abspath(os.path.join('..', 'models')))
-sys.path.append(os.path.abspath(os.path.join('..', 'dataStructures')))
 
-from categorizer.gensimTest import clean_tokenize
+from textProcessing.tokenizer import clean_tokenize
+
+
+testSearch = input(f"Search: ")
