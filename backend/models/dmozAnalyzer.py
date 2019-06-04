@@ -1,12 +1,16 @@
 import pandas as pd
-from crawlers.urlAnalyzer import url_to_pageString
-from crawlers.htmlAnalyzer import get_pageText, detect_language
+import sys, os
+
+for folder in ['dataStructures', 'crawlers', 'data']:
+    sys.path.append(os.path.abspath(os.path.join('..', folder)))
+
+from urlAnalyzer import url_to_pageString
+from htmlAnalyzer import get_pageText, detect_language
 import re
 from threading import Thread
 from queue import Queue
-from dataStructures.simpleStructures import Simple_List, Metrics
-from dataStructures.objectSaver import save, load
-import models.categorizer.textVectorizer as tv
+from simpleStructures import Simple_List, Metrics
+from objectSaver import save, load
 
 
 ### Match objects compiled for quick calls in functions ###

@@ -2,12 +2,15 @@
 # Outsources URL processing to urlAnalyzer.py
 # Outsources HTML processing to htmlAnalyzer.py
 # Outsoucres database definitions to thicctable.py
-
+import sys, os
 from queue import Queue
 from threading import Thread
-import crawlers.urlAnalyzer as ua
-import crawlers.htmlAnalyzer as ha
-from dataStructures.simpleStructures import Simple_List, Metrics
+import urlAnalyzer as ua
+import htmlAnalyzer as ha
+
+sys.path.append(os.path.abspath(os.path.join('..', '..', 'dataStructures')))
+from simpleStructures import Simple_List, Metrics
+from objectSaver import save
 
 def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath=""):
     """

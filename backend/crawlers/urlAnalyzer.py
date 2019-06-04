@@ -3,7 +3,7 @@
 # urlAnalyzer.py are usually passed to htmlAnalyzer.py.
 
 import urllib.request
-import crawlers.htmlAnalyzer as ha
+import htmlAnalyzer as ha
 
 
 class ParseError(Exception):
