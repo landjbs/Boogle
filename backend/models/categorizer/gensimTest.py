@@ -7,6 +7,7 @@ import smart_open # for opening documents
 import warnings
 warnings.simplefilter("ignore")
 import re
+import multiprocessing
 
 
 def clean_tokenize(inStr):
@@ -14,8 +15,8 @@ def clean_tokenize(inStr):
     # lowercase inStr, filter out common stop words and numerics
     cleanStr = strip_numeric(remove_stopwords(inStr.lower()))
     # tokenize cleanStr by whitespace
-    tokens = nltk.tokenize.word_tokenize(cleaStr))
-    return cleanTokens
+    tokens = nltk.tokenize.word_tokenize(cleanStr)
+    return tokens
 
 
 def train_d2v(data, path='d2v.model', max_epochs=100, vec_size=300, alpha=0.025):
@@ -26,12 +27,16 @@ def train_d2v(data, path='d2v.model', max_epochs=100, vec_size=300, alpha=0.025)
     tagged_data = [TaggedDocument(words=clean_tokenize(_d), tags=[str(i)]) for i, _d in enumerate(data)]
     print(f"\tData Tagged (length={len(tagged_data)})")
 
+    # initialize cores for fast model training
+    cores = multiprocessing.cpu_count()
+
     # initialize model
     model = Doc2Vec(vector_size=vec_size,
                     alpha=alpha,
                     min_alpha=0.00025,
                     min_count=1,
-                    dm=1)
+                    dm=1,
+                    workders=cores)
 
     # build vector of all words contained in tagged data
     model.build_vocab(tagged_data)
@@ -76,7 +81,7 @@ for count, file in enumerate(listdir(path)):
     pageText = "".join([line for line in FileObj])
     dataList.append(pageText)
     print(f"\tAnalyzing {path}: {count}", end="\r")
-    if count > 10:
+    if count > 1000:
         print("\n")
         break
 
@@ -87,7 +92,7 @@ for count, file in enumerate(listdir(path)):
     pageText = "".join([line for line in FileObj])
     dataList.append(pageText)
     print(f"\tAnalyzing {path}: {count}", end="\r")
-    if count > 10:
+    if count > 10000:
         print("\n")
         break
 
