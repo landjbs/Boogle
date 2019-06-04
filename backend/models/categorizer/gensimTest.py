@@ -9,16 +9,19 @@ import re
 
 def clean_tokenize(inStr, stopWords=[]):
     """ Converts string to clean, lowercase list of tokens """
+    # lowercase inStr and split by white space
     lowerTokens = nltk.tokenize.word_tokenize(inStr.lower())
+    # filter out tokens contained in stopWords
     cleanTokens = list(filter(lambda token : token not in stopWords, lowerTokens))
     return cleanTokens
 
 
 def train_d2v(data, path='d2v.model', max_epochs=100, vec_size=300, alpha=0.025):
     """ Trains doc vectorization model on iterable of docs and saves model to path """
+    print(f"\n{'-'*40}\nTraining '{path}' model:")
     # list mapping list of document tokens to unique integer tag
-    tagged_data = [TaggedDocument(words=nltk.tokenize.word_tokenize(_d.lower()), tags=[str(i)]) for i, _d in enumerate(data)]
-    print("\nData Tagged")
+    tagged_data = [TaggedDocument(words=clean_tokenize(_d), tags=[str(i)]) for i, _d in enumerate(data)]
+    print(f"\tData Tagged (length={len(tagged_data)})")
     # initialize model
     model = Doc2Vec(vector_size=vec_size,
                     alpha=alpha,
@@ -28,10 +31,10 @@ def train_d2v(data, path='d2v.model', max_epochs=100, vec_size=300, alpha=0.025)
 
     # build vector of all words contained in tagged data
     model.build_vocab(tagged_data)
-    print("Vocab Built")
+    print("\tVocab Built")
     # train model for max_epochs
     for epoch in range(max_epochs):
-        print(f'\tTraining: {epoch}', end="\r")
+        print(f'\tEpoch: {epoch}', end="\r")
         model.train(tagged_data,
                     # signify that tagged_data is what was used to build vocab
                     total_examples=model.corpus_count,
