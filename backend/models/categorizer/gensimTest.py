@@ -1,7 +1,6 @@
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
-from gensim.parsing.preprocessing import remove_stopwords, strip_numeric
 import nltk
-from os import listdir # for
+import sys, os
 import smart_open # for opening documents
 # ignore warnings
 import warnings
@@ -121,7 +120,7 @@ def genData(pathDict, numSamples=100000, outPath=""):
     dataList = []
     for path in pathDict:
         print(f"Analyzing {path}")
-        files = listdir(path)
+        files = os.listdir(path)
         fileDicts = [file_to_dict(file, path, "test.model", pathDict[path]) for i, file in enumerate(files) if i < numSamples]
         dataList += fileDicts
     df = pd.DataFrame(dataList)
