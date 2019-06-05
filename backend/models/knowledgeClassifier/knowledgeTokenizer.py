@@ -8,10 +8,6 @@ from objectSaver import save, load
 stripString = "[(|)|.|!|?|\[|\]|\{|\}|\n|=|$|*|+" + r"\\]"
 stripMatcher = re.compile(stripString)
 
-# matcher for elements to replace with "" in rawToken
-spaceString = r"_"
-spaceMatcher = re.compile(spaceString)
-
 # matcher for elements to replace with "_" in rawToken
 conversionString = "-"
 conversionMatcher = re.compile(conversionString)
@@ -60,19 +56,26 @@ def knowledgeTokenize_search(inStr, knowledgeSet):
 # print(clean_knowledge_token("1\2Python-docs\n"))
 
 
-knowledgeSet = build_knowledgeSet("enwiki-latest-all-titles-in-ns0",
-                    outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set")
+# knowledgeSet = build_knowledgeSet("enwiki-latest-all-titles-in-ns0",
+#                     outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set")
 
-print('Built')
+# print('Built')
 
 # knowledgeSet = load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set')
 
-knowledgeMatcher = build_knowledgeMatcher(knowledgeSet, outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeMatcher.re")
-print("Created")
+# knowledgeMatcher = build_knowledgeMatcher(knowledgeSet[:2000], outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeMatcher.re")
+# print("Created")
+#
+# test = "harvard college fuck you princeton"
 
-test = "harvard college fuck you princeton"
+knowledgeMatcher = load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeMatcher.re')
 
-print(re.findall(knowledgeMatcher, test))
+print(knowledgeMatcher)
+
+while True:
+    test = input("Search: ")
+    test = clean_knowledge_token(test)
+    print(re.findall(knowledgeMatcher, test))
 
 
 pass
