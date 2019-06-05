@@ -5,11 +5,11 @@ sys.path.append(os.path.abspath(os.path.join('..', '..', 'dataStructures')))
 from objectSaver import save, load
 
 # matcher for elements to replace with "" in rawToken
-stripString = "[(|)|.|!|?|\[|\]|\{|\}|\n|=|$|*|+" + r"\\]"
+stripString = '[(|)|.|!|?|\[|\]|\{|\}|\n|=|$|*|+|"|' + r"\\" + "|']"
 stripMatcher = re.compile(stripString)
 
 # matcher for elements to replace with "_" in rawToken
-conversionString = "-"
+conversionString = "[-| ]"
 conversionMatcher = re.compile(conversionString)
 
 
@@ -17,12 +17,11 @@ def clean_knowledge_token(rawToken):
     """ Cleans rawToken by stripping parentheses and replacing _ with spaces """
     # replace stripMatcher with "" in rawToken
     cleanToken = re.sub(stripMatcher, "", rawToken)
-    # replace spaceMatcher with " " in cleanToken
-    spacedToken = re.sub(spaceMatcher, "", cleanToken)
-    # replace conversionMatcher with "_" in in spacedToken
-    convertedToken = re.sub(conversionMatcher, "_", spacedToken)
+    # replace conversionMatcher with "_" in in cleanToken
+    convertedToken = re.sub(conversionMatcher, "_", cleanToken)
     # lowercase token
     lowerToken = convertedToken.lower()
+    print(f"Before: {rawToken} | After: {lowerToken}")
     return lowerToken
 
 
@@ -61,17 +60,17 @@ def knowledgeTokenize_search(inStr, knowledgeSet):
 
 # print('Built')
 
-# knowledgeSet = load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set')
+knowledgeSet = load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set')
 
-# knowledgeMatcher = build_knowledgeMatcher(knowledgeSet[:2000], outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeMatcher.re")
+knowledgeMatcher = build_knowledgeMatcher(knowledgeSet[:2000], outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeMatcher.re")
 # print("Created")
 #
-# test = "harvard college fuck you princeton"
+test = "harvard college fuck you princeton"
 
-knowledgeMatcher = load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeMatcher.re')
+# knowledgeMatcher = load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeMatcher.re')
 
-print(knowledgeMatcher)
-
+# print(knowledgeMatcher)
+#
 while True:
     test = input("Search: ")
     test = clean_knowledge_token(test)
