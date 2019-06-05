@@ -35,11 +35,26 @@ def build_knowledgeSet(knowledgeFile, outPath):
         save(knowledgeSet, outPath)
     return knowledgeSet
 
+def build_knowledgeMatcher(knowledgeSet):
+    """ Builds regex matcher for words in knowledgeSet """
+    knowledgeString = "[" + "|".join(knowledgeSet) + "]"
+    knowledgeMatcher = re.compile(knowledgeString)
+    return knowledgeMatcher
 
 def knowledgeTokenize_search(inStr, knowledgeSet):
     """ Checks if inStr is in knowledgeSet. TO IMPROVE!!!!!!!! """
     if (inStr in knowledgeSet):
         return inStr
 
-build_knowledgeSet("enwiki-latest-all-titles-in-ns0",
+
+knowledgeSet = build_knowledgeSet("enwiki-latest-all-titles-in-ns0",
                     outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set")
+
+
+
+
+
+
+
+
+pass
