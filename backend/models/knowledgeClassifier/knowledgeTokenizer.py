@@ -5,7 +5,7 @@ sys.path.append(os.path.abspath(os.path.join('..', '..', 'dataStructures')))
 from objectSaver import save, load
 
 # matcher for elements to replace with "" in rawToken
-stripString = r"[(|)|\n|\t]"
+stripString = r"[(|)|.|!|?|\n|\t]"
 stripMatcher = re.compile(stripString)
 
 # matcher for elements to replace with " " in rawToken
@@ -30,12 +30,13 @@ def build_knowledgeSet(knowledgeFile, outPath):
     Returns: set (for fast lookup) of tokens stripped from knowledgeData
     """
     with open(knowledgeFile) as knowledgeData:
-        knowledgeSet = {clean_knowledge_token(token) for token in knowledgeData}
+        knowledgeSet = {clean_knowledge_token(token) for token in knowledgeData if not (token != "")}
     if not (outPath==""):
         save(knowledgeSet, outPath)
     return knowledgeSet
 
-def knowledgeTokenize_search(inStr, knowledgeSet):
+
+def knowledgeTokenize_search(inStr, knowledgeSet="knowledgeTokens.set"):
     """ Checks if inStr is in knowledgeSet. TO IMPROVE!!!!!!!! """
     if (inStr in knowledgeSet):
         return inStr
