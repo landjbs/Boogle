@@ -5,12 +5,16 @@ sys.path.append(os.path.abspath(os.path.join('..', '..', 'dataStructures')))
 from objectSaver import save, load
 
 # matcher for elements to replace with "" in rawToken
-stripString = r"[(|)|.|!|?|\n|\t]"
+stripString = "[(|)|.|!|?|\[|\]|\{|\}|\n|=|$" + r"\\]"
 stripMatcher = re.compile(stripString)
 
 # matcher for elements to replace with " " in rawToken
 spaceString = r"_"
 spaceMatcher = re.compile(spaceString)
+
+# matcher for elements to replace with "_" in rawToken
+conversionString = "-"
+conversionMatcher = re.compile(conversionString)
 
 
 def clean_knowledge_token(rawToken):
@@ -19,27 +23,31 @@ def clean_knowledge_token(rawToken):
     cleanToken = re.sub(stripMatcher, "", rawToken)
     # replace spaceMatcher with " " in cleanToken
     spacedToken = re.sub(spaceMatcher, " ", cleanToken)
+    # replace conversionMatcher with "_" in in spacedToken
+    convertedToken = re.sub(conversionMatcher, "_", spacedToken)
     # lowercase token
-    lowerToken = spacedToken.lower()
+    lowerToken = convertedToken.lower()
     return lowerToken
 
 
-def build_knowledgeSet(knowledgeFile, outPath):
+def build_knowledgeSet(knowledgeFile, outPath=""):
     """
     Args: \n delimited file of words to treat as knowledge tokens (tokens for strict word search)
     Returns: set (for fast lookup) of tokens stripped from knowledgeData
     """
     with open(knowledgeFile) as knowledgeData:
-        knowledgeSet = {clean_knowledge_token(token) for token in knowledgeData if not (token != "")}
+        # knowledgeSet = {clean_knowledge_token(token) for token in knowledgeData}
+        knowledgeSet = [clean_knowledge_token(token) for token in knowledgeData]
+        knowledgeSet = list(filter(lambda token : (token !=""), knowledgeSet))
     if not (outPath==""):
         save(knowledgeSet, outPath)
     return knowledgeSet
 
-def build_knowledgeMatcher(knowledgeSet):
+def build_knowledgeMatcher(knowledgeSet, outPath=""):
     """ Builds regex matcher for words in knowledgeSet """
     knowledgeString = "[" + "|".join(knowledgeSet) + "]"
     knowledgeMatcher = re.compile(knowledgeString)
-    return knowledgeMatcher
+    return knowledgeString
 
 def knowledgeTokenize_search(inStr, knowledgeSet):
     """ Checks if inStr is in knowledgeSet. TO IMPROVE!!!!!!!! """
@@ -47,14 +55,20 @@ def knowledgeTokenize_search(inStr, knowledgeSet):
         return inStr
 
 
+# print(clean_knowledge_token("1\2Python-docs\n"))
+
+
 knowledgeSet = build_knowledgeSet("enwiki-latest-all-titles-in-ns0",
                     outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set")
 
+print('Built')
 
+knowledgeMatcher = build_knowledgeMatcher(knowledgeSet)
+print("Created")
 
-
-
-
+test = "harvard college video game princeton"
+#
+print(re.findall(knowledgeMatcher, test))
 
 
 pass
