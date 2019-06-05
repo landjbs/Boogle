@@ -5,10 +5,10 @@ sys.path.append(os.path.abspath(os.path.join('..', '..', 'dataStructures')))
 from objectSaver import save, load
 
 # matcher for elements to replace with "" in rawToken
-stripString = "[(|)|.|!|?|\[|\]|\{|\}|\n|=|$" + r"\\]"
+stripString = "[(|)|.|!|?|\[|\]|\{|\}|\n|=|$|*|+" + r"\\]"
 stripMatcher = re.compile(stripString)
 
-# matcher for elements to replace with " " in rawToken
+# matcher for elements to replace with "" in rawToken
 spaceString = r"_"
 spaceMatcher = re.compile(spaceString)
 
@@ -22,7 +22,7 @@ def clean_knowledge_token(rawToken):
     # replace stripMatcher with "" in rawToken
     cleanToken = re.sub(stripMatcher, "", rawToken)
     # replace spaceMatcher with " " in cleanToken
-    spacedToken = re.sub(spaceMatcher, " ", cleanToken)
+    spacedToken = re.sub(spaceMatcher, "", cleanToken)
     # replace conversionMatcher with "_" in in spacedToken
     convertedToken = re.sub(conversionMatcher, "_", spacedToken)
     # lowercase token
@@ -45,8 +45,10 @@ def build_knowledgeSet(knowledgeFile, outPath=""):
 
 def build_knowledgeMatcher(knowledgeSet, outPath=""):
     """ Builds regex matcher for words in knowledgeSet """
-    knowledgeString = "[" + "|".join(knowledgeSet) + "]"
+    knowledgeString = "(" + "|".join(knowledgeSet) + ")"
     knowledgeMatcher = re.compile(knowledgeString)
+    if not (outPath==""):
+        save(knowledgeMatcher, outPath)
     return knowledgeString
 
 def knowledgeTokenize_search(inStr, knowledgeSet):
@@ -63,11 +65,13 @@ knowledgeSet = build_knowledgeSet("enwiki-latest-all-titles-in-ns0",
 
 print('Built')
 
-knowledgeMatcher = build_knowledgeMatcher(knowledgeSet)
+# knowledgeSet = load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set')
+
+knowledgeMatcher = build_knowledgeMatcher(knowledgeSet, outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeMatcher.re")
 print("Created")
 
-test = "harvard college video game princeton"
-#
+test = "harvard college fuck you princeton"
+
 print(re.findall(knowledgeMatcher, test))
 
 
