@@ -1,5 +1,11 @@
 from gensim.parsing.preprocessing import remove_stopwords, strip_numeric
 from nltk.tokenize import word_tokenize
+sys.path.append(os.path.abspath(os.path.join('..', 'knowledgeClassifier')))
+
+print(gensim.parsing.preprocessing.STOPWORDS)
+
+
+# def possible_tokens(token):
 
 def clean_tokenize(inStr):
     """ Converts string to clean, lowercase list of tokens """
