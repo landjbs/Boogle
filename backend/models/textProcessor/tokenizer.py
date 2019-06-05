@@ -2,6 +2,7 @@ import sys, os
 from gensim.parsing.preprocessing import remove_stopwords, strip_numeric
 from nltk.tokenize import word_tokenize
 sys.path.append(os.path.abspath(os.path.join('..', 'knowledgeClassifier')))
+from knowledgeTokenizer import knowledgeTokenize_search
 
 from gensim.parsing.preprocessing import STOPWORDS
 
@@ -19,6 +20,8 @@ def clean_tokenize(inStr):
     possible_tokens(tokenList)
     return tokenList
 
+knowledgeSet = load('knowledgeTokens.set')
 
 while True:
-    clean_tokenize(input("Search: "))
+    query = clean_tokenize(input("Search: "))
+    knowledgeTokenize_search(query, knowledgeSet)

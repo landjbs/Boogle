@@ -36,9 +36,10 @@ def build_knowledgeSet(knowledgeFile, outPath):
     return knowledgeSet
 
 
-def knowledgeTokenize_search(inStr, knowledgeSet="knowledgeTokens.set"):
+def knowledgeTokenize_search(inStr, knowledgeSet):
     """ Checks if inStr is in knowledgeSet. TO IMPROVE!!!!!!!! """
     if (inStr in knowledgeSet):
         return inStr
 
-# build_knowledgeSet("enwiki-latest-all-titles-in-ns0", outPath="knowledgeTokens.set")
+build_knowledgeSet("enwiki-latest-all-titles-in-ns0",
+                    outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set")
