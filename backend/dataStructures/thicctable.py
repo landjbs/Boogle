@@ -3,7 +3,7 @@ from objectSaver import save, load
 class Thicctable():
     """
     Class to store indexed webdata as keys mapping to list of tuples of page data
-    in format (score, title, url, keywords, head)
+    in format (score, domainReverse, url, keywords, head)
     Methods:
         -__init__: Build topDict mapping list of keys to empty list
         -add_key: Adds key mapping to an empty list to the topDict
@@ -38,9 +38,18 @@ class Thicctable():
         """ Adds value to the list mapped by key in topDict """
         self.topDict[key].append(value)
 
-    def remove_value(self, key, value)
+    def remove_value(self, key, domainReverse):
+        """
+        Removes elemetnt with given domainReverse from list
+        mapped by key in topDict
+        """
+        domainEqual = lambda elt : (elt[1] != domainReverse)
+        self.topDict[key] = list(filter(domainEqual, self.topDict[key]))
 
-    #
+
+    def sort_key(self, key):
+        """ Sorts key based on pageRank score stored at index 0 in tuple of elts """
+
     # def sort_branch(self, branch):
     #     """ Applies page ranking algorithm to rank pages for every key in branch """
     #     # assert valid branch
@@ -87,23 +96,14 @@ class Thicctable():
 
 x = Thicctable(keys=['a','b','c'])
 
-x.add_key('d')
 
-x.remove_key('a')
+x.insert_value('b', ('hi', 1))
 
-x.insert('b', 2)
+x.insert_value('b', ('hey', 2))
 
-x.clean_key('b')
+x.insert_value('b', ('yo', 3))
 
-x.insert('d', 1)
-
-x.insert('d', 2)
-
-x.insert('d', 3)
-
-x.insert('d', 4)
-
-x.clip_key('d', 0)
+x.remove_value('b', 2)
 
 print(x.topDict)
 
