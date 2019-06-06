@@ -1,5 +1,3 @@
-
-
 class Thicctable():
     """
     Class to store indexed webdata in two branches:
@@ -23,10 +21,11 @@ class Thicctable():
 
     def metrics(self, branch):
         branch = branch.lower()
+        # assert valid branch
+        assert (branch in ['knowledge', 'concept']), "Valid branches are 'knowledge' or 'concept'"
+        # query branch metrics
         if (branch=='knowledge'):
-        elif (branch=='concept'):
         else:
-            raise
 
 
 x = Thicctable(knowledgeKeys=['hi','hello','yo'])
