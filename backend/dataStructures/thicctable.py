@@ -2,16 +2,17 @@ from objectSaver import save, load
 
 class Thicctable():
     """
-    Class to store indexed webdata as keys mapping to dict of page data
+    Class to store indexed webdata as keys mapping to list of tuples of page data
+    in format (score, title, url, keywords, head)
     Methods:
-        -Insert: Add value to list associated with
+        -__init__: Build topDict mapping list of keys to empty list
+        -add_key: Adds key mapping to an empty list to the topDict
+        -remove_key: Removes a key and the corresponding list from the topDict
+        -
     """
 
     def __init__(self, keys):
-        """
-        Initialize branch as store mapping keys to empty lists.
-        Keys should cover all buckets of dict, but can be added or removed
-        """
+        """ Initialize branch as key-val store mapping keys to empty lists """
         self.topDict = {key:[] for key in keys}
 
     def add_key(self, key):
@@ -21,6 +22,12 @@ class Thicctable():
     def remove_key(self, key):
         """ Removes key and associate list from topDict """
         del self.topDict[key]
+
+    def clean_key(self, key):
+        """ Clears the list associated with a key in the topDict """
+        self.topDict[key] = []
+
+    def clip_
 
     # def insert(self, key, ):
     #     """ Add value to key in knowledgeBranch"""
