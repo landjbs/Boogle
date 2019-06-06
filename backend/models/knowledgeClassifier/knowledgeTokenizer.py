@@ -62,11 +62,13 @@ def knowledgeTokenize_search(inStr, knowledgeSet):
 
 knowledgeSet = load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set')
 
-knowledgeMatcher = build_knowledgeMatcher(knowledgeSet[:2000], outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeMatcher.re")
+# knowledgeMatcher = build_knowledgeMatcher(knowledgeSet[:2000], outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeMatcher.re")
 # print("Created")
 #
-test = "harvard college fuck you princeton"
 
+knowledgeMatcher = build_knowledgeMatcher([clean_knowledge_token(token) for token in ["hi", "hi college","h", "hyo"]])
+
+print(knowledgeMatcher)
 # knowledgeMatcher = load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeMatcher.re')
 
 # print(knowledgeMatcher)
@@ -75,6 +77,17 @@ while True:
     test = input("Search: ")
     test = clean_knowledge_token(test)
     print(re.findall(knowledgeMatcher, test))
+
+
+
+
+
+
+
+
+
+
+
 
 
 pass
