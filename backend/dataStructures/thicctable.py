@@ -1,3 +1,5 @@
+from objectSaver import save, load
+
 class Thicctable():
     """
     Class to store indexed webdata in two branches:
@@ -20,20 +22,46 @@ class Thicctable():
             self.conceptBranch[key].append(value)
 
     def metrics(self, branch):
+        """ Display metrics """
         branch = branch.lower()
         # assert valid branch
         assert (branch in ['knowledge', 'concept']), "Valid branches are 'knowledge' or 'concept'"
         # query branch metrics
-        if (branch=='knowledge'):
-        else:
+        root = self.knowledgeBranch if (branch=='knowledge') else self.conceptBranch
+        for key in root:
+            print(f"Key: {key}\n\tNumber of Pages: {len(root[key])}")
+        return True
 
+# Testing
 
-x = Thicctable(knowledgeKeys=['hi','hello','yo'])
-
+import time
 import numpy as np
+
+
+loadStart = time.time()
+
+knowledgeSet = load("/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set")
+
+loadEnd = time.time()
+
+print(f"Loaded in {loadEnd - loadStart} seconds")
+
+createStart = time.time()
+
+x = Thicctable(knowledgeKeys=knowledgeSet)
+
+createEnd = time.time()
+
+print(f"Created in {createEnd - createStart} seconds")
+
+addStart = time.time()
 
 for _ in range(10000):
     key = np.random.choice(['hi', 'hello', 'yo'], size=1)
     x.insert(key[0], 'html', True)
 
-print(x.knowledgeBranch)
+addEnd = time.time()
+
+print(f"Added in {addEnd - addStart} seconds")
+
+x.metrics('knowledge')
