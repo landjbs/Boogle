@@ -24,14 +24,22 @@ class Thicctable():
         del self.topDict[key]
 
     def clean_key(self, key):
-        """ Clears the list associated with a key in the topDict """
+        """
+        Clears the list associated with a key in the topDict
+        Same funcitonality as clip_key(key, 0).
+        """
         self.topDict[key] = []
 
-    def clip_
+    def clip_key(self, key, n):
+        """ Clips list mapped by key to n elements """
+        self.topDict[key] = self.topDict[key][:n]
 
-    # def insert(self, key, ):
-    #     """ Add value to key in knowledgeBranch"""
-    #     self.topDict[key].append((score, info))
+    def insert_value(self, key, value):
+        """ Adds value to the list mapped by key in topDict """
+        self.topDict[key].append(value)
+
+    def remove_value(self, key, value)
+
     #
     # def sort_branch(self, branch):
     #     """ Applies page ranking algorithm to rank pages for every key in branch """
@@ -76,6 +84,29 @@ class Thicctable():
 
 # Testing
 #
+
+x = Thicctable(keys=['a','b','c'])
+
+x.add_key('d')
+
+x.remove_key('a')
+
+x.insert('b', 2)
+
+x.clean_key('b')
+
+x.insert('d', 1)
+
+x.insert('d', 2)
+
+x.insert('d', 3)
+
+x.insert('d', 4)
+
+x.clip_key('d', 0)
+
+print(x.topDict)
+
 # import numpy as np
 #
 # # knowledgeSet = load("/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set")
