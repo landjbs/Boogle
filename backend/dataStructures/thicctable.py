@@ -46,9 +46,13 @@ class Thicctable():
         domainEqual = lambda elt : (elt[1] != domainReverse)
         self.topDict[key] = list(filter(domainEqual, self.topDict[key]))
 
-
-    def sort_key(self, key):
-        """ Sorts key based on pageRank score stored at index 0 in tuple of elts """
+    def sort_key(self, key, index):
+        """
+        Sorts key based on attribute of elts.
+        Default attribute is 0, aka pageRank score
+        """
+        attributeLambda = lambda elt : elt[index]
+        self.topDict[key].sort(key=attributeLambda)
 
     # def sort_branch(self, branch):
     #     """ Applies page ranking algorithm to rank pages for every key in branch """
@@ -99,11 +103,11 @@ x = Thicctable(keys=['a','b','c'])
 
 x.insert_value('b', ('hi', 1))
 
-x.insert_value('b', ('hey', 2))
+x.insert_value('b', ('hey', 3))
 
-x.insert_value('b', ('yo', 3))
+x.insert_value('b', ('yo', 2))
 
-x.remove_value('b', 2)
+x.sort_key('b', 1)
 
 print(x.topDict)
 
