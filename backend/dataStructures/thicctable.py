@@ -152,50 +152,43 @@ class Thicctable():
 
 # Testing
 
-import time
-import numpy as np
-
-NUM = 100000
-
-x = Thicctable(keys=['a','b','c'])
-
-keyList = np.random.choice(['a','b','c'], size=NUM)
-v1List = np.random.randint(0, 10000, size=NUM)
-v2List = np.random.choice(['a','b','c','d','e','f','g','c'], size=NUM)
-
-insertStart = time.time()
-for i, key in enumerate(keyList):
-    x.insert_value(key, (v1List[i], v2List[i]))
-insertEnd = time.time()
-print(f"Insertion: {insertEnd - insertStart}")
-
-sortStart = time.time()
-x.sort_all(index=0)
-sortEnd = time.time()
-print(f"Sorting: {sortEnd - sortStart}")
-
-start = time.time()
-print(x.search_index('a', indexLambda=(lambda x:x[1])))
-end  = time.time()
-iSearch = end - start
-
-start = time.time()
-print(x.search_full('a'))
-end  = time.time()
-aSearch = end - start
-
-print(f"Search:\n\ti:  {iSearch}\n\ta: {aSearch}")
-
-x.plot_lengths()
+# import time
+# import numpy as np
+#
+# NUM = 100000
+#
+# x = Thicctable(keys=['a','b','c'])
+#
+# keyList = np.random.choice(['a','b','c'], size=NUM)
+# v1List = np.random.randint(0, 10000, size=NUM)
+# v2List = np.random.choice(['a','b','c','d','e','f','g','c'], size=NUM)
+#
+# insertStart = time.time()
+# for i, key in enumerate(keyList):
+#     x.insert_value(key, (v1List[i], v2List[i]))
+# insertEnd = time.time()
+# print(f"Insertion: {insertEnd - insertStart}")
+#
+# sortStart = time.time()
+# x.sort_all(index=0)
+# sortEnd = time.time()
+# print(f"Sorting: {sortEnd - sortStart}")
+#
+# start = time.time()
+# print(x.search_index('a', indexLambda=(lambda x:x[1])))
+# end  = time.time()
+# iSearch = end - start
+#
+# start = time.time()
+# print(x.search_full('a'))
+# end  = time.time()
+# aSearch = end - start
+#
+# print(f"Search:\n\ti:  {iSearch}\n\ta: {aSearch}")
+#
+# x.plot_lengths()
 
 # saveStart = time.time()
 # x.save("test.thicc")
 # saveEnd = time.time()
 # print(f"Save: {saveEnd - saveStart}")
-
-
-
-
-
-
-pass
