@@ -46,31 +46,27 @@ class Thicctable():
         domainEqual = lambda elt : (elt[1] != domainReverse)
         self.topDict[key] = list(filter(domainEqual, self.topDict[key]))
 
-    def sort_key(self, key, index):
+    def sort_key(self, key, index=1):
         """
-        Sorts key based on attribute of elts.
-        Default attribute is 0, aka pageRank score
+        Sorts key based on index of elts.
+        Default index is 0, aka pageRank score
         """
-        attributeLambda = lambda elt : elt[index]
-        self.topDict[key].sort(key=attributeLambda)
+        indexLambda = lambda elt : elt[index]
+        self.topDict[key].sort(key=indexLambda)
 
-    # def sort_branch(self, branch):
-    #     """ Applies page ranking algorithm to rank pages for every key in branch """
-    #     # assert valid branch
-    #     assert (branch in ['knowledge', 'concept']), "Valid branches are 'knowledge' or 'concept'"
-    #     # define root
-    #     root = self.knowledgeBranch if (branch=='knowledge') else self.conceptBranch
-    #     # define lambda for sorting branches
-    #     # sortLambda = lambda key : root[key].sort()
-    #     # apply ranking algorithm to every value in key, value store
-    #     # root = dict(map(sortLambda, root))
-    #     for key in root:
-    #         root[key].sort()
-    #     # store ranked root in knowledge or conceptBranch
-    #     if (branch=='knowledge'):
-    #         self.knowledgeBranch = root
-    #     else:
-    #         self.conceptBranch = root
+    def sort_all(self, index=0):
+        """ Sorts list mapped by each key in topDict based on index """
+        indexLambda = lambda elt : elt[index]
+        for key in self.topDict:
+            self.topDict[key].sort(key=indexLambda)
+
+    def search_index(self, key, index=1, n):
+        """ """
+
+    def search_full(self, key, n=20):
+        """ Pops of the top n elements of the list mapped by key in topDict """
+        return self.topDict[key][:n]
+
     #
     # def search(self, branch, key, numPages=20):
     #     """
@@ -107,9 +103,13 @@ x.insert_value('b', ('hey', 3))
 
 x.insert_value('b', ('yo', 2))
 
-x.sort_key('b', 1)
+x.insert_value('a', ('a', 2))
 
-print(x.topDict)
+x.insert_value('a', ('b', 1))
+
+x.sort_all(1)
+
+print(x.search('b', 10))
 
 # import numpy as np
 #
