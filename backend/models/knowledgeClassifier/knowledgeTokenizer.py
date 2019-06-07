@@ -15,14 +15,15 @@ stripMatcher = re.compile(stripString)
 
 def clean_knowledge_token(rawToken):
     """ Cleans rawToken by stripping parentheses and replacing _ with spaces """
-    print(rawToken)
-    # lowercase token
-    lowerToken = rawToken.lower()
-    # replace stripMatcher with "" in lowerToken
-    cleanToken = re.sub(stripMatcher, "", rawToken)
-    if len(re.split('\W', rawToken)) > 5:
-        print(lowerToken)
-    return lowerToken
+    splitWords = rawToken.split(sep="_")
+    if len(splitWords)<5:
+        # lowercase token
+        lowerToken = rawToken.lower()
+        # replace stripMatcher with "" in lowerToken
+        cleanToken = re.sub(stripMatcher, "", rawToken)
+    else:
+        print(splitWords)
+    return ""
 
 
 def build_knowledgeSet(knowledgeFile, outPath=""):
@@ -53,10 +54,8 @@ def knowledgeTokenize_search(inStr, knowledgeSet):
         return inStr
 
 
-print(clean_knowledge_token(''))
-
-# knowledgeSet = build_knowledgeSet("enwiki-latest-all-titles-in-ns0",
-#                     outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set")
+knowledgeSet = build_knowledgeSet("enwiki-latest-all-titles-in-ns0",
+                    outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set")
 
 # print('Built')
 

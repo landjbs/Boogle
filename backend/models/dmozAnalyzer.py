@@ -107,7 +107,8 @@ def scrape_dmoz_file(file, queueDepth=15, workerNum=25, outPath=""):
     return(outStore)
 
 
-scrape_dmoz_file(file="data/inData/test.tab.tsv", outPath="data/outData/outStore2.obj")
+scrape_dmoz_file(file="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/inData/test.tab.tsv",
+                    outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/dmoz.simple")
 
 
 #### MODEL STUFF ####

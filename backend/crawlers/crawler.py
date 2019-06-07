@@ -2,6 +2,7 @@
 # Outsources URL processing to urlAnalyzer.py
 # Outsources HTML processing to htmlAnalyzer.py
 # Outsoucres database definitions to thicctable.py
+
 import sys, os
 from queue import Queue
 from threading import Thread
@@ -82,72 +83,3 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
 testList = ['https://soundcloud.com/discover', 'https://www.imdb.com/interfaces/']
 
 scrape_urlList(testList)
-
-
-
-
-# def scrape_urlList_deep(urlList, maxNum, disp=False):
-#     """ Iterate through list of URLs, adding title, url, and links to webDF """
-#     count, errors = 0, 0
-#     pageDictList = []
-#     searchedURLs = set()
-#     # lists to store disp metrics
-#     lenList, errorList = [], []
-#     # continue iterating until no more links can be found
-#     while (urlList != []) and (count <= maxNum):
-#         # curURL to analyze is the head of urlList
-#         curURL = urlList[0]
-#         if curURL not in searchedURLs:
-#             searchedURLs.add(curURL)
-#             try:
-#                 # scrape text from link
-#                 curPageString = url_to_string(curURL)
-#                 # get title from pageString
-#                 curTitle = htmlAnalyzer.find_title(curPageString)
-#                 # get links from page string
-#                 curLinks = htmlAnalyzer.find_links(curPageString)
-#                 # get meta tag descriptions
-#                 curDescriptions = htmlAnalyzer.find_descriptions(curPageString)
-#                 # create dict of page info
-#                 curPageDict = {'title':curTitle, 'url':curURL, 'links':curLinks, 'descriptions':curDescriptions,  'loadTime':loadTime}
-#                 pageDictList.append(curPageDict)
-#                 # add curLinks to urlList for analysis
-#                 urlList += curLinks
-#             except:
-#                 errors += 1
-#             # remove first item in urlList
-#             del urlList[0]
-#             # increment count, lenList, and errorList
-#             count += 1
-#             lenList.append(len(urlList))
-#             errorList.append(errors)
-#         else:
-#             # if a url thats already been hit is found, finish scraping
-#             urlList = []
-#
-#         # print progress
-#         print(f"\t{count} URLs analyzed with {errors} errors!\r", end="")
-#
-#         if ((count % 20) == 0):
-#             # display metrics if asked
-#             if disp:
-#                 plt.plot(lenList)
-#                 plt.plot(errorList)
-#                 plt.legend(['Number URLs to Analyze', 'Number Error URLs'])
-#                 plt.title("Scrape Metrics")
-#                 plt.xlabel("Iterations")
-#                 plt.ylabel("Number URLs")
-#                 plt.savefig("scrapeMetrics")
-#
-#     # create dataframe of scraped info
-#     scrapedDF = pd.DataFrame(pageDictList)
-#     return(scrapedDF)
-#
-# #
-# # sampleStr = url_to_string("https://stackoverflow.com")
-# #
-# # test = htmlAnalyzer.find_links(sampleStr)
-# #
-# # testDF = scrape_urlList(test, 50, True)
-# #
-# # # testDF.to_csv('testDF.csv', sep=',')
