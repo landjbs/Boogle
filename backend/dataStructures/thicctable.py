@@ -138,7 +138,7 @@ class Thicctable():
         mappedMin, mappedMax = min(mappedList), max(mappedList)
         print(f"Metrics:\n\tMean: {mappedMean}\n\tMin: {mappedMin}\n\tMax: {mappedMax}")
         # plot mappedList from head to tail
-        plt.plt(mappedList)
+        plt.plot(mappedList)
         plt.title(f"Indexed Metrics of {key} Key")
         plt.xlabel("Index in List")
         plt.ylabel("Value")
@@ -155,7 +155,7 @@ class Thicctable():
 import time
 import numpy as np
 
-NUM = 10
+NUM = 100000
 
 x = Thicctable(keys=['a','b','c'])
 
@@ -186,15 +186,12 @@ aSearch = end - start
 
 print(f"Search:\n\ti:  {iSearch}\n\ta: {aSearch}")
 
-x.kill_smalls(4)
-# x.remove_key('a')
-
 x.plot_lengths()
 
-saveStart = time.time()
-x.save("test.thicc")
-saveEnd = time.time()
-print(f"Save: {saveEnd - saveStart}")
+# saveStart = time.time()
+# x.save("test.thicc")
+# saveEnd = time.time()
+# print(f"Save: {saveEnd - saveStart}")
 
 
 
