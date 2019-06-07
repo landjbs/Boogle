@@ -24,18 +24,16 @@ class Thicctable():
         return True
 
     def remove_key(self, key):
-        """ Removes key and associate list from topDict """
+        """ Removes key and associated list from topDict """
         del self.topDict[key]
         return True
 
     def kill_smalls(self, n):
-        """
-        Calls remove_key on keys with lists under length n.
-        Use carefully!!
-        """
-        for key in self.topDict:
-            if len(self.topDict) < n:
-                remove_key(key)
+        """ Removes keys with lists under length n. Use carefully! """
+        # find keys that map to a list shorter than n
+        smallKeys = [key for key in self.topDict if len(self.topDict[key]) < n]
+        for key in smallKeys:
+            del self.topDict[key]
         return True
 
     ### FUNCTIONS FOR MODIFYING KEY-MAPPED LISTS ###
@@ -59,7 +57,7 @@ class Thicctable():
 
     def remove_value(self, key, domainReverse):
         """
-        Removes elemetnt with given domainReverse from list
+        Removes element with given domainReverse from list
         mapped by key in topDict
         """
         domainEqual = lambda elt : (elt[1] != domainReverse)
@@ -166,9 +164,10 @@ aSearch = end - start
 
 print(f"Search:\n\ti:  {iSearch}\n\ta: {aSearch}")
 
-x.remove_smalls()
+x.kill_smalls(4)
+# x.remove_key('a')
 
-x.plot_lengths('test')
+x.plot_lengths()
 
 saveStart = time.time()
 x.save("test.thicc")
