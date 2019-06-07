@@ -1,22 +1,14 @@
-import pickle
-from dataStructures.simpleStructures import Simple
+import zlib
+from dataStructures.objectSaver import save
+import json
 
-test = Simple()
 
-test.add(5)
+testDict = {'a':(1,2,3) for _ in range(1000000)}
 
-test.add(4)
+save(testDict, 'uncompressed')
 
-file = open('test.obj', 'wb')
+dicstring = json.dumps(testDict)
+print(dicstring)
+compressed = zlib.compress(dicstring, 9)
 
-pickle.dump(test, file)
-
-file.close()
-
-# revive
-filehandler = open("test.obj", 'rb')
-object = pickle.load(filehandler)
-
-print(object)
-
-print(object.data)
+save(compressed, 'compressed')
