@@ -15,7 +15,7 @@ stripMatcher = re.compile(stripString)
 spaceString = r"[_]"
 spaceMatcher = re.compile(spaceString)
 
-def clean_knowledge_token(rawToken):
+def clean_knowledgeToken(rawToken):
     """ Cleans rawToken by stripping parentheses and replacing _ with spaces """
     # lowercase token
     lowerToken = rawToken.lower()
@@ -23,9 +23,8 @@ def clean_knowledge_token(rawToken):
     cleanToken = re.sub(stripMatcher, "", lowerToken)
     # replace spaceMathcer with " " in cleanToken
     spaceToken = re.sub(spaceMatcher, " ", cleanToken)
-    words = spaceToken.split(" ")
-    if len(words) > 10:
-        spaceToken=""
+    # if (len(spaceToken.split(" ")) > 10):
+    #     spaceToken=""
     return spaceToken
 
 
@@ -34,10 +33,9 @@ def build_knowledgeSet(knowledgeFile, outPath=""):
     Args: \n delimited file of words to treat as knowledge tokens (tokens for strict word search)
     Returns: set (for fast lookup) of tokens stripped from knowledgeData
     """
-
     with open(knowledgeFile) as knowledgeData:
         # build set of cleaned lines in knowledgeData
-        knowledgeSet = {clean_knowledge_token(token) for token in knowledgeData}
+        knowledgeSet = {clean_knowledgeToken(token) for token in knowledgeData}
         # knowledgeSet = {cleanToken for token in knowledgeData if (cleanToken := clean_knowledge_token(token)) != ""} ### REPLACE WITH THIS LINE AFTER PYTHON 3.8 COMES OUT !!!! ###p
         # filter out empty tokens from knowledgeSet
         knowledgeSet = set(filter(lambda token : (token != ""), knowledgeSet))
@@ -59,23 +57,35 @@ def build_knowledgeProcessor(knowledgeSet, outPath=""):
         save(knowledgeProcessor, outPath)
     return knowledgeProcessor
 
+def find_knowledgeTokens(pageText, knowledgeProcessor):
+    """ Returns dict mapping knowledge tokens found in text to number of occurences """
+    # use knowledgeProcessor to extract tokens from page text
+    keywordsFound = knowledgeProcessor.extract_keywords(pageText)
+    # create dict mapping keywords to number of times used in pageText using re.findall()
+    keywordDict = {keyword:(len(re.findall(keyword, pageText))) for keyword in keywordsFound}
+    return keywordDict
+
+
+
+
+
+
 
 # ### TESTING ###
-# knowledgeList = build_knowledgeSet("enwiki-latest-all-titles-in-ns0",
+# knowledgeSet = build_knowledgeSet("enwiki-latest-all-titles-in-ns0",
 #                     outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set")
 
 knowledgeList = list(load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set'))
 
-print(f'Built Knolwedge List of Length {len(knowledgeList)}')
+print(knowledgeList[:200])
 
-knowledgeProcessor = build_knowledgeProcessor(knowledgeList, "test")
-# outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeMatcher.re")
-print("Created")
+knowledgeProcessor = build_knowledgeProcessor(knowledgeList[:200], "test")
+# print("Created")
 
 while True:
     test = input("Search: ")
-    test = clean_knowledge_token(test)
-    out = knowledgeProcessor.extract_keywords(test)
+    test = clean_knowledgeToken(test)
+    out = find_knowledgeTokens(test, knowledgeProcessor)
     print(out)
 
 
