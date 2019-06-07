@@ -4,13 +4,8 @@ import numpy as np
 
 class Thicctable():
     """
-    Class to store indexed webdata as keys mapping to list of tuples of page data
-    in format (score, domainReverse, url, keywords, head)
-    Methods:
-        -__init__: Build topDict mapping list of keys to empty list
-        -add_key: Adds key mapping to an empty list to the topDict
-        -remove_key: Removes a key and the corresponding list from the topDict
-        -
+    Class to store indexed webdata as keys mapping to
+    list of tuples of page data.
     """
 
     def __init__(self, keys):
