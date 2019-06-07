@@ -1,12 +1,12 @@
 import scrapy
+from scrapy.crawler import CrawlerProcess
 
 class AliexpressTabletsSpider(scrapy.Spider):
     name = 'aliexpress_tablets'
     start_urls = ['https://www.aliexpress.com/category/200216607/tablets.html']
 
 
-     def parse(self, response):
-
+    def parse(self, response):
         print("procesing:"+response.url)
         #Extract data using css selectors
         product_name=response.css('.product::text').extract()
@@ -29,5 +29,15 @@ class AliexpressTabletsSpider(scrapy.Spider):
                 'company_name' : item[3],
             }
 
+            print(scraped_info)
+
             #yield or give the scraped info to scrapy
             yield scraped_info
+
+
+process = CrawlerProcess({
+    'USER_AGENT': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'
+})
+
+process.crawl(AliexpressTabletsSpider)
+process.start() # the script will block here until the crawling is finished
