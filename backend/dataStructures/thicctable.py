@@ -1,4 +1,5 @@
 from objectSaver import save, load
+import matplotlib.pyplot as plt
 
 class Thicctable():
     """
@@ -15,6 +16,7 @@ class Thicctable():
         """ Initialize branch as key-val store mapping keys to empty lists """
         self.topDict = {key:[] for key in keys}
 
+    ### FUNCTIONS FOR MODIFYING KEYS ###
     def add_key(self, key):
         """ Adds key and corresponding empty list to topDict """
         self.topDict.update({key:[]})
@@ -25,6 +27,7 @@ class Thicctable():
         del self.topDict[key]
         return True
 
+    ### FUNCTIONS FOR MODIFYING KEY-MAPPED LISTS ###
     def clean_key(self, key):
         """
         Clears the list associated with a key in the topDict
@@ -57,17 +60,21 @@ class Thicctable():
         Sorts key based on index of elts.
         Default index is 0, aka pageRank score
         """
+        # create lambda to pull element for sorting
         indexLambda = lambda elt : elt[index]
         self.topDict[key].sort(key=indexLambda)
         return True
 
     def sort_all(self, index=0):
         """ Sorts list mapped by each key in topDict based on index """
+        # create lambda to pull element for sorting
         indexLambda = lambda elt : elt[index]
+        # iterate over keys and sort
         for key in self.topDict:
             self.topDict[key].sort(key=indexLambda)
         return True
 
+    ### SEARCH FUNCTIONS ###
     def search_index(self, key, indexLambda, n=20):
         """
         Returns the data at index pulled by lambda of the top n elements of the
@@ -79,56 +86,70 @@ class Thicctable():
         """ Returns the top n elements of the list mapped by key in topDict """
         return self.topDict[key][:n]
 
-    def metrics(self, branch):
-        """ Display metrics for every page in a branch """
-        # assert valid branch
-        assert (branch in ['knowledge', 'concept']), "Valid branches are 'knowledge' or 'concept'"
-        # define root
-        root = self.knowledgeBranch if (branch=='knowledge') else self.conceptBranch
-        # query branch metrics
-        for key in root:
-            print(f"Key: {key}\n\tNumber of Pages: {len(root[key])}")
+    ### DATA MODIFICATION FUNCTIONS ###
+    def save(self, outPath):
+        """ Saves object to outPath, wraps objectSaver.save() """
+        save(self, outPath)
+
+    ### VISUALIZATION FUNCTIONS ###
+    def metrics_full(self):
+        """ Display metrics for every key in topList """
+        keyList, valueList = self.topDict.keys(), self.topDict.values()
+        lengthList = list(map(lambda elt : len(elt), valueList))
+        plt.bar(keys, values)
+        # plt.title("Number of Pages Per Key")
+
+        # plt.xticks(keyList)
+        # plt.show()
         return True
 
+
+
+
+
 # Testing
-#
+
+import time
+import numpy as np
+
+NUM = 10
 
 x = Thicctable(keys=['a','b','c'])
 
-x.insert_value('b', ('hi', 1))
+keyList = np.random.choice(['a','b','c'], size=NUM)
+v1List = np.random.randint(0, 10000, size=NUM)
+v2List = np.random.choice(['a','b','c','d','e','f','g','c'], size=NUM)
 
-x.insert_value('b', ('hey', 3))
+insertStart = time.time()
+for i, key in enumerate(keyList):
+    x.insert_value(key, (v1List[i], v2List[i]))
+insertEnd = time.time()
+print(f"Insertion: {insertEnd - insertStart}")
 
-x.insert_value('b', ('yo', 2))
+sortStart = time.time()
+x.sort_all(index=0)
+sortEnd = time.time()
+print(f"Sorting: {sortEnd - sortStart}")
 
-x.insert_value('a', ('a', 2))
+start = time.time()
+print(x.search_index('a', indexLambda=(lambda x:x[1])))
+end  = time.time()
+iSearch = end - start
 
-x.insert_value('a', ('b', 1))
+start = time.time()
+print(x.search_full('a'))
+end  = time.time()
+aSearch = end - start
 
-x.sort_all(1)
+print(f"Search:\n\ti:  {iSearch}\n\ta: {aSearch}")
 
-print(x.search_index('a', (lambda x: x[0])))
+x.metrics_full()
 
-# import numpy as np
-#
-# # knowledgeSet = load("/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set")
-#
-# # x = Thicctable(knowledgeKeys=knowledgeSet)
-# x = Thicctable(knowledgeKeys=['harvard'])
-#
-# print("x init")
-#
-# for _ in range(10):
-#     key = 'harvard'
-#     score = np.random.choice([0, 1, 2], size=1)
-#     value = np.random.choice(['a','b'], size=1)
-#     x.knowledge_insert(key, score[0], value[0])
-#
-# print('added')
-#
-# x.sort_branch('knowledge')
-#
-# print(x.search('knowledge', 'harvard'))
+saveStart = time.time()
+x.save("test.thicc")
+saveEnd = time.time()
+print(f"Save: {saveEnd - saveStart}")
+
 
 
 
