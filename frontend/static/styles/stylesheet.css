@@ -49,7 +49,7 @@ input {
 
 /* reduce opacity when input hovered */
 .home-search input:hover {
-  background-color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
 /* futher reduce opacity when input clicked */
@@ -103,7 +103,8 @@ input {
 }
 
 .btn-primary {
-  background-color: rgba(211, 211, 211, 0.4);
+  /* background-color: rgba(211, 211, 211, 0.5); */
+  background-color: red;
 }
 
 .btn-primary:hover {
@@ -271,4 +272,43 @@ footer {
   background-color: dodgerblue;
   color: white;
   transform: rotateY(180deg);
+}
+
+
+
+
+html{
+  background: black;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.container{
+  height: 300px;
+  width: 300px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -150px 0 0 -150px;
+}
+
+.square{
+  height: 94%;
+  width: 94%;
+  background: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -47% 0 0 -47%;
+}
+
+.black{
+  background: black;
+  animation: rotate 10s infinite linear;
+}
+
+@keyframes rotate{
+  0%{ transform: rotate(0deg); }
+  100%{ transform: rotate(360deg); }
 }
