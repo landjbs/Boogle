@@ -123,9 +123,30 @@ class Thicctable():
             plt.show()
         return True
 
-    def plot_key_metrics(self, key, outPath=""):
-        """ Print and plot metrics"""
-
+    def plot_key_metrics(self, key, indexLambda, outPath=""):
+        """
+        Print and plot metrics for data accessed  by index lambda across
+        elements of list mapped by key. Only works for number values,
+        such as score, length, time, etc.
+        """
+        # fetch list mapped by key
+        valueList = self.topDict[key]
+        # apply indexLambda to get data of interest
+        mappedList = list(map(indexLambda, valueList))
+        # get metrics of mappedList
+        mappedMean = np.mean(mappedList)
+        mappedMin, mappedMax = min(mappedList), max(mappedList)
+        print(f"Metrics:\n\tMean: {mappedMean}\n\tMin: {mappedMin}\n\tMax: {mappedMax}")
+        # plot mappedList from head to tail
+        plt.plt(mappedList)
+        plt.title(f"Indexed Metrics of {key} Key")
+        plt.xlabel("Index in List")
+        plt.ylabel("Value")
+        if not (outPath==""):
+            plt.savefig(outPath)
+        else:
+            plt.show()
+        return True
 
 
 
