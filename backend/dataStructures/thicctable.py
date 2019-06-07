@@ -18,10 +18,12 @@ class Thicctable():
     def add_key(self, key):
         """ Adds key and corresponding empty list to topDict """
         self.topDict.update({key:[]})
+        return True
 
     def remove_key(self, key):
         """ Removes key and associate list from topDict """
         del self.topDict[key]
+        return True
 
     def clean_key(self, key):
         """
@@ -29,14 +31,17 @@ class Thicctable():
         Same funcitonality as clip_key(key, 0).
         """
         self.topDict[key] = []
+        return True
 
     def clip_key(self, key, n):
         """ Clips list mapped by key to n elements """
         self.topDict[key] = self.topDict[key][:n]
+        return True
 
     def insert_value(self, key, value):
         """ Adds value to the list mapped by key in topDict """
         self.topDict[key].append(value)
+        return True
 
     def remove_value(self, key, domainReverse):
         """
@@ -45,6 +50,7 @@ class Thicctable():
         """
         domainEqual = lambda elt : (elt[1] != domainReverse)
         self.topDict[key] = list(filter(domainEqual, self.topDict[key]))
+        return True
 
     def sort_key(self, key, index=1):
         """
@@ -53,49 +59,41 @@ class Thicctable():
         """
         indexLambda = lambda elt : elt[index]
         self.topDict[key].sort(key=indexLambda)
+        return True
 
     def sort_all(self, index=0):
         """ Sorts list mapped by each key in topDict based on index """
         indexLambda = lambda elt : elt[index]
         for key in self.topDict:
             self.topDict[key].sort(key=indexLambda)
+        return True
 
-    def search_index(self, key, index=1, n):
-        """ """
+    def search_index(self, key, indexLambda, n=20):
+        """
+        Returns the data at indexLambda of the top n elements of the list mapped
+        by key in topDict
+        """
+        return list(map(indexLambda, self.topDict[key][:n]))
 
     def search_full(self, key, n=20):
-        """ Pops of the top n elements of the list mapped by key in topDict """
+        """ Returns the top n elements of the list mapped by key in topDict """
         return self.topDict[key][:n]
 
-    #
-    # def search(self, branch, key, numPages=20):
-    #     """
-    #     Pops top numPages pages from valueList mapped from key in branch
-    #     Built for speed, not readability
-    #     """
-    #     if branch=="knowledge":
-    #         return self.knowledgeBranch[key][:numPages]
-    #     elif branch=="concept":
-    #         return self.conceptBranch[key][:numPages]
-    #     else:
-    #         raise ValueError("Invalid Branch")
-    #
-    # def metrics(self, branch):
-    #     """ Display metrics for every page in a branch """
-    #     # assert valid branch
-    #     assert (branch in ['knowledge', 'concept']), "Valid branches are 'knowledge' or 'concept'"
-    #     # define root
-    #     root = self.knowledgeBranch if (branch=='knowledge') else self.conceptBranch
-    #     # query branch metrics
-    #     for key in root:
-    #         print(f"Key: {key}\n\tNumber of Pages: {len(root[key])}")
-    #     return True
+    def metrics(self, branch):
+        """ Display metrics for every page in a branch """
+        # assert valid branch
+        assert (branch in ['knowledge', 'concept']), "Valid branches are 'knowledge' or 'concept'"
+        # define root
+        root = self.knowledgeBranch if (branch=='knowledge') else self.conceptBranch
+        # query branch metrics
+        for key in root:
+            print(f"Key: {key}\n\tNumber of Pages: {len(root[key])}")
+        return True
 
 # Testing
 #
 
 x = Thicctable(keys=['a','b','c'])
-
 
 x.insert_value('b', ('hi', 1))
 
@@ -109,7 +107,7 @@ x.insert_value('a', ('b', 1))
 
 x.sort_all(1)
 
-print(x.search('b', 10))
+print(x.search_index('a', (lambda x: x[0])))
 
 # import numpy as np
 #
