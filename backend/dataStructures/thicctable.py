@@ -1,5 +1,6 @@
 from objectSaver import save, load
 import matplotlib.pyplot as plt
+import numpy as np
 
 class Thicctable():
     """
@@ -25,6 +26,16 @@ class Thicctable():
     def remove_key(self, key):
         """ Removes key and associate list from topDict """
         del self.topDict[key]
+        return True
+
+    def kill_smalls(self, n):
+        """
+        Calls remove_key on keys with lists under length n.
+        Use carefully!!
+        """
+        for key in self.topDict:
+            if len(self.topDict) < n:
+                remove_key(key)
         return True
 
     ### FUNCTIONS FOR MODIFYING KEY-MAPPED LISTS ###
@@ -90,19 +101,31 @@ class Thicctable():
     def save(self, outPath):
         """ Saves object to outPath, wraps objectSaver.save() """
         save(self, outPath)
-
-    ### VISUALIZATION FUNCTIONS ###
-    def metrics_full(self):
-        """ Display metrics for every key in topList """
-        keyList, valueList = self.topDict.keys(), self.topDict.values()
-        lengthList = list(map(lambda elt : len(elt), valueList))
-        plt.bar(keys, values)
-        # plt.title("Number of Pages Per Key")
-
-        # plt.xticks(keyList)
-        # plt.show()
         return True
 
+    ### VISUALIZATION FUNCTIONS ###
+    def plot_lengths(self, outPath=""):
+        """ Display metrics for every key in topList """
+        # get list of all keys and list of all values
+        keyList, valueList = self.topDict.keys(), self.topDict.values()
+        # find lengths for each element of valueList
+        lengthList = list(map(lambda elt : len(elt), valueList))
+        # get metrics of lengthList
+        meanLength = np.mean(lengthList)
+        minLength, maxLength= min(lengthList), max(lengthList)
+        print(f"Length Metrics:\n\tMean: {meanLength}\n\tMin: {minLength}\n\tMax: {maxLength}")
+        # plot keyList against lengthLis
+        plt.bar(keyList, lengthList)
+        plt.title("Number of Pages Per Key")
+        plt.xlabel("Keys")
+        plt.ylabel("Number Pages")
+        if not (outPath==""):
+            plt.savefig(outPath)
+        else:
+            plt.show()
+        return True
+
+    # def visualize_key_
 
 
 
@@ -143,7 +166,9 @@ aSearch = end - start
 
 print(f"Search:\n\ti:  {iSearch}\n\ta: {aSearch}")
 
-x.metrics_full()
+x.remove_smalls()
+
+x.plot_lengths('test')
 
 saveStart = time.time()
 x.save("test.thicc")
