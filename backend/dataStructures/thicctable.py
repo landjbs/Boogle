@@ -70,8 +70,8 @@ class Thicctable():
 
     def search_index(self, key, indexLambda, n=20):
         """
-        Returns the data at indexLambda of the top n elements of the list mapped
-        by key in topDict
+        Returns the data at index pulled by lambda of the top n elements of the
+        list mapped by key in topDict
         """
         return list(map(indexLambda, self.topDict[key][:n]))
 
