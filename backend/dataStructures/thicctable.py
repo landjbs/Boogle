@@ -123,7 +123,8 @@ class Thicctable():
             plt.show()
         return True
 
-    # def visualize_key_
+    def plot_key_metrics(self, key, outPath=""):
+        """ Print and plot metrics"""
 
 
 
