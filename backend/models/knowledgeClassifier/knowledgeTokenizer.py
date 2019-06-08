@@ -1,7 +1,12 @@
+"""
+TO COMPLETE
+"""
+
+
 # open access to all packages
+import sys, os
 sys.path.append(os.path.abspath(os.path.join('..', '..')))
 import re
-import sys, os
 import numpy as np
 from flashtext import KeywordProcessor
 import time
@@ -33,14 +38,16 @@ def build_knowledgeSet(knowledgeFile, outPath=""):
     Returns: set (for fast lookup) of tokens stripped from knowledgeData
     """
     # matcher for tokens to consider empty: any single character or empty string
-    emptyString = r"^(.)?$"
+    emptyString = r"^([.|  |\t\t])?$"
     emptyMatcher = re.compile(emptyString)
+
     # open file from knowledgeFile path
     with open(knowledgeFile) as knowledgeData:
         # build set of cleaned lines in knowledgeData
         knowledgeSet = {clean_knowledgeToken(token) for token in knowledgeData}
         # filter out empty tokens from knowledgeSet
         knowledgeSet = set(filter(lambda token : not re.fullmatch(emptyMatcher, token), knowledgeSet))
+
     # save to outPath if specified
     if not (outPath==""):
         save(knowledgeSet, outPath)
@@ -74,22 +81,21 @@ def find_knowledgeTokens(pageText, knowledgeProcessor):
 # ### TESTING ###
 # knowledgeSet = build_knowledgeSet("enwiki-latest-all-titles-in-ns0",
 #                     outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set")
-
+# knowledgeList = list(knowledgeSet)
 
 # knowledgeList = list(load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set'))
-
 #
-# knowledgeProcessor = build_knowledgeProcessor(knowledgeList[:200], "test")
-# # print("Created")
+#
+# knowledgeProcessor = build_knowledgeProcessor(knowledgeList,
+#                         outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeProcessor.match")
+#
+# print("Done")
 #
 # while True:
 #     test = input("Search: ")
 #     test = clean_knowledgeToken(test)
 #     out = find_knowledgeTokens(test, knowledgeProcessor)
 #     print(out)
-
-
-
 
 
 
