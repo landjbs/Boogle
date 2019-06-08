@@ -5,7 +5,9 @@ from flashtext import KeywordProcessor
 import time
 
 sys.path.append(os.path.abspath(os.path.join('..', '..', 'dataStructures')))
+# from dataStructures.objectSaver import save, load
 from objectSaver import save, load
+
 
 # matcher for elements to replace with "" in rawToken
 stripString = '[(|)|.|!|?|,|\[|\]|\/|\{|\}|\n|=|$|*|+|"|®|;' + r".\\" + "|']"
@@ -14,6 +16,16 @@ stripMatcher = re.compile(stripString)
 # matcher for elements to convert to spaces
 spaceString = r"[_]"
 spaceMatcher = re.compile(spaceString)
+
+# matcher for tokens to consider empty: any single character or empty string
+emptyString = r"^(.)?$"
+emptyMatcher = re.compile(emptyString)
+
+if re.fullmatch(emptyMatcher, 'a '):
+    print('yer')
+else:
+    print('no')
+
 
 def clean_knowledgeToken(rawToken):
     """ Cleans rawToken by stripping parentheses and replacing _ with spaces """
@@ -38,7 +50,7 @@ def build_knowledgeSet(knowledgeFile, outPath=""):
         knowledgeSet = {clean_knowledgeToken(token) for token in knowledgeData}
         # knowledgeSet = {cleanToken for token in knowledgeData if (cleanToken := clean_knowledge_token(token)) != ""} ### REPLACE WITH THIS LINE AFTER PYTHON 3.8 COMES OUT !!!! ###p
         # filter out empty tokens from knowledgeSet
-        knowledgeSet = set(filter(lambda token : (token != ""), knowledgeSet))
+        knowledgeSet = set(filter(lambda token : (token), knowledgeSet))
     if not (outPath==""):
         save(knowledgeSet, outPath)
     return knowledgeSet
@@ -75,18 +87,18 @@ def find_knowledgeTokens(pageText, knowledgeProcessor):
 # knowledgeSet = build_knowledgeSet("enwiki-latest-all-titles-in-ns0",
 #                     outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set")
 
-knowledgeList = list(load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set'))
-
-print(knowledgeList[:200])
-
-knowledgeProcessor = build_knowledgeProcessor(knowledgeList[:200], "test")
-# print("Created")
-
-while True:
-    test = input("Search: ")
-    test = clean_knowledgeToken(test)
-    out = find_knowledgeTokens(test, knowledgeProcessor)
-    print(out)
+# knowledgeList = list(load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set'))
+#
+# print(knowledgeList[:200])
+#
+# knowledgeProcessor = build_knowledgeProcessor(knowledgeList[:200], "test")
+# # print("Created")
+#
+# while True:
+#     test = input("Search: ")
+#     test = clean_knowledgeToken(test)
+#     out = find_knowledgeTokens(test, knowledgeProcessor)
+#     print(out)
 
 
 

@@ -12,6 +12,13 @@ from queue import Queue
 from simpleStructures import Simple_List, Metrics
 from objectSaver import save, load
 
+## knowledgeToken stuff ###
+from knowledgeClassifier.knowledgeTokenizer import build_knowledgeProcessor, find_knowledgeTokens
+
+knowledgeList = list(load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set'))
+knowledgeProcessor = build_knowledgeProcessor(knowledgeList)
+
+
 ### Match objects compiled for quick calls in functions ###
 # matcher for url in dmozDF line
 urlString = r'(?<=").+(?="\t)'
@@ -47,6 +54,7 @@ def scrape_dmoz_line(line):
     pageString = url_to_pageString(url)
     # get rendered text on pageString
     pageText = get_pageText(pageString)
+    print(find_knowledgeTokens(pageText, knowledgeProcessor))
     # skip page if not in english
     assert (detect_language(pageText) == 'en'), f"{url} not in English"
     # create list of training data to append to Simple struct
