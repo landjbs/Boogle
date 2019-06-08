@@ -9,19 +9,9 @@ sys.path.append(os.path.abspath(os.path.join('..', '..', 'dataStructures')))
 from objectSaver import save, load
 
 
-# matcher for elements to replace with "" in rawToken
-stripString = '[(|)|.|!|?|,|\[|\]|\/|\{|\}|\n|=|$|*|+|"|®|;' + r".\\" + "|']"
-stripMatcher = re.compile(stripString)
 
-# matcher for elements to convert to spaces
-spaceString = r"[_]"
-spaceMatcher = re.compile(spaceString)
 
-# matcher for tokens to consider empty: any single character or empty string
-emptyString = r"^(.)?$"
-emptyMatcher = re.compile(emptyString)
-
-if re.fullmatch(emptyMatcher, 'a '):
+if emptyMatcher.fullmatch('a'):
     print('yer')
 else:
     print('no')
@@ -35,8 +25,6 @@ def clean_knowledgeToken(rawToken):
     cleanToken = re.sub(stripMatcher, "", lowerToken)
     # replace spaceMathcer with " " in cleanToken
     spaceToken = re.sub(spaceMatcher, " ", cleanToken)
-    # if (len(spaceToken.split(" ")) > 10):
-    #     spaceToken=""
     return spaceToken
 
 
@@ -45,12 +33,25 @@ def build_knowledgeSet(knowledgeFile, outPath=""):
     Args: \n delimited file of words to treat as knowledge tokens (tokens for strict word search)
     Returns: set (for fast lookup) of tokens stripped from knowledgeData
     """
+    # compile matchers for quick matches during iteration
+    # matcher for elements to replace with "" in rawToken
+    stripString = '[(|)|.|!|?|,|\[|\]|\/|\{|\}|\n|=|$|*|+|"|®|;' + r".\\" + "|']"
+    stripMatcher = re.compile(stripString)
+    # matcher for elements to convert to spaces
+    spaceString = r"[_]"
+    spaceMatcher = re.compile(spaceString)
+    # matcher for tokens to consider empty: any single character or empty string
+    emptyString = r"^(.)?$"
+    emptyMatcher = re.compile(emptyString)
+
+    # open file from knowledgeFile path
     with open(knowledgeFile) as knowledgeData:
         # build set of cleaned lines in knowledgeData
         knowledgeSet = {clean_knowledgeToken(token) for token in knowledgeData}
         # knowledgeSet = {cleanToken for token in knowledgeData if (cleanToken := clean_knowledge_token(token)) != ""} ### REPLACE WITH THIS LINE AFTER PYTHON 3.8 COMES OUT !!!! ###p
         # filter out empty tokens from knowledgeSet
-        knowledgeSet = set(filter(lambda token : (token), knowledgeSet))
+        knowledgeSet = set(filter(lambda token : not re.fullmatch(emptyMatcher, token), knowledgeSet))
+    # save to outPath if specified
     if not (outPath==""):
         save(knowledgeSet, outPath)
     return knowledgeSet
