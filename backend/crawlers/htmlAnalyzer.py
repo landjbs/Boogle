@@ -3,9 +3,11 @@
 # urlAnalyzer.py. Outsources all NLP and ML to backend/models.
 
 import re # to match for patterns in pageStrings
-import datetime # to find the loadTime of a page
+import time # to find the loadTime of a page
 import langid # to classify language of pageString
 from bs4 import BeautifulSoup
+import crawlers.urlAnalyzer as ua
+
 
 
 # image string
@@ -75,7 +77,12 @@ def analyze_html(pageString):
     linkList = get_links(curSoup)
     # MORE HERE—loadTime should be last!
     # time at which the url data was loaded into memory
-    loadTime = datetime.datetime.now()
+    loadTime = ()
     # set outs
     outDict = {'title':title, 'linkList':linkList, 'loadTime':loadTime}
     return outDict
+
+def scrape_url(url):
+    """
+    Fetches and processes url and returns tuple of page info with None score
+    """
