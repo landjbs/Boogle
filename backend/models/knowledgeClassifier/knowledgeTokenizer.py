@@ -1,13 +1,11 @@
+# open access to all packages
+sys.path.append(os.path.abspath(os.path.join('..', '..')))
 import re
 import sys, os
 import numpy as np
 from flashtext import KeywordProcessor
 import time
-
-sys.path.append(os.path.abspath(os.path.join('..', '..')))
-# from dataStructures.objectSaver import save, load
 from dataStructures.objectSaver import save, load
-
 
 ## Matchers ##
 # matcher for elements to replace with "" in rawToken
@@ -17,9 +15,7 @@ stripMatcher = re.compile(stripString)
 spaceString = r"[_]"
 spaceMatcher = re.compile(spaceString)
 
-
-
-
+## Functions ##
 def clean_knowledgeToken(rawToken):
     """ Cleans rawToken by stripping parentheses and replacing _ with spaces """
     # lowercase token
@@ -39,12 +35,10 @@ def build_knowledgeSet(knowledgeFile, outPath=""):
     # matcher for tokens to consider empty: any single character or empty string
     emptyString = r"^(.)?$"
     emptyMatcher = re.compile(emptyString)
-
     # open file from knowledgeFile path
     with open(knowledgeFile) as knowledgeData:
         # build set of cleaned lines in knowledgeData
         knowledgeSet = {clean_knowledgeToken(token) for token in knowledgeData}
-        # knowledgeSet = {cleanToken for token in knowledgeData if (cleanToken := clean_knowledge_token(token)) != ""} ### REPLACE WITH THIS LINE AFTER PYTHON 3.8 COMES OUT !!!! ###p
         # filter out empty tokens from knowledgeSet
         knowledgeSet = set(filter(lambda token : not re.fullmatch(emptyMatcher, token), knowledgeSet))
     # save to outPath if specified
@@ -75,8 +69,6 @@ def find_knowledgeTokens(pageText, knowledgeProcessor):
     # create dict mapping keywords to number of times used in pageText using re.findall()
     keywordDict = {keyword:(len(re.findall(keyword, pageText))) for keyword in keywordsFound}
     return keywordDict
-
-
 
 
 # ### TESTING ###
