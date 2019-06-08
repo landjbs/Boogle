@@ -58,7 +58,7 @@ def build_knowledgeProcessor(knowledgeSet, outPath=""):
     # add all items from knowledge set cast as list
     # knowledgeProcessor.add_keywords_from_list(list(knowledgeSet))
     for i, keyword in enumerate(knowledgeSet):
-        print(f"\t{i}", end="\r")
+        print(f"\tBuilding knowledgeProcessor: {i}", end="\r")
         knowledgeProcessor.add_keyword(keyword)
     print("\nknowledgeProcessor Built")
     if not (outPath==""):
@@ -78,14 +78,12 @@ def find_knowledgeTokens(pageText, knowledgeProcessor):
 
 
 # ### TESTING ###
-knowledgeSet = build_knowledgeSet("enwiki-latest-all-titles-in-ns0",
-                    outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set")
+# knowledgeSet = build_knowledgeSet("enwiki-latest-all-titles-in-ns0",
+#                     outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set")
 
-knowledgeList = list(knowledgeSet)
 
 # knowledgeList = list(load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set'))
-#
-print(knowledgeList[:200])
+
 #
 # knowledgeProcessor = build_knowledgeProcessor(knowledgeList[:200], "test")
 # # print("Created")
