@@ -9,12 +9,13 @@ sys.path.append(os.path.abspath(os.path.join('..', '..', 'dataStructures')))
 from objectSaver import save, load
 
 
-
-
-if emptyMatcher.fullmatch('a'):
-    print('yer')
-else:
-    print('no')
+## Matchers ##
+# matcher for elements to replace with "" in rawToken
+stripString = '[(|)|.|!|?|,|\[|\]|\/|\{|\}|\n|=|$|*|+|"|®|;' + r".\\" + "|']"
+stripMatcher = re.compile(stripString)
+# matcher for elements to convert to spaces
+spaceString = r"[_]"
+spaceMatcher = re.compile(spaceString)
 
 
 def clean_knowledgeToken(rawToken):
@@ -33,13 +34,6 @@ def build_knowledgeSet(knowledgeFile, outPath=""):
     Args: \n delimited file of words to treat as knowledge tokens (tokens for strict word search)
     Returns: set (for fast lookup) of tokens stripped from knowledgeData
     """
-    # compile matchers for quick matches during iteration
-    # matcher for elements to replace with "" in rawToken
-    stripString = '[(|)|.|!|?|,|\[|\]|\/|\{|\}|\n|=|$|*|+|"|®|;' + r".\\" + "|']"
-    stripMatcher = re.compile(stripString)
-    # matcher for elements to convert to spaces
-    spaceString = r"[_]"
-    spaceMatcher = re.compile(spaceString)
     # matcher for tokens to consider empty: any single character or empty string
     emptyString = r"^(.)?$"
     emptyMatcher = re.compile(emptyString)
@@ -56,6 +50,7 @@ def build_knowledgeSet(knowledgeFile, outPath=""):
         save(knowledgeSet, outPath)
     return knowledgeSet
 
+
 def build_knowledgeProcessor(knowledgeSet, outPath=""):
     """ Builds flashtext matcher for words in knowledgeSet iterable """
     # initialize flashtext KeywordProcessor
@@ -70,6 +65,7 @@ def build_knowledgeProcessor(knowledgeSet, outPath=""):
         save(knowledgeProcessor, outPath)
     return knowledgeProcessor
 
+
 def find_knowledgeTokens(pageText, knowledgeProcessor):
     """ Returns dict mapping knowledge tokens found in text to number of occurences """
     # use knowledgeProcessor to extract tokens from page text
@@ -81,16 +77,15 @@ def find_knowledgeTokens(pageText, knowledgeProcessor):
 
 
 
-
-
-
 # ### TESTING ###
-# knowledgeSet = build_knowledgeSet("enwiki-latest-all-titles-in-ns0",
-#                     outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set")
+knowledgeSet = build_knowledgeSet("enwiki-latest-all-titles-in-ns0",
+                    outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set")
+
+knowledgeList = list(knowledgeSet)
 
 # knowledgeList = list(load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set'))
 #
-# print(knowledgeList[:200])
+print(knowledgeList[:200])
 #
 # knowledgeProcessor = build_knowledgeProcessor(knowledgeList[:200], "test")
 # # print("Created")
