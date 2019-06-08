@@ -4,9 +4,9 @@ import numpy as np
 from flashtext import KeywordProcessor
 import time
 
-sys.path.append(os.path.abspath(os.path.join('..', '..', 'dataStructures')))
+sys.path.append(os.path.abspath(os.path.join('..', '..')))
 # from dataStructures.objectSaver import save, load
-from objectSaver import save, load
+from dataStructures.objectSaver import save, load
 
 
 ## Matchers ##
@@ -16,6 +16,8 @@ stripMatcher = re.compile(stripString)
 # matcher for elements to convert to spaces
 spaceString = r"[_]"
 spaceMatcher = re.compile(spaceString)
+
+
 
 
 def clean_knowledgeToken(rawToken):
