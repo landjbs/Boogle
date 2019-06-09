@@ -9,11 +9,9 @@ from bs4 import BeautifulSoup
 import crawlers.urlAnalyzer as ua
 
 
-
 # image string
 imageString = '(?<=src=")' + "\S+" + '(?=")'
 imageMatcher = re.compile(imageString)
-
 
 
 def clean_pageText(rawText):
@@ -35,7 +33,6 @@ def get_pageText(pageString):
     return cleanText
 
 
-
 def get_links(soup):
     """ Returns list of all valid links from pageString """
     # get list of all <a> tags in soup
@@ -51,27 +48,6 @@ def detect_language(pageString):
     return(lang)
 
 
-def analyze_html(pageString):
-    """
-    Args: pageString to analyze (usually passed from urlAnalyzer)
-    Returns: TO DO
-    """
-    # create a soup object for parsing pageString
-    curSoup = BeautifulSoup(pageString, "html.parser")
-    ## strip data from curSoup
-    # get string in <title></title> tags
-    title = curSoup.title.string
-    # get all readable text on the page
-    raw_pageText = curSoup.get_text()
-    # get list of valid links
-    linkList = get_links(curSoup)
-    # MORE HERE—loadTime should be last!
-    # time at which the url data was loaded into memory
-    loadTime = ()
-    # set outs
-    outDict = {'title':title, 'linkList':linkList, 'loadTime':loadTime}
-    return outDict
-
 def scrape_url(url):
     """
     Fetches and processes url and returns tuple of page info with None score
@@ -84,4 +60,9 @@ def scrape_url(url):
     curSoup = BeautifulSoup(pageString, 'html.parser')
     # get string in <title></title> tags
     title = curSoup.title.string
-    print(title)
+    # get raw_pageText for soup matcher
+    raw_pageText = curSoup.get_text()
+    # find location of title in raw_pageText
+    titleLoc = raw_pageText.find(title)
+    pageText = clean_pageText(raw_pageText[titleLoc:])
+    print(pageText)

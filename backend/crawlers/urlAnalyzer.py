@@ -4,13 +4,16 @@
 import urllib.request
 import re
 
+
 class ParseError(Exception):
     """ Exception for errors while parsing a link """
     pass
 
+
 # matcher for url denoted by https:// or http://
 urlString = r'https://\S+|http://\S+'
 urlMatcher = re.compile(urlString)
+
 
 def parsable(url):
     """ Returns true if url follows urlMatcher pattern """

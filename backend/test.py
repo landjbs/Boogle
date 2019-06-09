@@ -8,7 +8,7 @@ import crawlers.htmlAnalyzer as ha
 from dataStructures.objectSaver import save, load
 import time
 
-ha.scrape_url('www.harvard.edu')
+ha.scrape_url('http://unicode.org/faq/normalization.html')
 
 
 # print(time.time())
