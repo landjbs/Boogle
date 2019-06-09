@@ -2,7 +2,6 @@
 TO COMPLETE
 """
 
-
 # open access to all packages
 import sys, os
 sys.path.append(os.path.abspath(os.path.join('..', '..')))
@@ -11,27 +10,10 @@ import numpy as np
 from flashtext import KeywordProcessor
 import time
 from dataStructures.objectSaver import save, load
+from textProcessor.cleaner import clean_text
 
-## Matchers ##
-# matcher for elements to replace with "" in rawToken
-stripString = '[(|)|.|!|?|,|\[|\]|\/|\{|\}|\n|=|$|*|+|"|®|;' + r".\\" + "|']"
-stripMatcher = re.compile(stripString)
-# matcher for elements to convert to spaces
-spaceString = r"[_]"
-spaceMatcher = re.compile(spaceString)
 
 ## Functions ##
-def clean_knowledgeToken(rawToken):
-    """ Cleans rawToken by stripping parentheses and replacing _ with spaces """
-    # lowercase token
-    lowerToken = rawToken.lower()
-    # replace stripMatcher with "" in lowerToken
-    cleanToken = re.sub(stripMatcher, "", lowerToken)
-    # replace spaceMathcer with " " in cleanToken
-    spaceToken = re.sub(spaceMatcher, " ", cleanToken)
-    return spaceToken
-
-
 def build_knowledgeSet(knowledgeFile, outPath=""):
     """
     Args: \n delimited file of words to treat as knowledge tokens (tokens for strict word search)
