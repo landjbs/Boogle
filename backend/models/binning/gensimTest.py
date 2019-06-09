@@ -1,21 +1,16 @@
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 import nltk
-import sys, os
 import smart_open # for opening documents
-# ignore warnings
-import warnings
-warnings.simplefilter("ignore")
+from warnings import simplefilter
 import re
 import multiprocessing
 import matplotlib.pyplot as plt
 import pandas as pd
-# model stuff
-from keras.models import Sequential
-from keras.layers import Dense, Activation
-from keras.utils import to_categorical
 
-sys.path.append(os.path.abspath(os.path.join('..', '..', 'dataStructures')))
 from objectSaver import save, load
+
+# ignore warnings
+simplefilter("ignore")
 
 
 def clean_tokenize(inStr):

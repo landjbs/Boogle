@@ -13,8 +13,6 @@ from models.textProcessor.cleaner import clean_text
 from models.knowledge.knowledgeTokenizer import find_knowledgeTokens
 
 
-
-
 # image string
 imageString = '(?<=src=")' + "\S+" + '(?=")'
 imageMatcher = re.compile(imageString)

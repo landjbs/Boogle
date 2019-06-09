@@ -1,8 +1,11 @@
+# crawlers
 import crawlers.htmlAnalyzer as ha
-from models.textProcessor.cleaner import clean_text
+# data structures
 from dataStructures.thicctable import Thicctable
-from models.knowledge.knowledgeTokenizer import build_knowledgeProcessor
 from dataStructures.objectSaver import load, save
+# models
+from models.knowledge.knowledgeTokenizer import build_knowledgeProcessor
+from models.knowledge.knowledgeTokenizer import build_knowledgeProcessor
 
 # knowledge set loaded
 knowledgeSet = list(load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set'))
