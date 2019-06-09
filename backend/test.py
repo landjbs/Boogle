@@ -1,6 +1,6 @@
 import sys, os
 
-sys.path.append(os.path.abspath(os.path.join('..', '..')))
+# sys.path.append(os.path.abspath(os.path.join('..', '..')))
 
 import urllib.request
 from models.knowledgeClassifier.knowledgeTokenizer import build_knowledgeProcessor, find_knowledgeTokens
@@ -8,7 +8,8 @@ import crawlers.htmlAnalyzer as ha
 from dataStructures.objectSaver import save, load
 import time
 
-ha.scrape_url('http://unicode.org/faq/normalization.html')
+x = ha.scrape_url('www.harvard.edu')
+print(x)
 
 
 # print(time.time())

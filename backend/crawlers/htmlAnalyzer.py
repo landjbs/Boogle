@@ -2,8 +2,8 @@
 # pageStrings generally passed from crawler.py after being cleaned by
 # urlAnalyzer.py. Outsources all NLP and ML to backend/models.
 
-import sys, os
-sys.path.append(os.path.abspath(os.path.join('..')))
+# import sys, os
+# sys.path.append(os.path.abspath(os.path.join('..')))
 import re # to match for patterns in pageStrings
 import time # to find the loadTime of a page
 import langid # to classify language of pageString
@@ -22,10 +22,10 @@ def clean_pageText(rawText, title):
     # find location of title in rawText
     titleLoc = rawText.find(title)
     # filter out everything before the title
-    afterTitle = rawText[:titleLoc]
-    #
+    afterTitle = rawText[titleLoc:]
+    # call clean_text from models.textProcessor.cleaner
     cleanedText = clean_text(afterTitle)
-    return cleanText
+    return cleanedText
 
 
 def get_pageText(pageString):
@@ -62,7 +62,8 @@ def scrape_url(url):
     # fetch page string and save time to load
     loadStart = time.time()
     pageString = ua.url_to_pageString(url)
-    loadTime = time.time() - loadStart
+    loadTime = time.time()
+    loadedAt = loadEnd - loadStart
     # create soup object for parsing pageString
     curSoup = BeautifulSoup(pageString, 'html.parser')
     # get string in <title></title> tags
@@ -70,11 +71,9 @@ def scrape_url(url):
     # get raw_pageText for soup matcher
     raw_pageText = curSoup.get_text()
     # find location of title in raw_pageText
-    pageText = clean_pageText(raw_pageText[titleLoc:])
+    pageText = clean_pageText(raw_pageText, title)
 
-
-
-
-
-
-    print(pageText)
+    # return tuple in form:
+    #   (score, title, url, linkList, loadTime)
+    dataTuple = (None, title, loadTime, loadedAt)
+    return dataTuple

@@ -3,14 +3,12 @@ TO COMPLETE
 """
 
 # open access to all packages
-import sys, os
-sys.path.append(os.path.abspath(os.path.join('..', '..')))
 import re
 import numpy as np
 from flashtext import KeywordProcessor
 import time
 from dataStructures.objectSaver import save, load
-from textProcessor.cleaner import clean_text
+from models.textProcessor.cleaner import clean_text
 
 
 ## Functions ##
