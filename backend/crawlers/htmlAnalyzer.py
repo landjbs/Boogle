@@ -13,6 +13,8 @@ from models.textProcessor.cleaner import clean_text
 from models.knowledge.knowledgeTokenizer import find_knowledgeTokens
 
 
+
+
 # image string
 imageString = '(?<=src=")' + "\S+" + '(?=")'
 imageMatcher = re.compile(imageString)
@@ -77,6 +79,7 @@ def scrape_url(url, knowledgeProcessor):
     linkList = get_links(curSoup)
     # get dict mapping knowledgeTokens in text to number of occurences
     knowledgeTokens = find_knowledgeTokens(cleanedText, knowledgeProcessor)
+
     # return tuple in form: (title, url, knowledgeTokens, linkList, loadTime)
     dataTuple = [title, url, knowledgeTokens, linkList, loadTime, loadedAt]
     return dataTuple

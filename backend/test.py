@@ -1,5 +1,5 @@
 import crawlers.htmlAnalyzer as ha
-from models.textProcessor.cleaner import clean_text
+from models.processing.cleaner import clean_text
 from dataStructures.thicctable import Thicctable
 from models.knowledge.knowledgeTokenizer import build_knowledgeProcessor
 from dataStructures.objectSaver import load, save
