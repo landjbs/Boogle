@@ -20,14 +20,12 @@ def build_knowledgeSet(knowledgeFile, outPath=""):
     # matcher for tokens to consider empty: any single character or empty string
     emptyString = r"^([.|  |\t\t])?$"
     emptyMatcher = re.compile(emptyString)
-
     # open file from knowledgeFile path
     with open(knowledgeFile) as knowledgeData:
         # build set of cleaned lines in knowledgeData
         knowledgeSet = {clean_text(token) for token in knowledgeData}
         # filter out empty tokens from knowledgeSet
         knowledgeSet = set(filter(lambda token : not re.fullmatch(emptyMatcher, token), knowledgeSet))
-
     # save to outPath if specified
     if not (outPath==""):
         save(knowledgeSet, outPath)
