@@ -56,9 +56,9 @@ def detect_language(pageString):
     return(lang)
 
 
-def scrape_url(url):
+def scrape_url(url, knowledgeProcessor):
     """
-    Fetches and processes url and returns tuple of page info with None score
+    Fetches and processes url and returns tuple of page info
     """
     # fetch page string and save time to load
     loadStart = time.time()
@@ -76,9 +76,9 @@ def scrape_url(url):
     # get list of links from url
     linkList = get_links(curSoup)
     # get dict mapping knowledgeTokens in text to number of occurences
-    knowledgeTokens = find_knowledgeTokens(cleanedText)
+    knowledgeTokens = find_knowledgeTokens(cleanedText, knowledgeProcessor)
 
 
-    # return tuple in form: (score, title, url, knowledgeTokens, linkList, loadTime)
-    dataTuple = (None, title, url, knowledgeTokens, linkList, loadTime, loadedAt)
+    # return tuple in form: (title, url, knowledgeTokens, linkList, loadTime)
+    dataTuple = [title, url, knowledgeTokens, linkList, loadTime, loadedAt]
     return dataTuple
