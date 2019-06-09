@@ -29,7 +29,7 @@ def build_knowledgeSet(knowledgeFile, outPath=""):
         save(knowledgeSet, outPath)
     return knowledgeSet
 
-# knowledgeList = load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set')
+# knowledgeList = list(load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set'))
 
 
 def build_knowledgeProcessor(knowledgeSet, outPath=""):
@@ -46,9 +46,10 @@ def build_knowledgeProcessor(knowledgeSet, outPath=""):
         save(knowledgeProcessor, outPath)
     return knowledgeProcessor
 
-knowledgeProcessor = load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeProcessor.match')
+# knowledgeProcessor = load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeProcessor.match')
+# knowledgeProcessor = build_knowledgeProcessor(knowledgeList)
 
-def find_knowledgeTokens(pageText, knowledgeProcessor=knowledgeProcessor):
+def find_knowledgeTokens(pageText, knowledgeProcessor):
     """ Returns dict mapping knowledge tokens found in text to number of occurences """
     # use knowledgeProcessor to extract tokens from page text
     keywordsFound = knowledgeProcessor.extract_keywords(pageText)
@@ -61,6 +62,7 @@ def find_knowledgeTokens(pageText, knowledgeProcessor=knowledgeProcessor):
 # knowledgeSet = build_knowledgeSet("enwiki-latest-all-titles-in-ns0",
 #                     outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set")
 
+# print(knowledgeSet)
 
 # knowledgeProcessor = build_knowledgeProcessor(knowledgeList,
 #                         outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeProcessor.match")

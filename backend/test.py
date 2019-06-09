@@ -6,13 +6,16 @@ import urllib.request
 from models.knowledge.knowledgeTokenizer import build_knowledgeProcessor, find_knowledgeTokens
 import crawlers.htmlAnalyzer as ha
 from dataStructures.objectSaver import save, load
+from models.textProcessor.cleaner import clean_text
 import time
 
 
 while True:
     test = input("Search: ")
-    x = ha.scrape_url(test)
-    print(x)
+    # x = ha.scrape_url(test)
+    # print(x)
+    clean = clean_text(test)
+    print(clean, len(clean))
 
 
 # print(time.time())
