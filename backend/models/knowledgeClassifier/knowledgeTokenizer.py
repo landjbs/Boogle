@@ -26,7 +26,7 @@ def build_knowledgeSet(knowledgeFile, outPath=""):
     # open file from knowledgeFile path
     with open(knowledgeFile) as knowledgeData:
         # build set of cleaned lines in knowledgeData
-        knowledgeSet = {clean_knowledgeToken(token) for token in knowledgeData}
+        knowledgeSet = {clean_text(token) for token in knowledgeData}
         # filter out empty tokens from knowledgeSet
         knowledgeSet = set(filter(lambda token : not re.fullmatch(emptyMatcher, token), knowledgeSet))
 

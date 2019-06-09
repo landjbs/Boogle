@@ -9,7 +9,7 @@ spaceString = r"[_]"
 spaceMatcher = re.compile(spaceString)
 
 ## Funcitons ##
-def clean_knowledgeToken(rawString):
+def clean_text(rawString):
     """ Cleans rawToken by stripping parentheses and replacing _ with spaces """
     # lowercase rawString
     loweredString = rawString.lower()
