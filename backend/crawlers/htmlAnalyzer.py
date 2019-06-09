@@ -2,11 +2,14 @@
 # pageStrings generally passed from crawler.py after being cleaned by
 # urlAnalyzer.py. Outsources all NLP and ML to backend/models.
 
+import sys, os
+sys.path.append(os.path.abspath(os.path.join('..')))
 import re # to match for patterns in pageStrings
 import time # to find the loadTime of a page
 import langid # to classify language of pageString
 from bs4 import BeautifulSoup
 import crawlers.urlAnalyzer as ua
+from models.textProcessor.cleaner import clean_text
 
 
 # image string
@@ -14,10 +17,14 @@ imageString = '(?<=src=")' + "\S+" + '(?=")'
 imageMatcher = re.compile(imageString)
 
 
-def clean_pageText(rawText):
+def clean_pageText(rawText, title):
     """ Removes junk from output of soup.get_text() """
-    cleanText = rawText.replace("\n","")
-    # cleanText = cleanText.replace("\t","")
+    # find location of title in rawText
+    titleLoc = rawText.find(title)
+    # filter out everything before the title
+    afterTitle = rawText[:titleLoc]
+    #
+    cleanedText = clean_text(afterTitle)
     return cleanText
 
 
@@ -63,6 +70,11 @@ def scrape_url(url):
     # get raw_pageText for soup matcher
     raw_pageText = curSoup.get_text()
     # find location of title in raw_pageText
-    titleLoc = raw_pageText.find(title)
     pageText = clean_pageText(raw_pageText[titleLoc:])
+
+
+
+
+
+
     print(pageText)
