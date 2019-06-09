@@ -63,7 +63,7 @@ def scrape_url(url):
     loadStart = time.time()
     pageString = ua.url_to_pageString(url)
     loadTime = time.time()
-    loadedAt = loadEnd - loadStart
+    loadedAt = loadTime - loadStart
     # create soup object for parsing pageString
     curSoup = BeautifulSoup(pageString, 'html.parser')
     # get string in <title></title> tags
@@ -72,8 +72,9 @@ def scrape_url(url):
     raw_pageText = curSoup.get_text()
     # find location of title in raw_pageText
     pageText = clean_pageText(raw_pageText, title)
+    # get list of links from url
+    linkList = get_links(curSoup)
 
-    # return tuple in form:
-    #   (score, title, url, linkList, loadTime)
-    dataTuple = (None, title, loadTime, loadedAt)
+    # return tuple in form: (score, title, url, linkList, loadTime)
+    dataTuple = (None, title, url, linkList, loadTime, loadedAt)
     return dataTuple
