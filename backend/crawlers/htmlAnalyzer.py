@@ -15,10 +15,6 @@ imageString = '(?<=src=")' + "\S+" + '(?=")'
 imageMatcher = re.compile(imageString)
 
 
-# matcher for url denoted by https:// or http://
-urlString = r'https://\S+|http://\S+'
-urlMatcher = re.compile(urlString)
-
 
 def clean_pageText(rawText):
     """ Removes junk from output of soup.get_text() """
@@ -39,19 +35,13 @@ def get_pageText(pageString):
     return cleanText
 
 
-def parsable(url):
-    """ Returns true if url follows urlMatcher pattern """
-    # canParse = False if not urlMatcher.match(url) else False
-    canParse = True if urlMatcher.fullmatch(url) else False
-    return canParse
-
 
 def get_links(soup):
     """ Returns list of all valid links from pageString """
     # get list of all <a> tags in soup
     a_list = soup.find_all('a', href=True)
     # get list of validated urls from <a> tag list
-    linkList = [link['href'] for link in a_list if parsable(link['href'])]
+    linkList = [link['href'] for link in a_list if ua.parsable(link['href'])]
     return linkList
 
 
@@ -86,3 +76,13 @@ def scrape_url(url):
     """
     Fetches and processes url and returns tuple of page info with None score
     """
+    # fetch page string and save time to load
+    loadStart = time.time()
+    pageString = ua.url_to_pageString(url)
+    loadTime = loadEnd - loadStart
+    # create soup object for parsing pageString
+    soup = BeautifulSoup(pageString, 'html.parser')
+    # get string in <title></title> tags
+    
+
+    print(loadTime)
