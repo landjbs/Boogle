@@ -1,8 +1,6 @@
 """
 TO COMPLETE
 """
-
-# open access to all packages
 import re
 import numpy as np
 from flashtext import KeywordProcessor
@@ -31,6 +29,8 @@ def build_knowledgeSet(knowledgeFile, outPath=""):
         save(knowledgeSet, outPath)
     return knowledgeSet
 
+# knowledgeList = load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set')
+
 
 def build_knowledgeProcessor(knowledgeSet, outPath=""):
     """ Builds flashtext matcher for words in knowledgeSet iterable """
@@ -46,24 +46,22 @@ def build_knowledgeProcessor(knowledgeSet, outPath=""):
         save(knowledgeProcessor, outPath)
     return knowledgeProcessor
 
+knowledgeProcessor = load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeProcessor.match')
 
-def find_knowledgeTokens(pageText, knowledgeProcessor):
+def find_knowledgeTokens(pageText, knowledgeProcessor=knowledgeProcessor):
     """ Returns dict mapping knowledge tokens found in text to number of occurences """
     # use knowledgeProcessor to extract tokens from page text
     keywordsFound = knowledgeProcessor.extract_keywords(pageText)
     # create dict mapping keywords to number of times used in pageText using re.findall()
-    keywordDict = {keyword:(len(re.findall(keyword, pageText))) for keyword in keywordsFound}
+    keywordDict = {keyword:(len(re.findall(keyword, pageText, re.IGNORECASE))) for keyword in keywordsFound}
     return keywordDict
 
 
 # ### TESTING ###
 # knowledgeSet = build_knowledgeSet("enwiki-latest-all-titles-in-ns0",
 #                     outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set")
-# knowledgeList = list(knowledgeSet)
 
-# knowledgeList = list(load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set'))
-#
-#
+
 # knowledgeProcessor = build_knowledgeProcessor(knowledgeList,
 #                         outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeProcessor.match")
 #

@@ -10,6 +10,7 @@ import langid # to classify language of pageString
 from bs4 import BeautifulSoup
 import crawlers.urlAnalyzer as ua
 from models.textProcessor.cleaner import clean_text
+from models.knowledge.knowledgeTokenizer import find_knowledgeTokens
 
 
 # image string
@@ -74,13 +75,10 @@ def scrape_url(url):
     cleanedText = clean_pageText(rawText, title)
     # get list of links from url
     linkList = get_links(curSoup)
+    # get dict mapping knowledgeTokens in text to number of occurences
+    knowledgeTokens = find_knowledgeTokens(cleanedText)
 
 
-
-
-
-
-
-    # return tuple in form: (score, title, url, linkList, loadTime)
-    dataTuple = (None, title, url, linkList, loadTime, loadedAt)
+    # return tuple in form: (score, title, url, knowledgeTokens, linkList, loadTime)
+    dataTuple = (None, title, url, knowledgeTokens, linkList, loadTime, loadedAt)
     return dataTuple
