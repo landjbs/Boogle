@@ -79,10 +79,9 @@ def scrape_url(url):
     # fetch page string and save time to load
     loadStart = time.time()
     pageString = ua.url_to_pageString(url)
-    loadTime = loadEnd - loadStart
+    loadTime = time.time() - loadStart
     # create soup object for parsing pageString
-    soup = BeautifulSoup(pageString, 'html.parser')
+    curSoup = BeautifulSoup(pageString, 'html.parser')
     # get string in <title></title> tags
-    
-
-    print(loadTime)
+    title = curSoup.title.string
+    print(title)
