@@ -77,8 +77,6 @@ def scrape_url(url, knowledgeProcessor):
     linkList = get_links(curSoup)
     # get dict mapping knowledgeTokens in text to number of occurences
     knowledgeTokens = find_knowledgeTokens(cleanedText, knowledgeProcessor)
-
-
     # return tuple in form: (title, url, knowledgeTokens, linkList, loadTime)
     dataTuple = [title, url, knowledgeTokens, linkList, loadTime, loadedAt]
     return dataTuple

@@ -29,7 +29,7 @@ def bin_page(pageList):
         try:
             testData.insert_value(token, pageTuple)
             testData.sort_key(token, index=-1)
-            print('Page Added to Index')
+            print(f'Page Added to {token}')
         except Exception as e:
             print(e)
 
