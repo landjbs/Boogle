@@ -53,10 +53,10 @@ def get_links(soup):
 def detect_language(pageString):
     """ Detects language of a pageString """
     lang, score = langid.classify(pageString)
-    return(lang)
+    return lang
 
 
-def scrape_url(url, knowledgeProcessor):
+def scrape_url(url):  #knowledgeProcessor
     """
     Fetches and processes url and returns tuple of page info
     """
@@ -80,7 +80,7 @@ def scrape_url(url, knowledgeProcessor):
     pageLength = len(cleanedText.split(" "))
     # return tuple in form: (title, url, knowledgeTokens, linkList, loadTime)
     # pageList = [title, url, knowledgeTokens, linkList, loadTime, loadedAt]
-    pageList = [title, url, pageLength., linkList, loadTime, loadedAt]
+    pageList = [title, pageVector]
 
 
     return pageList

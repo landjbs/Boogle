@@ -2,7 +2,7 @@ import re
 
 ## Matchers ##
 # matcher for elements to replace with "" in rawToken
-stripString = '[(|)|.|!|?|,|\[|\]|\/|\{|\}|\n|=|$|*|+|"|®|;' + r".\\" + "|']"
+stripString = '[(|)|.|!|?|,|\[|\]|\/|\{|\}|\n|=|$|*|+|"|®|;|^' + r".\\" + "|']"
 stripMatcher = re.compile(stripString)
 # matcher for elements to convert to spaces
 spaceString = r"[_]"

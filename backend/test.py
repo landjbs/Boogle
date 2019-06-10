@@ -5,7 +5,7 @@ from models.knowledge.knowledgeTokenizer import build_knowledgeProcessor
 from dataStructures.objectSaver import load, save
 
 # # knowledge set loaded
-# knowledgeSet = list(load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set'))
+knowledgeSet = list(load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set'))
 # testData = Thicctable(knowledgeSet)
 # print('Data Table Created')
 # del knowledgeSet
@@ -17,11 +17,12 @@ from dataStructures.objectSaver import load, save
 # BOOGLE #
 print(f"{'-'*40}\nWelcome to Boogle!\n{'-'*40}")
 while True:
-    try:
-        url = input("Page URL: ")
-        pageList = ha.scrape_url(url, knowledgeProcessor)
-        for elt in pageList:
-            print(elt, end=f"\n{'-'*50}\n")
+    # try:
+    url = input("Page URL: ")
+    pageList = ha.scrape_url(url) #knowledgeProcessor
+    print("\t\tSearch Results")
+    for elt in pageList:
+        print(elt, end=f"\n{'-'*50}\n")
     except Exception as e:
         print(f"\t\tERROR: {e}")
 
