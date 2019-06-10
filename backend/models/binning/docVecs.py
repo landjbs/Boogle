@@ -1,12 +1,11 @@
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
-from nltk.tokenize import word_tokenize
+from gensim.parsing.preprocessing import strip_numeric, remove_stopwords
+from nltk import word_tokenize
 import smart_open # for opening documents
 from warnings import simplefilter
-import re
-import multiprocessing
+import multiprocessing # for faster model training
 import matplotlib.pyplot as plt
-import pandas as pd
-from dataStructures.objectSaver import save, load
+import os
 
 # ignore warnings
 simplefilter("ignore")
@@ -26,12 +25,12 @@ def vector_tokenize(inStr):
 
 def train_d2v(data, path='d2vModel.sav', max_epochs=100, vec_size=300, alpha=0.025):
     """
-    Trains doc vectorization model on iterable of docs and saves model to path
+    Trains doc vec model on iterable of raw docs and saves model to path
     """
     print(f"\n{'-'*40}\nTraining '{path}' model:")
 
     # list mapping list of document tokens to unique integer tag
-    tagged_data = [TaggedDocument(words=clean_tokenize(_d), tags=[str(i)]) for i, _d in enumerate(data)]
+    tagged_data = [TaggedDocument(words=vector_tokenize(_d), tags=[str(i)]) for i, _d in enumerate(data)]
     print(f"\tData Tagged (length={len(tagged_data)})")
 
     # initialize cores for fast model training
@@ -82,6 +81,36 @@ def docVec_to_dict(docVec):
     """ Converts docVec to dict for easy df insertion """
     docDict = {i:scalar for i, scalar in enumerate(docVec)}
     return docDict
+
+def visualize_docVecs(vecList):
+    """ Plots list of docVecs to determine differences """
+    for vec in vecList:
+        plt.plot(vecList)
+    plt.title(f'Vectors for {len(vecList)} Documents')
+    plt.xlabel('Vector Dimensions')
+    plt.ylable('Document Value')
+    plt.show()
+
+
+# Train model #
+# textList = []
+# for doc in os.listdir('aclImdb/train/neg'):
+#     with open('aclImdb/train/neg/' + doc, 'r') as file:
+#         text = "".join([line for line in file])
+#         textList.append(text)
+#
+# for doc in os.listdir('aclImdb/train/pos'):
+#     with open('aclImdb/train/pos/' + doc, 'r') as file:
+#         text = "".join([line for line in file])
+#         textList.append(text)
+#
+#
+# train_d2v(textList)
+
+
+
+
+
 
 
 

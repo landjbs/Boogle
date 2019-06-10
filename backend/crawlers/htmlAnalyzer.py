@@ -29,13 +29,14 @@ def clean_pageText(rawText, title):
     return cleanedText
 
 
-def get_pageText(pageString):
+def get_pageText(url):
     """
     Gets only pageText from pageString using BeautifulSoup.
     Requires recreation of BeautifulSoup() object so don't call in
     htmlAnalyzer.py.
     """
-    curSoup = BeautifulSoup(pageString, "html.parser")
+    rawString = ua.url_to_pageString(url)
+    curSoup = BeautifulSoup(rawString, "html.parser")
     rawText = curSoup.get_text()
     cleanText = clean_pageText(rawText)
     return cleanText

@@ -1,11 +1,12 @@
 import crawlers.htmlAnalyzer as ha
 from models.processing.cleaner import clean_text
-from dataStructures.thicctable import Thicctable
 from models.knowledge.knowledgeTokenizer import build_knowledgeProcessor
+from models.binning.docVecs import vectorize_document
 from dataStructures.objectSaver import load, save
+from dataStructures.thicctable import Thicctable
 
 # # knowledge set loaded
-knowledgeSet = list(load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set'))
+# knowledgeSet = list(load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set'))
 # testData = Thicctable(knowledgeSet)
 # print('Data Table Created')
 # del knowledgeSet
@@ -19,12 +20,14 @@ print(f"{'-'*40}\nWelcome to Boogle!\n{'-'*40}")
 while True:
     # try:
     url = input("Page URL: ")
-    pageList = ha.scrape_url(url) #knowledgeProcessor
-    print("\t\tSearch Results")
-    for elt in pageList:
-        print(elt, end=f"\n{'-'*50}\n")
-    except Exception as e:
-        print(f"\t\tERROR: {e}")
+    # pageList = ha.scrape_url(url) #knowledgeProcessor
+    pageText = ha.get_pageText(url)
+    print(pageText)
+    # print("\t\tSearch Results")
+    # for elt in pageList:
+    #     print(elt, end=f"\n{'-'*50}\n")
+    # except Exception as e:
+        # print(f"\t\tERROR: {e}")
 
 
 # print(time.time())
