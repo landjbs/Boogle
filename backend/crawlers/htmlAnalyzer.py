@@ -9,7 +9,7 @@ import time # to find the loadTime of a page
 import langid # to classify language of pageString
 from bs4 import BeautifulSoup
 import crawlers.urlAnalyzer as ua
-from models.textProcessor.cleaner import clean_text
+from models.processing.cleaner import clean_text
 from models.knowledge.knowledgeTokenizer import find_knowledgeTokens
 
 

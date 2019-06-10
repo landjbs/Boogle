@@ -5,7 +5,7 @@ from dataStructures.thicctable import Thicctable
 from dataStructures.objectSaver import load, save
 # models
 from models.knowledge.knowledgeTokenizer import build_knowledgeProcessor
-from models.knowledge.knowledgeTokenizer import build_knowledgeProcessor
+from models.processing.cleaner import clean_text
 
 # knowledge set loaded
 knowledgeSet = list(load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set'))
@@ -32,9 +32,12 @@ def bin_page(pageList):
         try:
             testData.insert_value(token, pageTuple)
             testData.sort_key(token, index=-1)
-            print(f'Page Added to {token}')
+            print(f'Page Added to {token}', end='\r')
         except Exception as e:
             print(e)
+
+# load webpages
+
 
 
 # BOOGLE #
