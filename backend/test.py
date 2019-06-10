@@ -19,14 +19,17 @@ from dataStructures.thicctable import Thicctable
 print(f"{'-'*40}\nWelcome to Boogle!\n{'-'*40}")
 vecDict = {}
 while True:
-    url = input("Page URL: ")
-    if not url=='vis':
-        pageText = ha.get_pageText(url)
-        cleanText = "".join(dv.vector_tokenize(pageText))
-        docVec = dv.vectorize_document(cleanText, modelPath="models/binning/d2vModel.sav")
-        vecDict.update({url:docVec})
-    else:
-        dv.visualize_docVecs(vecDict)
+    try:
+        url = input("Page URL: ")
+        if not url=='vis':
+            pageText = ha.get_pageText(url)
+            cleanText = "".join(dv.vector_tokenize(pageText))
+            docVec = dv.vectorize_document(cleanText, modelPath="models/binning/d2vModel.sav")
+            vecDict.update({url:docVec})
+        else:
+            dv.visualize_docVecs(vecDict)
+    except Exception as e:
+        print(e)
 
 
 

@@ -83,7 +83,7 @@ def docVec_to_dict(docVec):
     return docDict
 
 def visualize_docVecs(vecDict):
-    """ Plots list of docVecs to determine differences """
+    """ Plots dict mapping titles to docVecs to determine differences """
     for url in vecDict:
         plt.plot(vecDict[url])
     plt.legend([key for key in vecDict])
