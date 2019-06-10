@@ -24,7 +24,7 @@ def vector_tokenize(inStr):
     return tokens
 
 
-def train_d2v(data, path='d2v.model', max_epochs=100, vec_size=300, alpha=0.025):
+def train_d2v(data, path='d2vModel.sav', max_epochs=100, vec_size=300, alpha=0.025):
     """
     Trains doc vectorization model on iterable of docs and saves model to path
     """
