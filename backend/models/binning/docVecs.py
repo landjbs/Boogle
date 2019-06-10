@@ -1,6 +1,6 @@
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from gensim.parsing.preprocessing import strip_numeric, remove_stopwords
-from nltk import word_tokenize
+import nltk
 import smart_open # for opening documents
 from warnings import simplefilter
 import multiprocessing # for faster model training
@@ -19,7 +19,7 @@ def vector_tokenize(inStr):
     # lowercase inStr, filter out common stop words and numerics
     cleanStr = strip_numeric(remove_stopwords(inStr.lower()))
     # tokenize cleanStr by whitespace
-    tokens = word_tokenize(cleanStr)
+    tokens = nltk.tokenize.word_tokenize(cleanStr)
     return tokens
 
 
@@ -66,10 +66,10 @@ def train_d2v(data, path='d2vModel.sav', max_epochs=100, vec_size=300, alpha=0.0
     print(f"Model saved to '{path}'.\n{'-'*40}")
 
 
-def vectorize_document(doc, modelPath="d2vModel.model"):
+def vectorize_document(doc, modelPath="d2vModel.sav"):
     """ Vectorizes document with d2v model stored at modelPath """
     # load saved model
-    model= Doc2Vec.load("test.model")
+    model= Doc2Vec.load(modelPath)
     # tokenize input doc
     tokenizedDoc = nltk.tokenize.word_tokenize(doc.lower())
     # create document vector for tokenizedDoc
@@ -82,13 +82,14 @@ def docVec_to_dict(docVec):
     docDict = {i:scalar for i, scalar in enumerate(docVec)}
     return docDict
 
-def visualize_docVecs(vecList):
+def visualize_docVecs(vecDict):
     """ Plots list of docVecs to determine differences """
-    for vec in vecList:
-        plt.plot(vecList)
-    plt.title(f'Vectors for {len(vecList)} Documents')
+    for url in vecDict:
+        plt.plot(vecDict[url])
+    plt.legend([key for key in vecDict])
+    plt.title(f'Vectors for {len(vecDict)} Documents')
     plt.xlabel('Vector Dimensions')
-    plt.ylable('Document Value')
+    plt.ylabel('Document Value')
     plt.show()
 
 
