@@ -25,6 +25,7 @@ print('Knowledge Processor Created')
 def bin_page(pageList):
     """ Test function to pull out and score dict from tuple """
     knowledgeDict = pageList[2]
+    print("Adding Page to:", end=" ")
     for token in knowledgeDict:
         score = knowledgeDict[token]
         pageList.append((1000/score))
@@ -32,7 +33,7 @@ def bin_page(pageList):
         try:
             testData.insert_value(token, pageTuple)
             testData.sort_key(token, index=-1)
-            print(f'\tPage Added to {token}', end='\r')
+            print(f'{token}', end=' | ')
         except Exception as e:
             print(e)
 
@@ -50,7 +51,7 @@ with open('data/inData/test.tab.tsv') as dmozData:
         except Exception as e:
             print(f"ERROR: {e}")
 
-save(testData, 'thiccTest')
+save(testData.topDict, 'thiccTest')
 
 # BOOGLE #
 print(f"{'-'*40}\nWelcome to Boogle!\n{'-'*40}")
