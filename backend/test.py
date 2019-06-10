@@ -1,7 +1,7 @@
 import crawlers.htmlAnalyzer as ha
 from models.processing.cleaner import clean_text
 from models.knowledge.knowledgeTokenizer import build_knowledgeProcessor
-from models.binning.docVecs import vectorize_document
+from models.binning.docVecs import vector_tokenize, vectorize_document
 from dataStructures.objectSaver import load, save
 from dataStructures.thicctable import Thicctable
 
@@ -22,7 +22,9 @@ while True:
     url = input("Page URL: ")
     # pageList = ha.scrape_url(url) #knowledgeProcessor
     pageText = ha.get_pageText(url)
-    print(pageText)
+    cleanText = vector_tokenize(pageText)
+    docVec = vectorize_document(cleanText)
+    print(docVec)
     # print("\t\tSearch Results")
     # for elt in pageList:
     #     print(elt, end=f"\n{'-'*50}\n")

@@ -66,7 +66,7 @@ def train_d2v(data, path='d2vModel.sav', max_epochs=100, vec_size=300, alpha=0.0
     print(f"Model saved to '{path}'.\n{'-'*40}")
 
 
-def vectorize_document(doc, modelPath="test.model"):
+def vectorize_document(doc, modelPath="d2vModel.model"):
     """ Vectorizes document with d2v model stored at modelPath """
     # load saved model
     model= Doc2Vec.load("test.model")

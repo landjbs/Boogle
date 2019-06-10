@@ -38,7 +38,8 @@ def get_pageText(url):
     rawString = ua.url_to_pageString(url)
     curSoup = BeautifulSoup(rawString, "html.parser")
     rawText = curSoup.get_text()
-    cleanText = clean_pageText(rawText)
+    title = curSoup.title.string
+    cleanText = clean_pageText(rawText, title)
     return cleanText
 
 
