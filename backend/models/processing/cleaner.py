@@ -15,27 +15,21 @@ First iteration actions:
 import re
 
 ## Matchers ##
-# matcher for elements to convert to spaces
-spaceString = r"[\t|\n]"
+# matcher for any sequence of tabs, newlines, multiple spaces, and dashes
+spaceString = r"[\t|\n|\s|-]+"
 spaceMatcher = re.compile(spaceString)
 
-# matcher for elements to replace with "" in rawToken
-stripString = '[(|)|.|!|?|,|\[|\]|\/|\{|\}|\n|=|$|*|+|"|®|;|^' + r".\\" + "|']"
+# matcher for non-alpha or space characters
+stripString = r"[^a-zA-Z\s]"
 stripMatcher = re.compile(stripString)
 
 ## Funcitons ##
 def clean_text(rawString):
     """ Cleans rawToken by stripping parentheses and replacing _ with spaces """
-    # replace spaceMathcer with " " in cleanToken
+    # replace spaceMathcer with " "
     spacedString = re.sub(spaceMatcher, " ", rawString)
-    # replace stripMatcher with "" in rawString
-    cleanedString = re.sub(stripMatcher, "", spacedString)
+    # replace stripMatcher with "" in rawString and remove trailing whitespace
+    cleanedString = re.sub(stripMatcher, "", spacedString).strip()
     # lowercase rawString
     loweredString = cleanedString.lower()
     return loweredString
-
-
-while True:
-    raw = input("Text: ")
-    clean = clean_text(raw)
-    print(f"\tClean: {clean}\n\tEmpty: {clean == ' '}")
