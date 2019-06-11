@@ -20,11 +20,12 @@ spaceString = r"[\t|\n|\s|-]+"
 spaceMatcher = re.compile(spaceString)
 
 # matcher for things that look like html tags
-tagString = r"(?<=<[^\s])[^<]+(?=>)"
+# tagString = r"(?<=<[^\s])[^<]+(?=<.+>)"
+tagString = r"<[\s]>[^<]+<.+>"
 tagMatcher = re.compile(tagString)
 
 # matcher for non-alpha or space characters
-stripString = r"[^a-zA-Z\s]"
+stripString = r"[^a-zA-Z\s\t\t-]"
 stripMatcher = re.compile(stripString)
 
 ## Funcitons ##
@@ -34,11 +35,13 @@ def clean_text(rawString):
     space, removing non-alpha chars, and lowercasing alpha chars
     """
     # replace spaceMatcher and tagMatcher with " "
-    spacedString = re.sub(tagMatcher, " ", re.sub(spaceMatcher, " ", rawString))
-    # replace stripMatcher with "" and remove trailing whitespace
-    cleanedString = re.sub(stripMatcher, "", spacedString).strip()
-    # lowercase rawString
-    loweredString = cleanedString.lower()
+    detaggeddString = re.sub(tagMatcher, " ", rawString)
+    # replace stripMatcher with ""
+    cleanedString = re.sub(stripMatcher, "", detaggeddString)
+    # replace spaceMatcher with " " and strip surround whitespace
+    spacedString = re.sub(spaceMatcher, " ", cleanedString).strip()
+    # lowercase
+    loweredString = spacedString.lower()
     return loweredString
 
 
