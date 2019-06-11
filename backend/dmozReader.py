@@ -99,7 +99,7 @@ def scrape_dmoz_file(file, queueDepth=15, workerNum=25, outPath=""):
         save(outStore.data, outPath)
 
 
-scrape_dmoz_file(file="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/inData/test.tab.tsv")
+scrape_dmoz_file(file="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/inData/dmoz_domain_category.tab.tsv")
 
 
 
