@@ -16,16 +16,13 @@ import re
 
 ## Matchers ##
 # matcher for things that look like html tags
-tagString = r"<[^\s][^<]+>"
-tagMatcher = re.compile(tagString)
+tagMatcher = re.compile(r"<[^\s][^<]+>")
 
 # matcher for non-alpha or space characters
-stripString = r"[^a-zA-Z\s\t\t-]"
-stripMatcher = re.compile(stripString)
+stripMatcher = re.compile(r"[^a-zA-Z\s\t\t-]")
 
 # matcher for any sequence of tabs, newlines, multiple spaces, and dashes
-spaceString = r"[\t|\n|\s|-]+"
-spaceMatcher = re.compile(spaceString)
+spaceMatcher = re.compile(r"[\t|\n|\s|-]+")
 
 ## Funcitons ##
 def clean_text(rawString):
@@ -42,9 +39,3 @@ def clean_text(rawString):
     # lowercase
     loweredString = spacedString.lower()
     return loweredString
-
-
-while True:
-    raw = input("Text: ")
-    clean = clean_text(raw)
-    print(clean)
