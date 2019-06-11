@@ -54,7 +54,7 @@ def build_knowledgeProcessor(knowledgeSet, outPath=""):
         save(knowledgeProcessor, outPath)
     return knowledgeProcessor
 
-def build_freqDict(folderPath, knowledgeProcessor=knowledgeProcessor, outPath=""):
+def build_freqDict(folderPath, knowledgeProcessor, outPath=""):
     """
     Args: folderPath to folder containing files from which to read,
     knowledgeProcessor for token extraction.
