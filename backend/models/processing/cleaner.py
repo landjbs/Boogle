@@ -21,13 +21,14 @@ tagMatcher = re.compile(r"<[^\s][^<]+>")
 # matcher for non-alpha or space characters
 stripMatcher = re.compile(r"[^a-zA-Z\s\t\t-]")
 
-# matcher for any sequence of tabs, newlines, multiple spaces, and dashes
-spaceMatcher = re.compile(r"[\t|\n|\s|-]+")
+# matcher for any sequence of tabs, newlines, multiple spaces, underscores,
+# and dashes
+spaceMatcher = re.compile(r"[\t|\n|\s|-|_]+")
 
 ## Funcitons ##
 def clean_text(rawString):
     """
-    Cleans rawString but replacing spaceMatcher and tagMatcher with a single
+    Cleans rawString by replacing spaceMatcher and tagMatcher with a single
     space, removing non-alpha chars, and lowercasing alpha chars
     """
     # replace spaceMatcher and tagMatcher with " "

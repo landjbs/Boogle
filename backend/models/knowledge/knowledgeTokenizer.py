@@ -1,10 +1,10 @@
 """
 Generates set of knowledge tokens, which comprize the keys in the topDict of
-the key-val store described in dataStructures.thicctable. These tokens represent
-the extent of top-level lookup buckets avaiable to users and, as such, follow
-the philosophy of comprehensive concision. There should be enough knowledge
-tokens that any reasonable search can be answered by the contents of a lookup
-bucket, but not so many as to take up redundant space.
+the key-val store described in dataStructures.thicctable. These tokens
+represent the extent of top-level lookup buckets avaiable to users and, as
+such, follow the philosophy of comprehensive concision. There should be enough
+knowledge tokens that any reasonable search can be answered by the contents of
+a lookup bucket, but not so many as to take up redundant space.
 Knowledge tokens are only permitted to be words and phrases; tokens comprised
 soley of non-alpha chars will be mapped to the English representation of the
 token (eg. & -> ampersand)
