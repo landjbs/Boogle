@@ -9,6 +9,7 @@ results than simple keyword lookup-tables.
 """
 
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 from sys import path
 path.append("/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend")
@@ -20,11 +21,11 @@ from sklearn.manifold import TSNE
 # number of dimensions in document vector
 NUM_DIMS = 300
 # list of urls to analyze
-urlList = ["www.harvard.edu"]
-
+urlList = ["https://en.wikipedia.org/wiki/Yogurt",
+            "https://www.epicurious.com/recipes/food/views/homemade-yogurt-395111",
+            "https://en.wikipedia.org/wiki/Connecticut_River"]
 # initialize matrix to store docVec for each url
-vecMatrix = np.zeros((len(urlList), NUM_DIMS))
-
+vecList = []
 # iterate through urls
 for i, url in enumerate(urlList):
     # fetch page text
@@ -34,18 +35,17 @@ for i, url in enumerate(urlList):
     # make docVec for cleanText
     docVec = dv.vectorize_document(cleanText, modelPath="d2vModel.sav")
     # insert docVec into vecMatrix
-    vecMatrix[i] = docVec
+    docDict = dv.docVec_to_dict(docVec)
+    vecList.append(docDict)
 
-print(vecMatrix)
+df = pd.DataFrame(vecList)
 
-# init pca
-pca = PCA(n_components=1, svd_solver='arpack')
-pca.fit_transform(vecMatrix)
+corrDf = df.corr()
 
-print(vecMatrix)
+print(corrDf)
 
-
-
+plt.imshow(corrDf)
+plt.show()
 
 
 

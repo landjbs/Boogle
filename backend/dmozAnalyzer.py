@@ -4,7 +4,7 @@ import sys, os
 for folder in ['dataStructures', 'crawlers', 'data']:
     sys.path.append(os.path.abspath(os.path.join('..', folder)))
 
-from urlAnalyzer import url_to_pageString
+from crawlers.urlAnalyzer import url_to_pageString
 from htmlAnalyzer import get_pageText, detect_language
 import re
 from threading import Thread
