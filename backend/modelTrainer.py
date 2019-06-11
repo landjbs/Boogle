@@ -12,8 +12,10 @@ for folder in os.listdir(PATH):
     for file in os.listdir(f"{PATH}/{folder}"):
         with open(f"{PATH}/{folder}/{file}", 'r') as fObj:
             pageText = fObj.read()
-            docList.append(pageText)
+            cleanText = "".join(dv.vector_tokenize(pageText))
+            print(cleanText)
+            docList.append(cleanText)
             count += 1
             print(f"Analyzing {count}", end="\r")
 
-dv.
+dv.train_d2v(docList, path="models/binning/d2vModel.sav")
