@@ -50,6 +50,7 @@ def scrape_dmoz_line(line):
         file.write(pageText)
     return True
 
+# 482478
 
 def scrape_dmoz_file(file, queueDepth=15, workerNum=25, outPath=""):
     """
