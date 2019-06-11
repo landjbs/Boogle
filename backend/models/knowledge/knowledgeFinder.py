@@ -45,7 +45,7 @@ def find_weightedTokens(divText, div, knowledgeProcessor):
     # iterate over the tokens found
     for token in tokensFound:
         # find number of occurences of a token in divText
-        tokenNum = len(re.findall(token, divText, flags=re.IGNORECASE))
+        tokenNum = len(re.findall(f"(?<=\s){token}(\s)", divText, flags=re.IGNORECASE))
         # find frequency of token usage in divText
         tokenFrequency = tokenNum / divLen
         # score token based on token, frequency, and div

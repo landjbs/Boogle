@@ -58,6 +58,7 @@ knowledgeProcessor = KeywordProcessor(case_sensitive=False)
 knowledgeProcessor.add_keyword('foo')
 knowledgeProcessor.add_keyword('bar')
 
+print(knowledgeProcessor.extract_keywords("ram bar"))
 
 def build_freqDict(folderPath, knowledgeProcessor=knowledgeProcessor):
     """
@@ -70,7 +71,10 @@ def build_freqDict(folderPath, knowledgeProcessor=knowledgeProcessor):
     rawDict = {}
     # find and iterate over list of files within folderPath
     files = os.listdir(folderPath)
-    for file in files:
+    for i, file in enumerate(files):
+        print(f"\t{i}", end='\r')
+        if i > 1000:
+            break
         with open(f"{folderPath}/{file}") as FileObj:
             # read in the current file
             text = FileObj.read()
@@ -81,7 +85,7 @@ def build_freqDict(folderPath, knowledgeProcessor=knowledgeProcessor):
             # iterate over tokensFound
             for token in tokensFound:
                 # find number of occurences of token in current file
-                tokenNum = len(re.findall(token, text, flags=re.IGNORECASE))
+                tokenNum = len(re.findall(f"(?<=\s){token}(?=\s)", text, flags=re.IGNORECASE))
                 # find frequency of token use in current file
                 tokenFreq = tokenNum / textLen
                 # check if token has been seen before
@@ -92,7 +96,11 @@ def build_freqDict(folderPath, knowledgeProcessor=knowledgeProcessor):
                     # if see before, add current freq to first elt of token map and increment number occurences
                     rawDict[token][0] += tokenFreq
                     rawDict[token][1] += 1
-            
+    print(rawDict)
+    # lambda to normalize tokenFreq by number of pages
+    normalizeFreq = lambda val : val[0] / val[1]
+    freqDict = {token:normalizeFreq(rawDict[token]) for token in rawDict}
+    print(freqDict)
 
 
 
