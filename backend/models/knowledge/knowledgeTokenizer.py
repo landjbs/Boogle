@@ -25,7 +25,7 @@ def build_knowledgeSet(knowledgeFile, outPath=""):
     # matcher for tokens to consider empty: any single character or empty string
     emptyString = r"^([.|  |\t\t])?$"
     emptyMatcher = re.compile(emptyString)
-    # open file from knowledgeFile path
+    # open file from knowledge
     with open(knowledgeFile) as knowledgeData:
         # build set of cleaned lines in knowledgeData
         knowledgeSet = {clean_text(token) for token in knowledgeData}
