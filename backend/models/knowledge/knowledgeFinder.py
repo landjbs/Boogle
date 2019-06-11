@@ -10,6 +10,9 @@ knowledgeProcessor = KeywordProcessor(case_sensitive=False)
 knowledgeProcessor.add_keyword('foo')
 knowledgeProcessor.add_keyword('bar')
 
+# dict mapping html divs to score  multiplier
+divScores = {'title':20, 'h1':5, 'p':1}
+
 # keywordDict = {keyword:(len(re.findall(keyword, pageText, re.IGNORECASE))) for keyword in keywordsFound}
 
 def find_rawTokens(inStr, knowledgeProcessor):
@@ -19,14 +22,17 @@ def find_rawTokens(inStr, knowledgeProcessor):
     """
     return set(knowledgeProcessor.extract_keywords(inStr))
 
-# def score_token(token, div):
-#     """
-#     Args: single knowledge token and html division where it occurred
-#     Returns: score of token weighted by
-#     """
+def score_token(token, freq, div):
+    """
+    Args: single knowledge token and html division where it occurred
+    Returns: score of token weighted by
+    """
+    divMultipier = divScores[div]
+    score = freq * divMultipier
+    return score
 
 
-def find_weightedTokens(divText, knowledgeProcessor):
+def find_weightedTokens(divText, div, knowledgeProcessor):
     """
     Returns dict mapping knowledge tokens to score assigned by score_token
     """
@@ -40,7 +46,9 @@ def find_weightedTokens(divText, knowledgeProcessor):
         tokenNum = len(re.findall(token, divText, flags=re.IGNORECASE))
         # find frequency of token usage in divText
         tokenFrequency = tokenNum / divLen
-        print(tokenFrequency)
+        # score token based on token, frequency, and div
+        tokenScore = score_token(token, tokenFrequency, div)
+        print(f"{token}: {tokenScore}")
 
 
 def find_weighted_knowledge(divDict):
@@ -56,7 +64,7 @@ def find_weighted_knowledge(divDict):
     """
     for div in divDict:
         divText = divDict[div]
-        weightedTokens = find_weightedTokens(divText, knowledgeProcessor)
+        weightedTokens = find_weightedTokens(divText, div, knowledgeProcessor)
 
         # tokenDict = (find_tokens(divDict[div], knowledgeProcessor))
         # tokenDict = dict(map(lambda k : (k[0], k[1]/2), tokenDict.items()))
