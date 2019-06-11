@@ -46,7 +46,7 @@ def scrape_dmoz_line(line):
     # skip page if not in english
     assert (detect_language(pageText) == 'en'), f"{url} not in English"
     # open file in top folder and write pageText in
-    with open(f"data/outData/dmozProcessed/{top}/{url}", 'w+') as file:
+    with open(f"data/outData/dmozProcessed/{top}/{url}.sav", 'w+') as file:
         file.write(pageText)
     return True
 
@@ -59,8 +59,6 @@ def scrape_dmoz_file(file, queueDepth=15, workerNum=25, outPath=""):
     """
     # queue to hold lines of file
     lineQueue = Queue(queueDepth)
-    # struct (list) to hold scraped data
-    outStore = Simple_List()
     # struct to keep track of metrics
     scrapeMetrics = Metrics()
 
@@ -70,12 +68,11 @@ def scrape_dmoz_file(file, queueDepth=15, workerNum=25, outPath=""):
             line = lineQueue.get()
             try:
                 # call helper to scrape line
-                pageDict = scrape_dmoz_line(line)
-                # add scraped pageDict to outStore list
-                outStore.add(pageDict)
+                scrape_dmoz_line(line)
                 # update scrape metrics
                 scrapeMetrics.add(error=False)
-            except:
+            except Exception as e:
+                print(f"\tERROR: {e}")
                 # update scrape metrics
                 scrapeMetrics.add(error=True)
             # log progress
@@ -100,8 +97,6 @@ def scrape_dmoz_file(file, queueDepth=15, workerNum=25, outPath=""):
     # save Simple_List() object in outPath if specifed
     if not (outPath == ""):
         save(outStore.data, outPath)
-
-    return(outStore)
 
 
 scrape_dmoz_file(file="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/inData/test.tab.tsv")
