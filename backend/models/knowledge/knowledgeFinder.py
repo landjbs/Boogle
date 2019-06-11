@@ -8,8 +8,16 @@ from flashtext import KeywordProcessor
 
 knowledgeProcessor = KeywordProcessor(case_sensitive=False)
 knowledgeProcessor.add_keyword('foo')
+knowledgeProcessor.add_keyword('bar')
 
 # keywordDict = {keyword:(len(re.findall(keyword, pageText, re.IGNORECASE))) for keyword in keywordsFound}
+
+def find_rawTokens(inStr, knowledgeProcessor):
+    """
+    Finds set of tokens used in inStr without scoring or count.
+    Used to tokenize search queries.
+    """
+    return set(knowledgeProcessor.extract_keywords(inStr))
 
 # def score_token(token, div):
 #     """
@@ -25,12 +33,12 @@ def find_weightedTokens(divText, knowledgeProcessor):
     # find number of words in divText
     divLen = len(divText.split())
     # use knowledgeProcessor to extract tokens from page text
-    tokensFound = knowledgeProcessor.extract_keywords(divText)
+    tokensFound = set(knowledgeProcessor.extract_keywords(divText))
     # iterate over the tokens found
     for token in tokensFound:
         # find number of occurences of a token in divText
         tokenNum = len(re.findall(token, divText, flags=re.IGNORECASE))
-        print(tokenNum)
+
 
 def find_weighted_knowledge(divDict):
     """
@@ -53,9 +61,11 @@ def find_weighted_knowledge(divDict):
 
 
 
+while True:
+    search = input('Search: ')
+    print(find_rawTokens(search))
 
-
-find_weighted_knowledge({'title':'foo bar', 'h1':'foo', 'p':'hello world'})
+# find_weighted_knowledge({'title':'foo foo foo bar', 'h1':'foo', 'p':'hello world'})
 
 
 
