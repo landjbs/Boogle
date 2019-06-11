@@ -15,18 +15,17 @@ First iteration actions:
 import re
 
 ## Matchers ##
-# matcher for any sequence of tabs, newlines, multiple spaces, and dashes
-spaceString = r"[\t|\n|\s|-]+"
-spaceMatcher = re.compile(spaceString)
-
 # matcher for things that look like html tags
-# tagString = r"(?<=<[^\s])[^<]+(?=<.+>)"
-tagString = r"<[\s]>[^<]+<.+>"
+tagString = r"<[^\s][^<]+>"
 tagMatcher = re.compile(tagString)
 
 # matcher for non-alpha or space characters
 stripString = r"[^a-zA-Z\s\t\t-]"
 stripMatcher = re.compile(stripString)
+
+# matcher for any sequence of tabs, newlines, multiple spaces, and dashes
+spaceString = r"[\t|\n|\s|-]+"
+spaceMatcher = re.compile(spaceString)
 
 ## Funcitons ##
 def clean_text(rawString):
