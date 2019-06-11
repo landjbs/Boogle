@@ -10,8 +10,8 @@ soley of non-alpha chars will be mapped to the English representation of the
 token (eg. & -> ampersand).
 These tokens are then converted into a flashtext matcher for ~constant time,
 greedy lookup of phrases and words. Flashtext is a great module based on this
-paper: https://arxiv.org/pdf/1711.00046.pdf.
-The matcher is applied in knowledgeFinder.
+paper: https://arxiv.org/pdf/1711.00046.pdf. The matcher is applied in
+knowledgeFinder.
 """
 
 import os, re
@@ -79,7 +79,7 @@ def build_freqDict(folderPath, knowledgeProcessor, outPath=""):
             # iterate over tokensFound
             for token in tokensFound:
                 # find number of occurences of token in current file
-                tokenNum = len(re.findall(f"(?<=\s){token}(?=[^a-zA-Z])", text, flags=re.IGNORECASE))
+                tokenNum = len(re.findall(f"(?<=[^a-zA-Z]){token}(?=[^a-zA-Z])", text, flags=re.IGNORECASE))
                 # find frequency of token use in current file
                 tokenFreq = tokenNum / textLen
                 # check if token has been seen before
@@ -90,7 +90,6 @@ def build_freqDict(folderPath, knowledgeProcessor, outPath=""):
                     # if see before, add current freq to first elt of token map and increment number occurences
                     rawDict[token][0] += tokenFreq
                     rawDict[token][1] += 1
-    print(rawDict)
     # lambda to normalize tokenFreq by number of pages
     normalizeFreq = lambda val : val[0] / val[1]
     # create normalized freqDict
