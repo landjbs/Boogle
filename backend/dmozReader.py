@@ -71,8 +71,7 @@ def scrape_dmoz_file(file, queueDepth=15, workerNum=25, outPath=""):
                 scrape_dmoz_line(line)
                 # update scrape metrics
                 scrapeMetrics.add(error=False)
-            except Exception as e:
-                print(f"\tERROR: {e}")
+            except:
                 # update scrape metrics
                 scrapeMetrics.add(error=True)
             # log progress
@@ -101,10 +100,4 @@ def scrape_dmoz_file(file, queueDepth=15, workerNum=25, outPath=""):
 
 scrape_dmoz_file(file="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/inData/dmoz_domain_category.tab.tsv")
 
-
-
-
-
-
-
-pass
+print("Done")
