@@ -1,23 +1,7 @@
-import pandas as pd
-import sys, os
-
-for folder in ['dataStructures', 'crawlers', 'data']:
-    sys.path.append(os.path.abspath(os.path.join('..', folder)))
-
-from crawlers.urlAnalyzer import url_to_pageString
-from htmlAnalyzer import get_pageText, detect_language
+from crawlers.htmlAnalyzer import get_pageText
 import re
 from threading import Thread
 from queue import Queue
-from simpleStructures import Simple_List, Metrics
-from objectSaver import save, load
-
-## knowledgeToken stuff ###
-from knowledgeClassifier.knowledgeTokenizer import build_knowledgeProcessor, find_knowledgeTokens
-
-knowledgeList = list(load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set'))
-knowledgeProcessor = build_knowledgeProcessor(knowledgeList)
-
 
 ### Match objects compiled for quick calls in functions ###
 # matcher for url in dmozDF line

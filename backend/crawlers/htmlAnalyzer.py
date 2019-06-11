@@ -31,7 +31,7 @@ def clean_pageText(rawText, title):
 
 def get_pageText(url):
     """
-    Gets only pageText from pageString using BeautifulSoup.
+    Gets only pageText from url using BeautifulSoup and urlAnalyzer.
     Requires recreation of BeautifulSoup() object so don't call in
     htmlAnalyzer.py.
     """
