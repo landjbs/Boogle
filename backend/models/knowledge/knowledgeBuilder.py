@@ -14,9 +14,10 @@ paper: https://arxiv.org/pdf/1711.00046.pdf.
 The matcher is applied in knowledgeFinder.
 """
 
+import os
+from flashtext import KeywordProcessor
 from dataStructures.objectSaver import save, load
 from models.processing.cleaner import clean_text
-from flashtext import KeywordProcessor
 
 
 ## Functions ##
@@ -37,8 +38,6 @@ def build_knowledgeSet(knowledgeFile, outPath=""):
         save(knowledgeSet, outPath)
     return knowledgeSet
 
-# knowledgeList = list(load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set'))
-
 
 def build_knowledgeProcessor(knowledgeSet, outPath=""):
     """ Builds flashtext matcher for words in knowledgeSet iterable """
@@ -55,8 +54,17 @@ def build_knowledgeProcessor(knowledgeSet, outPath=""):
         save(knowledgeProcessor, outPath)
     return knowledgeProcessor
 
-# knowledgeProcessor = load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeProcessor.match')
-# knowledgeProcessor = build_knowledgeProcessor(knowledgeList)
+
+def build_freqDict(folderPath, knowledgeProcessor):
+    """
+    Args: folderPath to folder containing files from which to read,
+    knowledgeProcessor for token extraction.
+    Returns: dict mapping knowledge tokens to average frequency of occurence in
+    files. Only tokens found in files will have associated frequency.
+    """
+    files =
+    for file in files:
+        with open()
 
 
 
