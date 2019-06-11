@@ -15,13 +15,12 @@ First iteration actions:
 import re
 
 ## Matchers ##
-# matcher for any sequence of tabs, newlines, multiple spaces, dashes,
-# and anything surrounded by <>
+# matcher for any sequence of tabs, newlines, multiple spaces, and dashes
 spaceString = r"[\t|\n|\s|-]+"
 spaceMatcher = re.compile(spaceString)
 
-## matcher for things that look like html tags
-tagString = r"(?<=<)[^<]+(?=>)"
+# matcher for things that look like html tags
+tagString = r"(?<=<[^\s])[^<]+(?=>)"
 tagMatcher = re.compile(tagString)
 
 # matcher for non-alpha or space characters
@@ -31,10 +30,8 @@ stripMatcher = re.compile(stripString)
 ## Funcitons ##
 def clean_text(rawString):
     """ Cleans rawToken by stripping parentheses and replacing _ with spaces """
-    # replace spaceMatcher with " "
-    spacedString = re.sub(spaceMatcher, " ", rawString)
-    # replace tagMatcher with " "
-    spacedString = re.sub(tagMatcher, " ", spacedString)
+    # replace spaceMatcher and tagMatcher with " "
+    spacedString = re.sub(tagMatcher, " ", re.sub(spaceMatcher, " ", rawString))
     # replace stripMatcher with "" in rawString and remove trailing whitespace
     cleanedString = re.sub(stripMatcher, "", spacedString).strip()
     # lowercase rawString
