@@ -5,7 +5,6 @@ import smart_open # for opening documents
 from warnings import simplefilter
 import multiprocessing # for faster model training
 import matplotlib.pyplot as plt
-import os
 
 # ignore warnings
 simplefilter("ignore")
@@ -93,7 +92,7 @@ def visualize_docVecs(vecDict):
     plt.show()
 
 
-# Train model #
+# Train imdb model #
 # textList = []
 # for doc in os.listdir('aclImdb/train/neg'):
 #     with open('aclImdb/train/neg/' + doc, 'r') as file:
@@ -107,7 +106,6 @@ def visualize_docVecs(vecDict):
 #
 #
 # train_d2v(textList)
-
 
 
 
