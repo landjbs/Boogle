@@ -15,14 +15,11 @@ Functions:
 import re
 
 ## Matchers ##
-# matcher for things that look like html tags
+# matches things that look like a single html tag
 tagMatcher = re.compile(r"<[^\s][^<]+>")
-
-# matcher for non-alpha or space characters
-stripMatcher = re.compile(r"[^a-zA-Z\s\t\t-]")
-
-# matcher for any sequence of tabs, newlines, multiple spaces, underscores,
-# and dashes
+# matches non-alpha or space characters
+stripMatcher = re.compile(r"[^a-zA-Z\s\t\n-_]")
+# matches any sequence of tabs, newlines, spaces, underscores, and dashes
 spaceMatcher = re.compile(r"[\t|\n|\s|-|_]+")
 
 ## Funcitons ##

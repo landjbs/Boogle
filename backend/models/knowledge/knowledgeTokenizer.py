@@ -66,25 +66,6 @@ def find_knowledgeTokens(pageText, knowledgeProcessor):
     return keywordDict
 
 
-# ### TESTING ###
-# knowledgeSet = build_knowledgeSet("enwiki-latest-all-titles-in-ns0",
-#                     outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set")
-
-# print(knowledgeSet)
-
-# knowledgeProcessor = build_knowledgeProcessor(knowledgeList,
-#                         outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeProcessor.match")
-#
-# print("Done")
-#
-# while True:
-#     test = input("Search: ")
-#     test = clean_knowledgeToken(test)
-#     out = find_knowledgeTokens(test, knowledgeProcessor)
-#     print(out)
-
-
-
 
 
 
