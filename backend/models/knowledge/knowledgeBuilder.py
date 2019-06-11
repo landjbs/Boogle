@@ -10,8 +10,6 @@ soley of non-alpha chars will be mapped to the English representation of the
 token (eg. & -> ampersand)
 """
 
-import re
-from flashtext import KeywordProcessor
 from dataStructures.objectSaver import save, load
 from models.processing.cleaner import clean_text
 
