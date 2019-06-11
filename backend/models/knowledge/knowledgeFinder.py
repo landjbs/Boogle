@@ -13,6 +13,16 @@ knowledgeProcessor.add_keyword('bar')
 # dict mapping html divs to score  multiplier
 divScores = {'title':20, 'h1':5, 'p':1}
 
+def build_freqDict(files, knowledgeProcessor):
+    """
+    Args: folderPath to folder containing files from which to read,
+    knowledgeProcessor for token extraction.
+    Returns: dict mapping knowledge tokens to average frequency of occurence in
+    files. Only tokens found in files will have associated frequency.
+    """
+    for file in files:
+        with open()
+
 # keywordDict = {keyword:(len(re.findall(keyword, pageText, re.IGNORECASE))) for keyword in keywordsFound}
 
 def find_rawTokens(inStr, knowledgeProcessor):

@@ -1,5 +1,8 @@
 """
-Document vectorization is a method of mapping a text document into
+Document vectorization is a method of mapping a text document into a vector
+of n values. While the length of this vector is determined by the designer,
+the relative values of different documents are assigned by a machine learning
+algorithm trained on
 """
 
 
