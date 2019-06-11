@@ -1,7 +1,9 @@
+import os
 from crawlers.htmlAnalyzer import get_pageText
 import re
 from threading import Thread
 from queue import Queue
+from dataStructures.simpleStructures import Metrics
 
 ### Match objects compiled for quick calls in functions ###
 # matcher for url in dmozDF line
@@ -16,11 +18,16 @@ folderMatcher = re.compile(folderString)
 topString = r'(?<="Top/)[^/]+'
 topMatcher = re.compile(topString)
 
+
+
 # indexed list of top of path for mapping to number
 topList = ['Arts', 'Business', 'Computers', 'Games', 'Health', 'Home', 'News',
             'Recreation', 'Reference', 'Regional', 'Science', 'Shopping',
             'Society', 'Sports', 'Kids_and_school']
 
+# # make the folders
+# for folder in topList:
+#     os.mkdir("data/outData/dmozProcessed/" + folder)
 
 ### Functions to scrape dmoz tsv file into dataframe for model training ###
 def encode_top(top):
@@ -29,21 +36,19 @@ def encode_top(top):
 
 
 def scrape_dmoz_line(line):
-    """ Helper to convert line dmoz tsv file to dict of url, folder path,  """
+    """ Helper to convert line dmoz tsv file to file of pageText """
     # find url, top, and folder with regexp match
     url = (urlMatcher.findall(line))[0]
     folder = (folderMatcher.findall(line))[0]
     top = (topMatcher.findall(line))[0]
-    # fetch pageString from url
-    pageString = url_to_pageString(url)
-    # get rendered text on pageString
-    pageText = get_pageText(pageString)
-    print(find_knowledgeTokens(pageText, knowledgeProcessor))
+    # fetch pageText from url
+    pageText = get_pageText(url)
     # skip page if not in english
     assert (detect_language(pageText) == 'en'), f"{url} not in English"
-    # create list of training data to append to Simple struct
-    outList = [url, top, folder, pageText]
-    return outList
+    # open file in top folder and write pageText in
+    with open(f"data/outData/dmozProcessed/{top}/{url}", 'w+') as file:
+        file.write(pageText)
+    return True
 
 
 def scrape_dmoz_file(file, queueDepth=15, workerNum=25, outPath=""):
@@ -99,35 +104,7 @@ def scrape_dmoz_file(file, queueDepth=15, workerNum=25, outPath=""):
     return(outStore)
 
 
-scrape_dmoz_file(file="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/inData/test.tab.tsv",
-                    outPath="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/dmoz.simple")
-
-
-#### MODEL STUFF ####
-
-# from keras.models import Sequential
-
-# dmozDF = pd.DataFrame(dmozSimple.data, columns=["url", "top", "path", "pageText"])
-#
-# print("DMOZ HEAD:\n:", dmozDF.head, end=f"\n{'-'*40}\n")
-#
-# dmozDF['pageText'] = dmozDF['pageText'].apply(lambda text : tv.tokenize(text))
-#
-# dmozDF['pageText'] = dmozDF['pageText'].apply(lambda tokenList : tv.vectorize(tokenList))
-#
-# dmozDF['top'] = dmozDF['top'].apply(lambda top : encode_top(top))
-#
-# from keras.utils import to_categorical
-#
-# dmozDF['top'] = to_categorical(dmozDF['top'])
-#
-# print(dmozDF['top'])
-
-
-# print(f"\n\n{'-'*60}\nDMOZ MODIFIED:\n{dmozDF.head}\n{'-'*60}")
-
-# print(f"{'-'*40}Top:\n{dmozDF['top']}")
-
+scrape_dmoz_file(file="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/inData/test.tab.tsv")
 
 
 
