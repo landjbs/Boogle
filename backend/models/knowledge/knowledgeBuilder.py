@@ -14,7 +14,7 @@ paper: https://arxiv.org/pdf/1711.00046.pdf.
 The matcher is applied in knowledgeFinder.
 """
 
-import os
+import os, re
 from flashtext import KeywordProcessor
 from dataStructures.objectSaver import save, load
 from models.processing.cleaner import clean_text
@@ -54,17 +54,54 @@ def build_knowledgeProcessor(knowledgeSet, outPath=""):
         save(knowledgeProcessor, outPath)
     return knowledgeProcessor
 
+knowledgeProcessor = KeywordProcessor(case_sensitive=False)
+knowledgeProcessor.add_keyword('foo')
+knowledgeProcessor.add_keyword('bar')
 
-def build_freqDict(folderPath, knowledgeProcessor):
+
+def build_freqDict(folderPath, knowledgeProcessor=knowledgeProcessor):
     """
     Args: folderPath to folder containing files from which to read,
     knowledgeProcessor for token extraction.
     Returns: dict mapping knowledge tokens to average frequency of occurence in
     files. Only tokens found in files will have associated frequency.
     """
-    files =
+    # initialize dict to store sum of frequencies and number of with token
+    rawDict = {}
+    # find and iterate over list of files within folderPath
+    files = os.listdir(folderPath)
     for file in files:
-        with open()
+        with open(f"{folderPath}/{file}") as FileObj:
+            # read in the current file
+            text = FileObj.read()
+            # find number of words in the current file
+            textLen = len(text.split())
+            # find tokens in the current file
+            tokensFound = set(knowledgeProcessor.extract_keywords(text))
+            # iterate over tokensFound
+            for token in tokensFound:
+                # find number of occurences of token in current file
+                tokenNum = len(re.findall(token, text, flags=re.IGNORECASE))
+                # find frequency of token use in current file
+                tokenFreq = tokenNum / textLen
+                # check if token has been seen before
+                if not token in rawDict:
+                    # if not seen before, add token map to current freq and one occurence
+                    rawDict.update({token:[tokenFreq, 1]})
+                else:
+                    # if see before, add current freq to first elt of token map and increment number occurences
+                    rawDict[token][0] += tokenFreq
+                    rawDict[token][1] += 1
+            
+
+
+
+
+
+
+
+
+
 
 
 
