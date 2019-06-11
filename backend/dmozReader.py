@@ -1,5 +1,5 @@
 import os
-from crawlers.htmlAnalyzer import get_pageText
+from crawlers.htmlAnalyzer import get_pageText, detect_language
 import re
 from threading import Thread
 from queue import Queue
