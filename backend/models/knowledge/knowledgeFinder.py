@@ -38,6 +38,9 @@ def find_weightedTokens(divText, knowledgeProcessor):
     for token in tokensFound:
         # find number of occurences of a token in divText
         tokenNum = len(re.findall(token, divText, flags=re.IGNORECASE))
+        # find frequency of token usage in divText
+        tokenFrequency = tokenNum / divLen
+        print(tokenFrequency)
 
 
 def find_weighted_knowledge(divDict):
@@ -61,11 +64,7 @@ def find_weighted_knowledge(divDict):
 
 
 
-while True:
-    search = input('Search: ')
-    print(find_rawTokens(search))
-
-# find_weighted_knowledge({'title':'foo foo foo bar', 'h1':'foo', 'p':'hello world'})
+find_weighted_knowledge({'title':'foo foo foo bar', 'h1':'foo', 'p':'hello world'})
 
 
 
