@@ -7,11 +7,16 @@ knowledge tokens that any reasonable search can be answered by the contents of
 a lookup bucket, but not so many as to take up redundant space.
 Knowledge tokens are only permitted to be words and phrases; tokens comprised
 soley of non-alpha chars will be mapped to the English representation of the
-token (eg. & -> ampersand)
+token (eg. & -> ampersand).
+These tokens are then converted into a flashtext matcher for ~constant time,
+greedy lookup of phrases and words. Flashtext is a great module based on this
+paper: https://arxiv.org/pdf/1711.00046.pdf.
+The matcher is applied in knowledgeFinder.
 """
 
 from dataStructures.objectSaver import save, load
 from models.processing.cleaner import clean_text
+from flashtext import KeywordProcessor
 
 
 ## Functions ##
@@ -52,16 +57,6 @@ def build_knowledgeProcessor(knowledgeSet, outPath=""):
 
 # knowledgeProcessor = load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeProcessor.match')
 # knowledgeProcessor = build_knowledgeProcessor(knowledgeList)
-
-def find_knowledgeTokens(pageText, knowledgeProcessor):
-    """
-    Returns dict mapping knowledge tokens found in text to number of occurences
-    """
-    # use knowledgeProcessor to extract tokens from page text
-    keywordsFound = knowledgeProcessor.extract_keywords(pageText)
-    # create dict mapping keywords to number of times used in pageText using re.findall()
-    keywordDict = {keyword:(len(re.findall(keyword, pageText, re.IGNORECASE))) for keyword in keywordsFound}
-    return keywordDict
 
 
 
