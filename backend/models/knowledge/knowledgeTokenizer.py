@@ -1,8 +1,16 @@
 """
-TO COMPLETE
+Generates set of knowledge tokens, which comprize the keys in the topDict of
+the key-val store described in dataStructures.thicctable. These tokens represent
+the extent of top-level lookup buckets avaiable to users and, as such, follow
+the philosophy of comprehensive concision. There should be enough knowledge
+tokens that any reasonable search can be answered by the contents of a lookup
+bucket, but not so many as to take up redundant space.
+Knowledge tokens are only permitted to be words and phrases; tokens comprised
+soley of non-alpha chars will be mapped to the English representation of the
+token (eg. & -> ampersand)
 """
+
 import re
-import numpy as np
 from flashtext import KeywordProcessor
 from dataStructures.objectSaver import save, load
 from models.processing.cleaner import clean_text
@@ -41,6 +49,7 @@ def build_knowledgeProcessor(knowledgeSet, outPath=""):
         print(f"\tBuilding knowledgeProcessor: {i}", end="\r")
         knowledgeProcessor.add_keyword(keyword)
     print("\nknowledgeProcessor Built")
+    # save knowledgeProcess to outPath if given
     if not (outPath==""):
         save(knowledgeProcessor, outPath)
     return knowledgeProcessor

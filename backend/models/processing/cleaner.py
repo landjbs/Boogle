@@ -5,7 +5,7 @@ This search engine is built around the desire to store comprehensive search
 results as concisely as possible, a philosophy extends to my text
 processing: everything that can be removed without interfering with search
 result, should be.
-First iteration actions:
+Functions:
     -clean_text(): Primarily used to clean pageStrings before analysis
         -Replace \t, \n, and multiple spaces with a single space
         -Remove non-alpha characters
@@ -31,11 +31,11 @@ def clean_text(rawString):
     space, removing non-alpha chars, and lowercasing alpha chars
     """
     # replace spaceMatcher and tagMatcher with " "
-    detaggeddString = re.sub(tagMatcher, " ", rawString)
+    detaggedString = re.sub(tagMatcher, " ", rawString)
     # replace stripMatcher with ""
-    cleanedString = re.sub(stripMatcher, "", detaggeddString)
+    cleanedString = re.sub(stripMatcher, "", detaggedString)
     # replace spaceMatcher with " " and strip surround whitespace
     spacedString = re.sub(spaceMatcher, " ", cleanedString).strip()
-    # lowercase
+    # lowercase the alpha chars that remain
     loweredString = spacedString.lower()
     return loweredString
