@@ -1,3 +1,8 @@
+"""
+Document vectorization is a method of mapping a text document into
+"""
+
+
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from gensim.parsing.preprocessing import strip_numeric, remove_stopwords
 import nltk
