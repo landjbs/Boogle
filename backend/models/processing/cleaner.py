@@ -29,10 +29,13 @@ stripMatcher = re.compile(stripString)
 
 ## Funcitons ##
 def clean_text(rawString):
-    """ Cleans rawToken by stripping parentheses and replacing _ with spaces """
+    """
+    Cleans rawString but replacing spaceMatcher and tagMatcher with a single
+    space, removing non-alpha chars, and lowercasing alpha chars
+    """
     # replace spaceMatcher and tagMatcher with " "
     spacedString = re.sub(tagMatcher, " ", re.sub(spaceMatcher, " ", rawString))
-    # replace stripMatcher with "" in rawString and remove trailing whitespace
+    # replace stripMatcher with "" and remove trailing whitespace
     cleanedString = re.sub(stripMatcher, "", spacedString).strip()
     # lowercase rawString
     loweredString = cleanedString.lower()
