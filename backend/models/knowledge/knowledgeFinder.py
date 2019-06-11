@@ -10,17 +10,19 @@ knowledgeProcessor = KeywordProcessor(case_sensitive=False)
 knowledgeProcessor.add_keyword('foo')
 
 
-# def score_token(token, div):
-#     """
-#     Args: single knowledge token and html division where it occurred
-#     Returns: score of token weighted by
-#     """
+def score_token(token, div):
+    """
+    Args: single knowledge token and html division where it occurred
+    Returns: score of token weighted by
+    """
 
 
-def find_tokens(pageText, knowledgeProcessor):
+def find_tokens(divText, knowledgeProcessor):
     """
     Returns dict mapping knowledge tokens to score assigned by score_token
     """
+    # find number of words in divText
+    divLen = len(divText.split())
     # use knowledgeProcessor to extract tokens from page text
     keywordsFound = knowledgeProcessor.extract_keywords(pageText)
     # create dict mapping keywords to number of times used in pageText using re.findall()
