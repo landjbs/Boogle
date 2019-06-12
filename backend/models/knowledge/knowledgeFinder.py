@@ -24,52 +24,47 @@ def find_rawTokens(inStr, knowledgeProcessor):
     return set(knowledgeProcessor.extract_keywords(inStr))
 
 
-def score_token(token, observedFreq, div):
-    """
-    Args: single knowledge token, frequency in current text, and html division
-    where it occurred.
-    Returns: score of token weighted by
-    """
-    # find average frequency of token from freqDict; no key in freqDict, avgFreq <- 0
-    try:
-        avgFreq = freqDict[token]
-    except:
-        avgFreq = 0
-    # normalize observed frequency by subtracting average frequency
-    normFreq = observedFreq - avgFreq
-    # if the normalized frequency is less than or equal to zero, score is zero
-    if normFreq <= 0:
-        score = 0
-    else:
-        # find the multiplier for the page div from divScores
-        divMultipier = divScores[div]
-        # token score is normalized frequency times div multiplier
-        score = normFreq * divMultipier
-    return score
-
-def analyze_token(token, divText=divText, ):
-    """ Helper to call """
-
 def find_scoredTokens(divText, div, knowledgeProcessor, cutoff):
     """
     Args: Text of division being analyzed, name of division, processor to find
     tokens, score cutoff to include token in dict.
     Returns: Dict of tokens in divText mapping to score assigned by score_token
     """
-    # initialize dict to hold token scores
-    scoresDict = {}
     # find number of words in divText
     divLen = len(divText.split())
     # use knowledgeProcessor to extract tokens from page text
     tokensFound = set(knowledgeProcessor.extract_keywords(divText))
-    # iterate over the tokens found
-    for token in tokensFound:
+
+    def score_token(token):
+        """
+        Helper to score token as function of frequency in current text relative
+        to average frequency and multiplier associated with page div
+        """
         # find number of occurences of a token in divText
         tokenNum = len(re.findall(f"(?<![a-zA-Z]){token}(?![a-zA-Z])", divText, flags=re.IGNORECASE))
         # find frequency of token usage in divText
         tokenFrequency = tokenNum / divLen
-        # score token based on token, frequency, and div
-        tokenScore = score_token(token, tokenFrequency, div)
+        # find average frequency of token from freqDict; no key in freqDict, avgFreq <- 0
+        try:
+            avgFreq = freqDict[token]
+        except:
+            avgFreq = 0
+        # normalize observed frequency by subtracting average frequency
+        normFreq = tokenFrequency - avgFreq
+        # if the normalized frequency is less than or equal to zero, score is zero
+        if normFreq <= 0:
+            score = 0
+        else:
+            # find the multiplier for the page div from divScores
+            divMultipier = divScores[div]
+            # token score is normalized frequency times div multiplier
+            score = normFreq * divMultipier
+        return score
+
+    # apply analyze_token to create dict mapping tokens to scores
+    scoresDict = {token:score_token(token) for token in tokensFound}
+    return scoresDict
+
 
 
 
@@ -88,7 +83,7 @@ def find_weighted_knowledge(divDict):
     for div in divDict:
         divText = divDict[div]
         print(div)
-        weightedTokens = find_weightedTokens(divText, div, knowledgeProcessor)
+        weightedTokens = find_scoredTokens(divText, div, knowledgeProcessor, 0)
 
         # tokenDict = (find_tokens(divDict[div], knowledgeProcessor))
         # tokenDict = dict(map(lambda k : (k[0], k[1]/2), tokenDict.items()))
