@@ -17,4 +17,5 @@ for folder in os.listdir(PATH):
             count += 1
             print(f"Analyzing {count}", end="\r")
 
-dv.train_d2v(docList, path="models/binning/d2vModel.sav")
+
+# dv.train_d2v(docList, path="models/binning/d2vModel.sav")
