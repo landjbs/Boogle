@@ -16,7 +16,7 @@ import re
 
 ## Matchers ##
 # matches things that look like a single html tag
-tagMatcher = re.compile(r"<[^\s][^<]+>")
+tagMatcher = re.compile(r"<[^\s][^<]*>")
 # matches non-alpha or space characters (dash must be at end)
 stripMatcher = re.compile(r"[^a-zA-Z\s\t\n_-]")
 # matches any sequence of tabs, newlines, spaces, underscores, and dashes
@@ -37,3 +37,28 @@ def clean_text(rawString):
     # lowercase the alpha chars that remain
     loweredString = spacedString.lower()
     return loweredString
+
+def end_test(rawString):
+    endMatcher = r"(?<=[a-zA-z])(?P<punc>[.!?])(?=\s[A-Z])"
+    return re.sub(r"(?<=[a-zA-z])(?P<punc>[.!?])(?=\s[A-Z])", " \g<punc>", rawString)
+
+
+while True:
+    test = input("Test: ")
+    print(end_test(test))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+pass

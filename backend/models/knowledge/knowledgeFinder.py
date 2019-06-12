@@ -49,21 +49,26 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
         if normFreq <= 0:
             score = 0
         else:
-            # find the multiplier for the page div from divScores
-            divMultipier = divScores[div]
+            # find the multiplier for the page div from divScores, 0 if not specified
+            try:
+                divMultipier = divScores[div]
+            except:
+                divMultipier = 1
             # token score is normalized frequency times div multiplier
             score = normFreq * divMultipier
         return score
 
     # apply analyze_token to create dict mapping tokens to scores
     scoreDict = {token:score_token(token) for token in tokensFound}
+    scoreDict = dict(filter(lambda token:scoreDict[token]>cutoff, scoreDict))
     return scoreDict
 
 
-def score_divDict(divDict, knowledgeProcessor):
+def score_divDict(divDict, knowledgeProcessor, freqDict):
     """
     Args: Dict mapping page divisions to cleaned content (eg. {'title':'foo',
-    'p':'hello world'})
+    'p':'hello world'}), knowledgeProcessor to use for matching, and dict of
+    average knowledge token frequency.
     Returns: Dict mapping all knowledge tokens found in divDict to score
     determined by div found and relative frequency.
     """
