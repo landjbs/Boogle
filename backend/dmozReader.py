@@ -104,3 +104,17 @@ def scrape_dmoz_file(file, queueDepth=15, workerNum=25, outPath=""):
 scrape_dmoz_file(file="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/inData/dmoz_domain_category.tab.tsv")
 
 print("Done")
+
+
+
+
+
+
+
+
+
+
+
+
+
+pass

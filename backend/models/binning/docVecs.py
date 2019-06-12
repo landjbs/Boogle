@@ -30,11 +30,16 @@ def vector_tokenize(inStr):
     return tokens
 
 
-def train_d2v(data, path='d2vModel.sav', max_epochs=100, vec_size=300, alpha=0.025):
+def train_d2v(folderPath, outPath='d2vModel.sav', max_epochs=100, vec_size=300, alpha=0.025):
     """
-    Trains doc vec model on iterable of raw docs and saves model to path
+    Trains doc vec model contents of folderPath of raw docs and saves model to outPath
     """
-    print(f"\n{'-'*40}\nTraining '{path}' model:")
+    print(f"\n{'-'*40}\nTraining '{outPath}' model:")
+
+    def tag_doc(file, index):
+        """ Helper to tag documents with unique int (the index of doc in folder iterable)"""
+
+    # iterate over files in folderPath
 
     # list mapping list of document tokens to unique integer tag
     tagged_data = [TaggedDocument(words=vector_tokenize(_d), tags=[str(i)]) for i, _d in enumerate(data)]
@@ -68,9 +73,9 @@ def train_d2v(data, path='d2vModel.sav', max_epochs=100, vec_size=300, alpha=0.0
         # fix the learning rate, no decay
         model.min_alpha = model.alpha
 
-    # save model to path
-    model.save(path)
-    print(f"Model saved to '{path}'.\n{'-'*40}")
+    # save model to outPath
+    model.save(outPath)
+    print(f"Model saved to '{outPath}'.\n{'-'*40}")
 
 
 def vectorize_document(doc, modelPath="d2vModel.sav"):
