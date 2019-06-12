@@ -51,7 +51,6 @@ def scrape_dmoz_line(line):
     print(top, url)
     return True
 
-# 482478
 
 def scrape_dmoz_file(file, queueDepth=15, workerNum=25, outPath=""):
     """
