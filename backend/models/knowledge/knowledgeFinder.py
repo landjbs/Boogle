@@ -4,17 +4,10 @@ built in models.knowledge.knowledgeBuilder.
 """
 
 import re
-from flashtext import KeywordProcessor
 
-knowledgeProcessor = KeywordProcessor(case_sensitive=False)
-knowledgeProcessor.add_keyword('foo')
-knowledgeProcessor.add_keyword('bar')
-knowledgeProcessor.add_keyword('hello')
 
 # dict mapping html divs to score  multiplier
 divScores = {'title':20, 'h1':5, 'p':1}
-freqDict = {'foo':0.4, 'bar':0.01}
-
 
 def find_rawTokens(inStr, knowledgeProcessor):
     """
@@ -24,10 +17,11 @@ def find_rawTokens(inStr, knowledgeProcessor):
     return set(knowledgeProcessor.extract_keywords(inStr))
 
 
-def find_scoredTokens(divText, div, knowledgeProcessor, cutoff):
+def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
     """
     Args: Text of division being analyzed, name of division, processor to find
-    tokens, score cutoff to include token in dict.
+    tokens, dict of average word frequencies, score cutoff to include token in
+    dict.
     Returns: Dict of tokens in divText mapping to score assigned by score_token
     """
     # find number of words in divText
@@ -66,10 +60,7 @@ def find_scoredTokens(divText, div, knowledgeProcessor, cutoff):
     return scoreDict
 
 
-
-
-
-def score_divDict(divDict):
+def score_divDict(divDict, knowledgeProcessor):
     """
     Args: Dict mapping page divisions to cleaned content (eg. {'title':'foo',
     'p':'hello world'})
@@ -83,7 +74,7 @@ def score_divDict(divDict):
         # get text inside div
         divText = divDict[div]
         # get dict of tokens in divText and their scores
-        divScores = find_scoredTokens(divText, div, knowledgeProcessor, 0)
+        divScores = find_scoredTokens(divText, div, knowledgeProcessor, freqDict, 0)
         # iterate over found tokens, adding their scores to the divDict
         for token in divScores:
             if token in scoreDict:
