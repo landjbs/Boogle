@@ -1,9 +1,12 @@
-import os
-from crawlers.htmlAnalyzer import get_pageText, detect_language
+from os import mkdir
 import re
 from threading import Thread
 from queue import Queue
 from dataStructures.simpleStructures import Metrics
+from crawlers.htmlAnalyzer import get_pageText, detect_language
+
+
+print(f"{'-'*80}THIS COMPUTER IS WORKING ON IMPORTANT THINGS—PLEASE DON'T CLOSE{'-'*80}")
 
 ### Match objects compiled for quick calls in functions ###
 # matcher for url in dmozDF line
@@ -27,7 +30,7 @@ topList = ['Arts', 'Business', 'Computers', 'Games', 'Health', 'Home', 'News',
 
 # # make the folders
 # for folder in topList:
-#     os.mkdir("data/outData/dmozProcessed/" + folder)
+#     mkdir("data/outData/dmozProcessed/" + folder)
 
 ### Functions to scrape dmoz tsv file into dataframe for model training ###
 def encode_top(top):
@@ -48,7 +51,6 @@ def scrape_dmoz_line(line):
     # open file in top folder and write pageText in
     with open(f"data/outData/dmozProcessed/{top}/{url}.sav", 'w+') as file:
         file.write(pageText)
-    print(top, url)
     return True
 
 

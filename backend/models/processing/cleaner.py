@@ -41,24 +41,3 @@ def clean_text(rawString):
 def end_test(rawString):
     """ Adds space before sentence-ending punctuation. Not yet used. """
     return re.sub(r"(?<=[a-zA-z])(?P<punc>[.!?])(?=\s[A-Z])", " \g<punc>", rawString)
-
-
-while True:
-    test = input("Test: ")
-    print(clean_text(test))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-pass
