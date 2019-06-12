@@ -10,7 +10,7 @@ import langid # to classify language of pageString
 from bs4 import BeautifulSoup
 import crawlers.urlAnalyzer as ua
 from models.processing.cleaner import clean_text
-from models.knowledge.knowledgeTokenizer import find_knowledgeTokens
+# from models.knowledge.knowledgeReader import find_knowledgeTokens
 
 
 # image string
@@ -39,12 +39,15 @@ def get_pageText(url):
     curSoup = BeautifulSoup(rawString, "html.parser")
     rawText = curSoup.get_text()
     title = curSoup.title.string
-    cleanText = clean_pageText(rawText, title)
-    return cleanText
+    cleanedText = clean_pageText(rawText, title)
+    return cleanedText
 
 
 def get_links(soup):
-    """ Returns list of all valid links from pageString """
+    """
+    Returns list of all valid links from pageString.
+    Must work on raw string: cleaning destroys links!
+    """
     # get list of all <a> tags in soup
     a_list = soup.find_all('a', href=True)
     # get list of validated urls from <a> tag list
