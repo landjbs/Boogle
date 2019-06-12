@@ -39,15 +39,14 @@ def train_d2v(folderPath, outPath='d2vModel.sav', max_epochs=100, vec_size=300, 
 
     def tag_doc(file, index):
         """
-        Helper to tag documents with unique int
-        (the index of doc in folder iterable)
+        Helper to tag documents with unique int (index of doc in folder)
         """
         with open(f"{folderPath}/{file}") as FileObj:
             text = FileObj.read()
             tokenized_text = vector_tokenize(text)
         return TaggedDocument(words=tokenized_text, tags=[str(index)]
 
-    # create
+    # create list of tagged texts from files in folderPath
     tagged_data = [tag_doc(file, i) for i, file in enumerate(listdir(folderPath))]
 
     # list mapping list of document tokens to unique integer tag

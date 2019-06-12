@@ -1,3 +1,11 @@
+"""
+Employs code from a variety of bakend subfolders to train models
+designed in backend/models. Models are trained in the top level
+and then sent down to data/outData for storage. A top level trainer
+is helpful because it has access to all the subfolders of the backend
+and no module packaging is necessary.
+"""
+
 import models.binning.docVecs as dv
 import os
 
