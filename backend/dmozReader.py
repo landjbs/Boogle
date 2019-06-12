@@ -48,7 +48,7 @@ def scrape_dmoz_line(line):
     # open file in top folder and write pageText in
     with open(f"data/outData/dmozProcessed/{top}/{url}.sav", 'w+') as file:
         file.write(pageText)
-    print(pageText)
+    print(top, url)
     return True
 
 # 482478
