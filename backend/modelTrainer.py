@@ -7,7 +7,6 @@ and no module packaging is necessary.
 """
 
 import models.binning.docVecs as dv
-import os
 
 #  584156 URLs analyzed with 396544 errors!
 
