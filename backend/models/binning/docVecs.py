@@ -1,8 +1,17 @@
 """
 Document vectorization is a method of mapping a text document into a vector
-of n values. While the length of this vector is determined by the designer,
+of n values. While the length of this vector is determined by the programmer,
 the relative values of different documents are assigned by a machine learning
-algorithm trained on
+algorithm trained for word and phrase prediction on BOW and PV-DM constructed
+from a training corpus. The approach is detailed in:
+https://cs.stanford.edu/~quocle/paragraph_vector.pdf.
+docVecs contains functions for training and applying such a model to vectorize
+pageText extracted from urls during scraping. The spatial relationship between
+paragraph vectors is examined in models/binning/clustering, which attempts
+to find clusters within pages that have the knowledge tokens. By clustering
+the contents of a val list in the thicctable key-val store, I hope to allow
+for more precise, intent-specific search results than those obtained via a
+simple reverse index.
 """
 
 

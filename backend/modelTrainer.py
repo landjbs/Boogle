@@ -12,8 +12,6 @@ import os
 #  584156 URLs analyzed with 396544 errors!
 
 PATH = 'data/outData/dmozProcessed'
-# iterable of pageTexts for training on
-docList = []
 count = 0
 
 for folder in os.listdir(PATH):
