@@ -4,6 +4,7 @@ from threading import Thread
 from queue import Queue
 from dataStructures.simpleStructures import Metrics
 from crawlers.htmlAnalyzer import get_pageText, detect_language
+import sys 
 
 
 print(f"{'-'*80}THIS COMPUTER IS WORKING ON IMPORTANT THINGS—PLEASE DON'T CLOSE{'-'*80}")
