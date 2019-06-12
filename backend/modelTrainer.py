@@ -11,17 +11,18 @@ import os
 
 #  584156 URLs analyzed with 396544 errors!
 
-PATH = 'data/outData/dmozProcessed'
-count = 0
+# PATH = 'data/outData/dmozProcessed'
+# count = 0
+#
+# for folder in os.listdir(PATH):
+#     for file in os.listdir(f"{PATH}/{folder}"):
+#         with open(f"{PATH}/{folder}/{file}", 'r') as oldFile:
+#             pageText = oldFile.read()
+#             with open(f"{PATH}/All/{file}", 'w+') as newFile:
+#                 newFile.write(pageText)
+#             count += 1
+#             print(f"Analyzing {count}", end="\r")
 
-for folder in os.listdir(PATH):
-    for file in os.listdir(f"{PATH}/{folder}"):
-        with open(f"{PATH}/{folder}/{file}", 'r') as oldFile:
-            pageText = oldFile.read()
-            with open(f"{PATH}/All/{file}", 'w+') as newFile:
-                newFile.write(pageText)
-            count += 1
-            print(f"Analyzing {count}", end="\r")
 
-
-# dv.train_d2v(docList, path="models/binning/d2vModel.sav")
+dv.train_d2v(folderPath="data/outData/dmozProcessed/All",
+            outPath="data/outData/binning/d2vModel.sav")

@@ -53,7 +53,7 @@ def train_d2v(folderPath, outPath='d2vModel.sav', max_epochs=100, vec_size=300, 
         with open(f"{folderPath}/{file}") as FileObj:
             text = FileObj.read()
             tokenized_text = vector_tokenize(text)
-        return TaggedDocument(words=tokenized_text, tags=[str(index)]
+        return TaggedDocument(words=tokenized_text, tags=[str(index)])
 
     # create list of tagged texts from files in folderPath
     tagged_data = [tag_doc(file, i) for i, file in enumerate(listdir(folderPath))]
