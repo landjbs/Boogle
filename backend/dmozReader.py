@@ -45,6 +45,7 @@ def scrape_dmoz_line(line):
     url = (urlMatcher.findall(line))[0]
     folder = (folderMatcher.findall(line))[0]
     top = (topMatcher.findall(line))[0]
+    # get outPath to which file would be written
     outPath = f"data/outData/dmozProcessed/{top}/{url}.sav"
     if not exists(outPath):
         # fetch pageText from url
@@ -55,7 +56,7 @@ def scrape_dmoz_line(line):
         with open(outPath, 'w+') as file:
             file.write(pageText)
     else:
-        print("Exists")
+        pass
     return True
 
 
