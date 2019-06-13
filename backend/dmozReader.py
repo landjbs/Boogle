@@ -1,4 +1,5 @@
 from os import mkdir
+from os.path import exists
 import re
 from threading import Thread
 from queue import Queue
@@ -44,13 +45,17 @@ def scrape_dmoz_line(line):
     url = (urlMatcher.findall(line))[0]
     folder = (folderMatcher.findall(line))[0]
     top = (topMatcher.findall(line))[0]
-    # fetch pageText from url
-    pageText = get_pageText(url)
-    # skip page if not in english
-    assert (detect_language(pageText) == 'en'), f"{url} not in English"
-    # open file in top folder and write pageText in
-    with open(f"data/outData/dmozProcessed/{top}/{url}.sav", 'w+') as file:
-        file.write(pageText)
+    outPath = f"data/outData/dmozProcessed/{top}/{url}.sav"
+    if not exists(outPath):
+        # fetch pageText from url
+        pageText = get_pageText(url)
+        # skip page if not in english
+        assert (detect_language(pageText) == 'en'), f"{url} not in English"
+        # open file in top folder and write pageText in
+        with open(outPath, 'w+') as file:
+            file.write(pageText)
+    else:
+        print("Exists")
     return True
 
 
