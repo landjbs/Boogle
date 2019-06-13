@@ -42,7 +42,7 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
         to average frequency and multiplier associated with page div
         """
         # find number of occurences of a token in divText
-        tokenNum = len(re.findall(f"(?<![a-zA-Z]){token}(?![a-zA-Z])", divText, flags=re.IGNORECASE))
+        tokenNum = knowledgeBuilder.count_token(token, divText)
         # find frequency of token usage in divText
         tokenFrequency = tokenNum / divLen
         # find average frequency of token from freqDict; if no key in freqDict, avgFreq <- 0

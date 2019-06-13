@@ -16,4 +16,18 @@ db = Thicctable(knowledgeSet)
 imdbModel = load('data/outData/binning/imdbModel.sav')
 
 urlList = []
-docList = [docVecs.vectorize_document(htmlAnalyzer.get_pageText(url), imdbModel) for url in urlList]
+docLits =
+
+for url in urlList:
+    pageText = htmlAnalyzer.get_pageText(url)
+    pageVec = docVecs.vectorize_document(pageText, imdbModel)
+    tokenCounts = knowledgeFinder.find_countedTokens(pageText, knowledgeProcessor)
+
+
+
+
+
+
+
+
+pass
