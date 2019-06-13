@@ -103,7 +103,10 @@ class Thicctable():
 
     ### VISUALIZATION FUNCTIONS ###
     def plot_lengths(self, outPath=""):
-        """ Display metrics for every key in topList """
+        """
+        Plot bar chart of lengths of value lists associated with topDict
+        keys and print length metrics across all lists.
+        """
         # get list of all keys and list of length of values
         keyList, lengthList = self.topDict.keys(), list(map(lambda elt : len(elt), self.topDict.values()))
         # get metrics of lengthList
