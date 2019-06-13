@@ -3,7 +3,7 @@ Functions for all text processing involding knowledgeSet and knowledgeProcessor
 built in models.knowledge.knowledgeBuilder.
 """
 
-import re
+import models.knowledge.knowledgeBuilder as knowledgeBuilder
 
 
 # dict mapping html divs to score  multiplier
@@ -16,6 +16,13 @@ def find_rawTokens(inStr, knowledgeProcessor):
     """
     return set(knowledgeProcessor.extract_keywords(inStr))
 
+def find_countedTokens(inStr, knowledgeProcessor):
+    """
+    Finds dict mapping tokens used in inStr to number of times used.
+    Does not normalize by length, div, or average frequency.
+    """
+    tokensFound = knowledgeProcessor.extract_keywords(inStr)
+    return {token:count_token(token, inStr) for token in tokensFound}
 
 def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
     """

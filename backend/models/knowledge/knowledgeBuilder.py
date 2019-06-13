@@ -54,6 +54,16 @@ def build_knowledgeProcessor(knowledgeSet, outPath=""):
         save(knowledgeProcessor, outPath)
     return knowledgeProcessor
 
+
+def count_token(token, pageText):
+    """
+    Uses regexp to return number of times a token is used in pageText.
+    Matches for tokens that are not parts of larger, uninterrupted words.
+    Does not require a knowledgeProcessor.
+    """
+    return len(re.findall(f"(?<![a-zA-Z]){token}(?![a-zA-Z])", pageText, flags=re.IGNORECASE))
+
+
 def build_freqDict(folderPath, knowledgeProcessor, outPath=""):
     """
     Args: folderPath to folder containing files from which to read,
@@ -79,7 +89,7 @@ def build_freqDict(folderPath, knowledgeProcessor, outPath=""):
             # iterate over tokensFound
             for token in tokensFound:
                 # find number of occurences of token in current file
-                tokenNum = len(re.findall(f"(?<=[^a-zA-Z]){token}(?=[^a-zA-Z])", text, flags=re.IGNORECASE))
+                tokenNum = count_token(token,text)
                 # find frequency of token use in current file
                 tokenFreq = tokenNum / textLen
                 # check if token has been seen before

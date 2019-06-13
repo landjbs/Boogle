@@ -95,15 +95,10 @@ def train_d2v(folderPath, outPath='d2vModel.sav', max_epochs=100, vec_size=300, 
     print(f"Model saved to '{outPath}'.\n{'-'*40}")
 
 
-def vectorize_document(doc, modelPath="d2vModel.sav"):
+def vectorize_document(doc, model):
     """ Vectorizes document with d2v model stored at modelPath """
-    # load saved model
-    model= Doc2Vec.load(modelPath)
-    # tokenize input doc
-    tokenizedDoc = nltk.tokenize.word_tokenize(doc.lower())
-    # create document vector for tokenizedDoc
-    docVector = model.infer_vector(tokenizedDoc)
-    return docVector
+    # return document vector for tokenized input doc
+    return model.infer_vector(vector_tokenize(doc))
 
 
 def docVec_to_dict(docVec):
@@ -111,7 +106,7 @@ def docVec_to_dict(docVec):
     docDict = {i:scalar for i, scalar in enumerate(docVec)}
     return docDict
 
-def visualize_docVecs(vecDict):
+def visualize_docVec(vecDict):
     """ Plots dict mapping titles to docVecs to determine differences """
     for url in vecDict:
         plt.plot(vecDict[url])
