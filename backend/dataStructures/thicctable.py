@@ -8,7 +8,7 @@ class Thicctable():
     list of tuples of page data.
     """
 
-    def __init__(self, keys):
+    def __init__(self, keys=[]):
         """ Initialize branch as key-val store mapping keys to empty lists """
         self.topDict = {key:[] for key in keys}
 
@@ -92,17 +92,20 @@ class Thicctable():
 
     ### DATA MODIFICATION FUNCTIONS ###
     def save(self, outPath):
-        """ Saves object to outPath, wraps objectSaver.save() """
-        save(self, outPath)
+        """ Writes contents of Thicctable to files in outPath for storage """
+        save(self.topDict, outPath)
+        return True
+
+    def load(self, inPath):
+        """ Reads Thicctable in from files in inPath """
+        self.topDict = load(inPath)
         return True
 
     ### VISUALIZATION FUNCTIONS ###
     def plot_lengths(self, outPath=""):
         """ Display metrics for every key in topList """
-        # get list of all keys and list of all values
-        keyList, valueList = self.topDict.keys(), self.topDict.values()
-        # find lengths for each element of valueList
-        lengthList = list(map(lambda elt : len(elt), valueList))
+        # get list of all keys and list of length of values
+        keyList, lengthList = self.topDict.keys(), list(map(lambda elt : len(elt), self.topDict.values()))
         # get metrics of lengthList
         meanLength = np.mean(lengthList)
         minLength, maxLength= min(lengthList), max(lengthList)

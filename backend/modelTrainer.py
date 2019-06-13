@@ -26,5 +26,3 @@ import os
 
 # dv.train_d2v(folderPath="data/outData/dmozProcessed/All",
 #             outPath="data/outData/binning/d2vModel.sav")
-
-dv.train_d2v(folderPath="data/inData/imdbData.in/train/unsup", outPath="data/outData/binning/imdbModel.sav")

@@ -3,7 +3,7 @@ import pickle
 def save(object, path):
     """ Saves object to path. Wraps pickle for consolidated codebase. """
     file = open(path, "wb")
-    pickle.dump(object, file)
+    pickle.dump(object, file, pickle.HIGHEST_PROTOCOL)
     print(f"Object successfully saved to {path}.")
 
 def load(path):
