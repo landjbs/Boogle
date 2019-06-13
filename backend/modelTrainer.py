@@ -7,6 +7,7 @@ and no module packaging is necessary.
 """
 
 import models.binning.docVecs as dv
+import os
 
 #  584156 URLs analyzed with 396544 errors!
 
@@ -23,5 +24,7 @@ import models.binning.docVecs as dv
 #             print(f"Analyzing {count}", end="\r")
 
 
-dv.train_d2v(folderPath="data/outData/dmozProcessed/All",
-            outPath="data/outData/binning/d2vModel.sav")
+# dv.train_d2v(folderPath="data/outData/dmozProcessed/All",
+#             outPath="data/outData/binning/d2vModel.sav")
+
+dv.train_d2v(folderPath="data/inData/imdbData.in/train/unsup", outPath="data/outData/binning/imdbModel.sav")

@@ -124,12 +124,12 @@ def visualize_docVecs(vecDict):
 
 # Train imdb model #
 # textList = []
-# for doc in os.listdir('aclImdb/train/neg'):
-#     with open('aclImdb/train/neg/' + doc, 'r') as file:
+# for doc in os.listdir('data/inData/imdbData.in/train/neg/'):
+#     with open('data/inData/imdbData.in/train/neg/' + doc, 'r') as file:
 #         text = "".join([line for line in file])
 #         textList.append(text)
 #
-# for doc in os.listdir('aclImdb/train/pos'):
+# for doc in os.listdir('data/inData/imdbData.in/train/pos'):
 #     with open('aclImdb/train/pos/' + doc, 'r') as file:
 #         text = "".join([line for line in file])
 #         textList.append(text)

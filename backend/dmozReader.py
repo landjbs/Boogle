@@ -43,7 +43,7 @@ def scrape_dmoz_line(line):
     """ Helper to convert line dmoz tsv file to file of pageText """
     # find url, top, and folder with regexp match
     url = (urlMatcher.findall(line))[0]
-    folder = (folderMatcher.findall(line))[0]
+    # folder = (folderMatcher.findall(line))[0]
     top = (topMatcher.findall(line))[0]
     # get outPath to which file would be written
     outPath = f"data/outData/dmozProcessed/{top}/{url}.sav"
