@@ -1,15 +1,11 @@
 import models.knowledge.knowledgeFinder as knowledgeFinder
 from dataStructures.objectSaver import load
 from dataStructures.thicctable import Thicctable
+import numpy as np
 
-db = Thicctable({'test'})
+small = Thicctable([i for i in range(10)])
 
-db.insert_value('test','bool juice')
+large = Thicctable([np.random.randint(0,10) for _ in range(10)])
 
-db.add_key('test2')
-
-db.insert_value('test2', 'jyce man')
-
-db.insert_value('test2', 'jyce woman')
-
-db.save('test.savv')
+small.save("small.sav")
+large.save("large.sav")
