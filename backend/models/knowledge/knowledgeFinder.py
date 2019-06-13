@@ -22,7 +22,7 @@ def find_countedTokens(inStr, knowledgeProcessor):
     Does not normalize by length, div, or average frequency.
     """
     tokensFound = knowledgeProcessor.extract_keywords(inStr)
-    return {token:count_token(token, inStr) for token in tokensFound}
+    return {token:knowledgeBuilder.count_token(token, inStr) for token in tokensFound}
 
 def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
     """

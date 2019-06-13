@@ -95,6 +95,11 @@ def train_d2v(folderPath, outPath='d2vModel.sav', max_epochs=100, vec_size=300, 
     print(f"Model saved to '{outPath}'.\n{'-'*40}")
 
 
+def load_model(path):
+    """ Loads gensim model from path to avoid re-importing Doc2Vec """
+    return Doc2Vec.load(path)
+
+
 def vectorize_document(doc, model):
     """ Vectorizes document with d2v model stored at modelPath """
     # return document vector for tokenized input doc
@@ -103,10 +108,10 @@ def vectorize_document(doc, model):
 
 def docVec_to_dict(docVec):
     """ Converts docVec to dict for easy df insertion """
-    docDict = {i:scalar for i, scalar in enumerate(docVec)}
-    return docDict
+    return {i:scalar for i, scalar in enumerate(docVec)}
 
-def visualize_docVec(vecDict):
+
+def visualize_vecDict(vecDict):
     """ Plots dict mapping titles to docVecs to determine differences """
     for url in vecDict:
         plt.plot(vecDict[url])
