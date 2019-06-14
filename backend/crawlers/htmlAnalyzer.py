@@ -8,15 +8,16 @@ import re # to match for patterns in pageStrings
 import time # to find the loadTime of a page
 import langid # to classify language of pageString
 from bs4 import BeautifulSoup
-import crawlers.urlAnalyzer as ua
+import crawlers.urlAnalyzer as urlAnalyzer
 from models.processing.cleaner import clean_text
 # from models.knowledge.knowledgeReader import find_knowledgeTokens
 
 
-# image string
-imageString = '(?<=src=")' + "\S+" + '(?=")'
-imageMatcher = re.compile(imageString)
+# image matcher
+imageMatcher = re.compile('(?<=src=")\S+(?=")')
 
+# matcher for all h-number tages in html text
+headerMatcher = re.compile('^h[1-6$]')
 
 def clean_pageText(rawText, title):
     """ Removes junk from output of soup.get_text() """
@@ -35,7 +36,7 @@ def get_pageText(url):
     Requires recreation of BeautifulSoup() object so don't call in
     htmlAnalyzer.py.
     """
-    rawString = ua.url_to_pageString(url)
+    rawString = urlAnalyzer.url_to_pageString(url)
     curSoup = BeautifulSoup(rawString, "html.parser")
     rawText = curSoup.get_text()
     title = curSoup.title.string
@@ -51,7 +52,7 @@ def get_links(soup):
     # get list of all <a> tags in soup
     a_list = soup.find_all('a', href=True)
     # get list of validated urls from <a> tag list
-    linkList = [link['href'] for link in a_list if ua.parsable(link['href'])]
+    linkList = [link['href'] for link in a_list if urlAnalyzer.parsable(link['href'])]
     return linkList
 
 
@@ -63,31 +64,41 @@ def detect_language(pageString):
 
 def scrape_url(url):  #knowledgeProcessor
     """
-    Fetches and processes url and returns tuple of page info
+    Fetches and processes url and returns list of page info.
+    Data Returned:
+        -loadTime: Time in seconds the page took to load (rounded to 10ths)
+        -loadDate: Time at which the page was loaded in days since 1970
+
     """
     # fetch page string and save time to load
     loadStart = time.time()
-    rawString = ua.url_to_pageString(url)
-    loadTime = time.time()
-    loadedAt = loadTime - loadStart
+    rawString = urlAnalyzer.url_to_pageString(url)
+    loadEnd = time.time()
+    # round time page took to load to 10ths
+    loadTime = round(loadEnd - loadStart, ndigits=1)
+    # number of days since 1970 when page was loaded
+    loadDate = int(loadEnd / (86400))
+
     # create soup object for parsing pageString
     curSoup = BeautifulSoup(rawString, 'html.parser')
-    # get string in <title></title> tags
+    # pull title and text from soup object
     title = curSoup.title.string
-    # get raw_pageText for soup matcher
-    rawText = curSoup.get_text()
-    # find location of title in raw_pageText
-    cleanedText = clean_pageText(rawText, title)
+    cleanedText = clean_pageText(curSoup.get_text(), title)
+
+    # validate language
+    assert (detect_language(cleanedText)=='en'), f"{url} not in English"
+
+    # headers = list(map(lambda elt: clean_text(str(elt)), curSoup.findAll(name=headerMatcher)))
+    headers = curSoup.findAll({'title':True, 'h1':True})
+    print(headers)
     # get list of links from url
     linkList = get_links(curSoup)
     # get dict mapping knowledgeTokens in text to number of occurences
     # knowledgeTokens = find_knowledgeTokens(cleanedText, knowledgeProcessor)
     pageLength = len(cleanedText.split(" "))
     # return tuple in form: (title, url, knowledgeTokens, linkList, loadTime)
-    # pageList = [title, url, knowledgeTokens, linkList, loadTime, loadedAt]
-    pageList = [title, pageVector]
-
-
+    # pageList = [url, title, knowledgeTokens, linkList, loadTime, loadedAt]
+    pageList=[]
     return pageList
 
 
