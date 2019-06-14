@@ -10,6 +10,7 @@ import langid # to classify language of pageString
 from bs4 import BeautifulSoup
 import crawlers.urlAnalyzer as urlAnalyzer
 from models.processing.cleaner import clean_text
+from models.knowledge.knowledgeFinder import score_divDict
 # from models.knowledge.knowledgeReader import find_knowledgeTokens
 
 
@@ -74,6 +75,7 @@ def scrape_url(url):  #knowledgeProcessor
     loadStart = time.time()
     rawString = urlAnalyzer.url_to_pageString(url)
     loadEnd = time.time()
+
     # round time page took to load to 10ths
     loadTime = round(loadEnd - loadStart, ndigits=1)
     # number of days since 1970 when page was loaded
@@ -88,18 +90,25 @@ def scrape_url(url):  #knowledgeProcessor
     # validate language
     assert (detect_language(cleanedText)=='en'), f"{url} not in English"
 
-    # headers = list(map(lambda elt: clean_text(str(elt)), curSoup.findAll(name=headerMatcher)))
-    headers = curSoup.findAll({'title':True, 'h1':True})
-    print(headers)
-    # get list of links from url
+    # find list of headers in soup object
+    headerList = curSoup.findAll(headerMatcher)
+    # join cleaned headers into space delimited string
+    headers = " ".join(clean_text(str(header)) for header in headerList)
+
+    # create dict of divs and contents for knowledge tokenization
+    divDict = {'title':title, 'headers':headers, 'all':cleanedText}
+
+    # find dict mapping knowledge tokens in divDict to their score
+    knowledgeTokens = score_divDict(divDict, knowledgeProcessor, freqDict)
+
+    # get list of links in soup object
     linkList = get_links(curSoup)
-    # get dict mapping knowledgeTokens in text to number of occurences
-    # knowledgeTokens = find_knowledgeTokens(cleanedText, knowledgeProcessor)
+
+    # find roungh number of words in page
     pageLength = len(cleanedText.split(" "))
-    # return tuple in form: (title, url, knowledgeTokens, linkList, loadTime)
-    # pageList = [url, title, knowledgeTokens, linkList, loadTime, loadedAt]
-    pageList=[]
-    return pageList
+
+    # return list of information about page
+    return [url, title, knowledgeTokens, linkList, pageLength, loadTime, loadDate]
 
 
 
