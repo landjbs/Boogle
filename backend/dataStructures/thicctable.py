@@ -88,6 +88,7 @@ class Thicctable():
             pageScore = pageRanker.score(pageList, token)
             # insert tuple of score and pageLists list into appropriate bin
             self.insert_value(token, (pageScore, pageList))
+        return True
 
     ### SEARCH FUNCTIONS ###
     def search_index(self, key, indexLambda, n=20):
