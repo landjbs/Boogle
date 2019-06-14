@@ -105,7 +105,7 @@ def scrape_url(url, knowledgeProcessor, freqDict):
     knowledgeTokens = score_divDict(divDict, knowledgeProcessor, freqDict)
 
     # find and clean list of links from soup object
-    linkList = list(map(lambda link:urlAnalyzer.clean_url(url), get_links(curSoup)))
+    linkList = get_links(curSoup)
 
     # find roungh number of words in page
     pageLength = len(cleanedText.split(" "))

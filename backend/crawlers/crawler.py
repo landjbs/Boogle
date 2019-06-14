@@ -6,12 +6,11 @@
 import sys, os
 from queue import Queue
 from threading import Thread
-import urlAnalyzer as urlAnalyzer
-import htmlAnalyzer as htmlAnalyzer
-
-sys.path.append(os.path.abspath(os.path.join('..')))
-from dataStructures.impleStructures import Simple_List, Metrics
-from dataStructures.objectSaver import save
+import crawlers.urlAnalyzer as urlAnalyzer
+import crawlers.htmlAnalyzer as htmlAnalyzer
+import models.knowledge.knowledgeBuilder as knowledgeBuilder
+from dataStructures.simpleStructures import Thicctable, Metrics
+from dataStructures.objectSaver import save, load
 
 def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath=""):
     """
@@ -19,6 +18,11 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
     Args: urlList to scrape, depth of url_queue, number of workers to spawn
     Returns: wide column store of data from each url
     """
+    # load knowledge data
+    knowledgeSet = {'harvard'}
+    knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor(knowledgeSet)
+    freqDict = {'harvard':0}
+
     # queue to hold urlList
     urlQueue = Queue(queueDepth)
     # set to hold unclean, previously scraped URLs
@@ -46,11 +50,11 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
             # pop top url from queue
             url = urlQueue.get()
             try:
-                pageList = htmlAnalyzer.scrape_url(url)
-                # add pageDict to outStore
-                outStore.add(pageDict)
+                pageList = htmlAnalyzer.scrape_url(url, knowledgeProcessor, freqDict)
+                print(pageList)
+                outStore.add(pageList)
                 # pull list of links from pageDict and enqueue
-                enqueue_urlList(pageDict['linkList'])
+                enqueue_urlList(pageList[3])
                 # update scrape metrics
                 scrapeMetrics.add(error=False)
             except:

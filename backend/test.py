@@ -1,21 +1,13 @@
-import models.knowledge.knowledgeFinder as knowledgeFinder
-import models.knowledge.knowledgeBuilder as knowledgeBuilder
-from dataStructures.objectSaver import load
-from dataStructures.thicctable import Thicctable
-import models.binning.docVecs as docVecs
-import crawlers.htmlAnalyzer as htmlAnalyzer
+# import models.knowledge.knowledgeFinder as knowledgeFinder
+# import models.knowledge.knowledgeBuilder as knowledgeBuilder
+# from dataStructures.objectSaver import load
+# from dataStructures.thicctable import Thicctable
+# import models.binning.docVecs as docVecs
+# import crawlers.htmlAnalyzer as htmlAnalyzer
 
-knowledgeSet = {'harvard'}
-knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor(knowledgeSet)
-freqDict = {'harvard':0}
+from crawlers.crawler import scrape_urlList
 
-while True:
-    url = input("search: ")
-    print(htmlAnalyzer.scrape_url(url, knowledgeProcessor, freqDict))
-    # try:
-    #
-    # except Exception as e:
-    #     print(e)
+scrape_urlList(['www.harvard.edu'])
 
 
 
