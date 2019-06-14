@@ -69,7 +69,8 @@ def scrape_url(url, knowledgeProcessor, freqDict):
     Data Returned:
         -url: unedited url of the page
         -title: title of the page
-        -
+        -knowledgeTokens: dict of knowledge tokens and their scores
+        -linkList: list of urls found on the page
         -loadTime: Time in seconds the page took to load (rounded to 10ths)
         -loadDate: Time at which the page was loaded in days since 1970
         -
@@ -105,11 +106,10 @@ def scrape_url(url, knowledgeProcessor, freqDict):
     knowledgeTokens = score_divDict(divDict, knowledgeProcessor, freqDict)
 
     # find and clean list of links from soup object
-    linkList = get_links(curSoup)
+    linkList = list(map(lambda url:urlAnalyzer.clean_url(url), get_links(curSoup)))
 
     # find roungh number of words in page
     pageLength = len(cleanedText.split(" "))
-
     # return list of information about page
     return [url, title, knowledgeTokens, linkList, pageLength, loadTime, loadDate]
 
