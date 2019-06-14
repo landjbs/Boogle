@@ -2,6 +2,7 @@ from dataStructures.objectSaver import save, load
 import matplotlib.pyplot as plt
 import numpy as np
 import models.ranking.pageRanker as pageRanker
+from os import exists
 
 class Thicctable():
     """
@@ -106,7 +107,8 @@ class Thicctable():
     def save(self, outPath):
         """ Writes contents of Thicctable to files in outPath for storage """
         for key in self.topDict:
-            
+            with open(f"{outPath}/{key}", 'w+', ) as FileObj:
+                FileObj.write()
         return True
 
     def load(self, inPath):
