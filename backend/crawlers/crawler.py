@@ -18,17 +18,19 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
     Args: urlList to scrape, depth of url_queue, number of workers to spawn
     Returns: wide column store of data from each url
     """
+    # load knowledge set and use to initialize databasse
+    knowledgeSet = load('data/outData/knowledge/knowledgeSet.sav')
+    database = Thicctable(knowledgeSet)
+    del knowledgeSet
+
     # load knowledge data
-    knowledgeSet = {'harvard'}
-    knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor(knowledgeSet)
-    freqDict = {'harvard':0}
+    knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
+    freqDict = load('data/outData/knowledge/freqDict.sav')
 
     # queue to hold urlList
     urlQueue = Queue(queueDepth)
-    # set to hold unclean, previously scraped URLs
-    scrapedSet = set()
-    # struct to hold scraped data
-    outStore = Simple_List()
+    # set to hold , previously scraped URLs
+    scrapedUrls = set()
     # struct to keep track of metrics
     scrapeMetrics = Metrics()
 
@@ -38,10 +40,8 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
         previously scraped
         """
         for url in urlList:
-            if not url in scrapedSet:
-                # add unclean url to set of scraped urls
-                scrapedSet.add(url)
-                # clean url and add to urlQueue
+            if not url in scrapedUrls:
+                scrapedUrls.add(url)
                 urlQueue.put(url)
 
     def worker():
@@ -52,6 +52,7 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
             try:
                 pageList = htmlAnalyzer.scrape_url(url, knowledgeProcessor, freqDict)
                 outStore.add(pageList)
+                print(pageList[2])
                 # pull list of links from pageDict and enqueue
                 enqueue_urlList(pageList[3])
                 # update scrape metrics

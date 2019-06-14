@@ -8,9 +8,10 @@ class Thicctable():
     list of tuples of page data.
     """
 
-    def __init__(self, keys=[]):
+    def __init__(self, keys):
         """ Initialize branch as key-val store mapping keys to empty lists """
         self.topDict = {key:[] for key in keys}
+        print(f"Table initialized with {len(keys)} buckets.")
 
     ### FUNCTIONS FOR MODIFYING KEYS ###
     def add_key(self, key):
