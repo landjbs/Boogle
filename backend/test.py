@@ -8,18 +8,31 @@ from models.processing.cleaner import clean_text
 
 from crawlers.crawler import scrape_urlList
 
-database = scrape_urlList(['www.harvard.edu', 'https://en.wikipedia.org/wiki/Harvard_University'])
+import os
+
+# urlList = list(map(lambda url:url[:-4], os.listdir('data/outData/dmozProcessed/All')[:500]))
+urlList = ['www.harvard.edu', 'www.wikipedia.org']
+
+knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
+print("Processor loaded")
+
+database = scrape_urlList(urlList, knowledgeProcessor)
+
 
 searchLambda = lambda item : item[:2]
+
 print(f"{'-'*73}\nWelcome to Boogle\t\t\t\t\t\t\t|\n{'-'*73}")
+
 while True:
     try:
         search = input("Search: ")
         clean_search = clean_text(search)
-        results = database.search_index(clean_search, searchLambda)
-        print("\tResults:")
-        for i, elt in enumerate(results):
-            print(f"\t\t{i}: {elt}")
+        searchList = knowledgeFinder.find_rawTokens(clean_search)
+        for token in searchList:
+            results = database.search_index(clean_search, searchLambda)
+            print(f"\t{token} Results:")
+            for i, elt in enumerate(results):
+                print(f"\t\t{i}: {elt}")
     except Exception as e:
         print(f'ERROR: {e}')
 

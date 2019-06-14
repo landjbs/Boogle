@@ -3,7 +3,7 @@
 # Outsources HTML processing to htmlAnalyzer.py
 # Outsoucres database definitions to thicctable.py
 
-import sys, os
+import os
 from queue import Queue
 from threading import Thread
 import crawlers.urlAnalyzer as urlAnalyzer
@@ -13,20 +13,26 @@ from dataStructures.simpleStructures import Metrics
 from dataStructures.thicctable import Thicctable
 from dataStructures.objectSaver import save, load
 
-def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath=""):
+import time
+
+def scrape_urlList(urlList, knowledgeProcessor, queueDepth=10, workerNum=20, maxLen=100, outPath=""):
     """
     Builds wide column store of url data from urlList with recursive search
     Args: urlList to scrape, depth of url_queue, number of workers to spawn
     Returns: wide column store of data from each url
     """
-    # load knowledge set and use to initialize databasse
+    # # load knowledge set and use to initialize databasse
     knowledgeSet = load('data/outData/knowledge/knowledgeSet.sav')
     database = Thicctable(knowledgeSet)
     del knowledgeSet
 
     # load knowledge data
-    knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
     freqDict = load('data/outData/knowledge/freqDict.sav')
+
+    # knowledgeSet = {'harvard'}
+    # database = Thicctable(knowledgeSet)
+    # knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor(knowledgeSet)
+    # freqDict = {'harvard':0}
 
     # queue to hold urlList
     urlQueue = Queue(queueDepth)
@@ -53,15 +59,18 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
             try:
                 pageList = htmlAnalyzer.scrape_url(url, knowledgeProcessor, freqDict)
                 database.bucket_page(pageList)
-                # pull list of links from pageDict and enqueue
+                # pull list of links from pageDict and put in urlQueue
                 # enqueue_urlList(pageList[3])
                 # update scrape metrics
                 scrapeMetrics.add(error=False)
-            except:
+            except Exception as e:
+                print(e)
                 # update scrape metrics
                 scrapeMetrics.add(error=True)
             # log progress
-            # print(f"\t{scrapeMetrics.count} URLs analyzed with {scrapeMetrics.errors} errors!", end="\r")
+            print(f"\t{scrapeMetrics.count} URLs analyzed with {scrapeMetrics.errors} errors!", end="\r")
+            if (scrapeMetrics.count % 5 == 0):
+                os.system('clear')
             # signal completion
             urlQueue.task_done()
 
@@ -77,5 +86,6 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
 
     # ensure all urlQueue processes are complete before proceeding
     urlQueue.join()
+
 
     return database
