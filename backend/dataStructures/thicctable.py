@@ -2,7 +2,6 @@ from dataStructures.objectSaver import save, load
 import matplotlib.pyplot as plt
 import numpy as np
 import models.ranking.pageRanker as pageRanker
-from os import exists
 
 class Thicctable():
     """
@@ -69,26 +68,32 @@ class Thicctable():
         """
         # create lambda to pull element for sorting
         indexLambda = lambda elt : elt[index]
-        self.topDict[key].sort(key=indexLambda)
+        self.topDict[key].sort(key=indexLambda, reverse=True)
         return True
 
-    def sort_all(self, index=0):
+    def sort_all(self, index=-1):
         """ Sorts list mapped by each key in topDict based on index """
         # create lambda to pull element for sorting
         indexLambda = lambda elt : elt[index]
         # iterate over keys and sort
         for key in self.topDict:
-            self.topDict[key].sort(key=indexLambda)
+            self.topDict[key].sort(key=indexLambda, reverse=True)
         return True
 
     def bucket_page(self, pageList):
-        """ Sort page into all applicable buckets """
+        """
+        Wraps insert_value and calls models.ranking to score page and sort
+        into all applicable buckets
+        """
         # iterate over tokens in pageList
         for token in pageList[2]:
             # get score of page from pageRanker
             pageScore = pageRanker.score(pageList, token)
+            print(f"{token}: {pageScore}")
+            scoredList = pageList.copy()
+            scoredList.append(pageScore)
             # insert tuple of score and pageLists list into appropriate bin
-            self.insert_value(token, (pageScore, pageList))
+            self.insert_value(token, scoredList)
         return True
 
     ### SEARCH FUNCTIONS ###
@@ -106,9 +111,9 @@ class Thicctable():
     ### DATA MODIFICATION FUNCTIONS ###
     def save(self, outPath):
         """ Writes contents of Thicctable to files in outPath for storage """
-        for key in self.topDict:
-            with open(f"{outPath}/{key}", 'w+', ) as FileObj:
-                FileObj.write()
+        # for key in self.topDict:
+        #     with open(f"{outPath}/{key}", 'w+', ) as FileObj:
+        #         FileObj.write()
         return True
 
     def load(self, inPath):

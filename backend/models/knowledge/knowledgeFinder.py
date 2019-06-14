@@ -6,7 +6,7 @@ built in models.knowledge.knowledgeBuilder.
 import models.knowledge.knowledgeBuilder as knowledgeBuilder
 
 # dict mapping html divs to score  multiplier
-divScores = {'title':20, 'headers':5, 'all':1}
+divScores = {'url':15, 'title':20, 'headers':5, 'all':1}
 
 
 def find_rawTokens(inStr, knowledgeProcessor):
@@ -42,7 +42,11 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
         to average frequency and multiplier associated with page div
         """
         # find number of occurences of a token in divText
-        tokenNum = knowledgeBuilder.count_token(token, divText)
+        if not (div=='url'):
+            tokenNum = knowledgeBuilder.count_token(token, divText)
+        else:
+            # url tokens are not delimited by spaces
+            tokenNum = re.findall(token, divText, flags=re.IGNORECASE)
         # find frequency of token usage in divText
         tokenFrequency = tokenNum / divLen
         # find average frequency of token from freqDict; if no key in freqDict, avgFreq <- 0
@@ -62,7 +66,7 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
             except:
                 divMultipier = 1
             # token score is normalized frequency times div multiplier
-            score = normFreq * divMultipier
+            score = (normFreq**3) * divMultipier
         return score
 
     # apply analyze_token to create dict mapping tokens to scores

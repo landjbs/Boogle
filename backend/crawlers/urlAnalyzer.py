@@ -31,7 +31,7 @@ def clean_url(url):
         if urlString.startswith('http'):
             pass
         elif urlString.startswith("www"):
-            urlString = "http://" + urlString
+            urlString = "https://" + urlString
         else:
             urlString = "http://www." + urlString
     return urlString

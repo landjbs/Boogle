@@ -100,7 +100,7 @@ def scrape_url(url, knowledgeProcessor, freqDict):
     headers = " ".join(clean_text(str(header)) for header in headerList)
 
     # create dict of divs and contents for knowledge tokenization
-    divDict = {'title':title, 'headers':headers, 'all':cleanedText}
+    divDict = {'url':url,'title':title, 'headers':headers, 'all':cleanedText}
 
     # find dict mapping knowledge tokens in divDict to their score
     knowledgeTokens = score_divDict(divDict, knowledgeProcessor, freqDict)
@@ -108,8 +108,8 @@ def scrape_url(url, knowledgeProcessor, freqDict):
     # find and clean list of links from soup object
     linkList = list(map(lambda url:urlAnalyzer.clean_url(url), get_links(curSoup)))
 
-    # find roungh number of words in page
-    pageLength = len(cleanedText.split(" "))
+    # DOC VEC BELOW
+
     # return list of information about page
     return [url, clean_title(title), knowledgeTokens, linkList, loadTime, loadDate]
 

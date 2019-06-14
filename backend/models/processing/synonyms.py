@@ -4,5 +4,6 @@ nltk.download('wordnet')
 
 print('imported')
 
-syns = wordnet.synsets("war")
-print(syns)
+while True:
+    search = input("Search: ")
+    print(wordnet.synsets(search))
