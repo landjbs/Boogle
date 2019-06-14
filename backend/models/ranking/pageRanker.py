@@ -1,4 +1,4 @@
-def score(pageList, key):
+def score(pageList, tokenScore):
     """
+    Ranks page based on attributes
     """
-    return 0

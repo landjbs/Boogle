@@ -71,11 +71,10 @@ def scrape_url(url, knowledgeProcessor, freqDict):
         -title: cleanedd title of the page
         -knowledgeTokens: dict of knowledge tokens and their scores
         -linkList: list of urls found on the page
-        -pageLength: rough number of words in page (by splitting cleanText)
         -loadTime: Time in seconds the page took to load (rounded to 10ths)
         -loadDate: Time at which the page was loaded in days since 1970
     """
-    
+
     # fetch page string and save time to load
     loadStart = time.time()
     rawString = urlAnalyzer.url_to_pageString(url, timeout=4)
@@ -112,7 +111,7 @@ def scrape_url(url, knowledgeProcessor, freqDict):
     # find roungh number of words in page
     pageLength = len(cleanedText.split(" "))
     # return list of information about page
-    return [url, clean_title(title), knowledgeTokens, linkList, pageLength, loadTime, loadDate]
+    return [url, clean_title(title), knowledgeTokens, linkList, loadTime, loadDate]
 
 
 
