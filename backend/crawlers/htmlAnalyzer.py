@@ -9,7 +9,7 @@ import time # to find the loadTime of a page
 import langid # to classify language of pageString
 from bs4 import BeautifulSoup
 import crawlers.urlAnalyzer as urlAnalyzer
-from models.processing.cleaner import clean_text
+from models.processing.cleaner import clean_text, clean_title
 from models.knowledge.knowledgeFinder import score_divDict
 # from models.knowledge.knowledgeReader import find_knowledgeTokens
 
@@ -88,7 +88,7 @@ def scrape_url(url, knowledgeProcessor, freqDict):
     # create soup object for parsing pageString
     curSoup = BeautifulSoup(rawString, 'html.parser')
     # pull title and text from soup object
-    title = curSoup.title.string
+    title = (curSoup.title.string)
     cleanedText = clean_pageText(curSoup.get_text(), title)
 
     # validate language
@@ -111,7 +111,7 @@ def scrape_url(url, knowledgeProcessor, freqDict):
     # find roungh number of words in page
     pageLength = len(cleanedText.split(" "))
     # return list of information about page
-    return [url, title, knowledgeTokens, linkList, pageLength, loadTime, loadDate]
+    return [url, clean_title(title), knowledgeTokens, linkList, pageLength, loadTime, loadDate]
 
 
 
