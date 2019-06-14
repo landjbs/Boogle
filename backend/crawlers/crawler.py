@@ -22,17 +22,17 @@ def scrape_urlList(urlList, knowledgeProcessor, queueDepth=10, workerNum=20, max
     Returns: wide column store of data from each url
     """
     # # load knowledge set and use to initialize databasse
-    # knowledgeSet = load('data/outData/knowledge/knowledgeSet.sav')
-    # database = Thicctable(knowledgeSet)
-    # del knowledgeSet
-    #
-    # # load knowledge data
-    # freqDict = load('data/outData/knowledge/freqDict.sav')
-
-    knowledgeSet = {'harvard'}
+    knowledgeSet = load('data/outData/knowledge/knowledgeSet.sav')
     database = Thicctable(knowledgeSet)
+    del knowledgeSet
+
+    # load knowledge data
+    freqDict = load('data/outData/knowledge/freqDict.sav')
+
+    # knowledgeSet = {'harvard'}
+    # database = Thicctable(knowledgeSet)
     #
-    freqDict = {'harvard':0}
+    # freqDict = {'harvard':0}
 
     # queue to hold urlList
     urlQueue = Queue(queueDepth)

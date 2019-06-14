@@ -22,7 +22,7 @@ stripMatcher = re.compile(r"[^a-zA-Z\s\t\n_-]")
 # matches any sequence of tabs, newlines, spaces, underscores, and dashes
 spaceMatcher = re.compile(r"[\t|\n|\s|-|_]+")
 # matches \t \r and \n in titles
-slashMatcher = re.compile(r"[\\r|\\n|\\t]")
+slashMatcher = re.compile(r"[.\r|.\n|.\t]")
 
 ## Funcitons ##
 def clean_text(rawString):
