@@ -77,9 +77,3 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
     urlQueue.join()
 
     return outStore
-
-
-
-testList = ['https://soundcloud.com/discover', 'https://www.imdb.com/interfaces/']
-
-scrape_urlList(testList)
