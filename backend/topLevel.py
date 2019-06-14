@@ -1,84 +1,35 @@
-# crawlers
-import crawlers.htmlAnalyzer as ha
-# data structures
+import models.knowledge.knowledgeFinder as knowledgeFinder
+import models.knowledge.knowledgeBuilder as knowledgeBuilder
+from dataStructures.objectSaver import load
 from dataStructures.thicctable import Thicctable
-from dataStructures.objectSaver import load, save
-# models
-from models.knowledge.knowledgeTokenizer import build_knowledgeProcessor
+import models.binning.docVecs as docVecs
+import crawlers.htmlAnalyzer as htmlAnalyzer
 from models.processing.cleaner import clean_text
 
-import re
+from crawlers.crawler import scrape_urlList
 
-# knowledgeSet load
-knowledgeSet = list(load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeTokens.set'))
-testData = Thicctable(knowledgeSet)
+import os
 
-print('Data Table Created')
+urlList = list(map(lambda url:url[:-4], os.listdir('data/outData/dmozProcessed/All')[:30000]))
 
-# del knowledgeSet
+knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
+print("Processor loaded")
 
-# load knowledgeProcessor
-knowledgeProcessor = load('/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/outData/knowledgeProcessor.match')
-print('Knowledge Processor Created')
+database = scrape_urlList(urlList, knowledgeProcessor)
 
+searchLambda = lambda item : item[:2]
 
-def bin_page(pageList):
-    """ Test function to pull out and score dict from tuple """
-    knowledgeDict = pageList[2]
-    print("Adding Page to:", end=" ")
-    for token in knowledgeDict:
-        score = knowledgeDict[token]
-        pageList.append((1000/score))
-        pageTuple = tuple(pageList)
-        try:
-            testData.insert_value(token, pageTuple)
-            testData.sort_key(token, index=-1)
-            print(f'{token}', end=' | ')
-        except Exception as e:
-            print(e)
+print(f"\n{'-'*73}\nWelcome to Boogle\t\t\t\t\t\t\t|\n{'-'*73}")
 
-urlMatcher = re.compile('(?<=").+(?="\t)')
-
-# load webpages
-with open('data/inData/test.tab.tsv') as dmozData:
-    for i, line in enumerate(dmozData):
-        try:
-            url = urlMatcher.findall(line)[0]
-            print(url)
-            pageList = ha.scrape_url(url, knowledgeProcessor)
-            bin_page(pageList)
-            print(f"Analyzing: {i}")
-        except Exception as e:
-            print(f"ERROR: {e}")
-
-save(testData.topDict, 'thiccTest')
-
-# BOOGLE #
-print(f"{'-'*40}\nWelcome to Boogle!\n{'-'*40}")
 while True:
     try:
-        rawSearch = input("Search: ")
-        cleanSearch = clean_text(rawSearch)
-        print(cleanSearch)
-        print(f"\t\t\t\tSearch Results:\n\t\t\t\t{testData.search_index(cleanSearch, indexLambda=(lambda x: x[:2]))}")
+        search = input("Search: ")
+        clean_search = clean_text(search)
+        searchList = knowledgeFinder.find_rawTokens(clean_search, knowledgeProcessor)
+        for token in searchList:
+            results = database.search_index(token, searchLambda)
+            print(f"\t{token} Results:")
+            for i, elt in enumerate(results):
+                print(f"\t\t{i}: {elt}")
     except Exception as e:
-        print(f"\t\tERROR: {e}")
-
-
-## MANUAL ENTRY ##
-# print(f"{'-'*40}\nWelcome to Boogle!\n{'-'*40}")
-# while True:
-#     try:
-#         action = int(input("1 - Add Page; 2 - Search\nAction: "))
-#         assert (action in [1,2]), "Action must be 1 or 2"
-#         if (action==1):
-#             url = input("Page URL: ")
-#             pageList = ha.scrape_url(url, knowledgeProcessor)
-#             bin_page(pageList)
-#         else:
-#             rawSearch = input("Search: ")
-#             cleanSearch = clean_text(rawSearch)
-#             print(cleanSearch)
-#             print(f"\t\t\t\tSearch Results:\n\t\t\t\t{testData.search_index(cleanSearch, indexLambda=(lambda x: x[:1]))}")
-#     except Exception as e:
-#         print(f"\t\tERROR: {e}")
+        print(f'ERROR: {e}')

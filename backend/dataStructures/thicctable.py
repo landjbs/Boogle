@@ -105,7 +105,8 @@ class Thicctable():
     ### DATA MODIFICATION FUNCTIONS ###
     def save(self, outPath):
         """ Writes contents of Thicctable to files in outPath for storage """
-        save(self.topDict, outPath)
+        for key in self.topDict:
+            
         return True
 
     def load(self, inPath):
