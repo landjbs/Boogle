@@ -1,6 +1,7 @@
 from dataStructures.objectSaver import save, load
 import matplotlib.pyplot as plt
 import numpy as np
+import models.ranking.pageRanker as pageRanker
 
 class Thicctable():
     """
@@ -78,6 +79,19 @@ class Thicctable():
         for key in self.topDict:
             self.topDict[key].sort(key=indexLambda)
         return True
+
+    def bucket_page(self, pageList):
+        """ """
+        # iterate over tokens in pageList
+        for token in pageList[3]:
+            # get score of page from pageRanker
+            pageScore = pageRanker.score(pageList, token)
+            # create new list from pageList and add score to end
+            scoredList = pageList.copy()
+            scoredList.append(pageScore)
+            # insert scored list into appropriate bin
+            self.insert_value(token, scoredList)
+            print(f"Added to {token}")
 
     ### SEARCH FUNCTIONS ###
     def search_index(self, key, indexLambda, n=20):

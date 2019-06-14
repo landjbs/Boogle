@@ -9,7 +9,7 @@ from threading import Thread
 import crawlers.urlAnalyzer as urlAnalyzer
 import crawlers.htmlAnalyzer as htmlAnalyzer
 import models.knowledge.knowledgeBuilder as knowledgeBuilder
-from dataStructures.simpleStructures import Simple_List, Metrics
+from dataStructures.simpleStructures import Thicctable, Metrics
 from dataStructures.objectSaver import save, load
 
 def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath=""):
@@ -51,7 +51,6 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
             url = urlQueue.get()
             try:
                 pageList = htmlAnalyzer.scrape_url(url, knowledgeProcessor, freqDict)
-                outStore.add(pageList)
                 print(pageList[2])
                 # pull list of links from pageDict and enqueue
                 enqueue_urlList(pageList[3])
