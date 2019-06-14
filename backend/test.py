@@ -1,19 +1,27 @@
-# import models.knowledge.knowledgeFinder as knowledgeFinder
-# import models.knowledge.knowledgeBuilder as knowledgeBuilder
-# from dataStructures.objectSaver import load
-# from dataStructures.thicctable import Thicctable
-# import models.binning.docVecs as docVecs
-# import crawlers.htmlAnalyzer as htmlAnalyzer
+import models.knowledge.knowledgeFinder as knowledgeFinder
+import models.knowledge.knowledgeBuilder as knowledgeBuilder
+from dataStructures.objectSaver import load
+from dataStructures.thicctable import Thicctable
+import models.binning.docVecs as docVecs
+import crawlers.htmlAnalyzer as htmlAnalyzer
+from models.processing.cleaner import clean_text
 
 from crawlers.crawler import scrape_urlList
 
-scrape_urlList(['www.harvard.edu'])
+database = scrape_urlList(['www.harvard.edu', 'https://en.wikipedia.org/wiki/Harvard_University'])
 
-
-
-
-
-
+searchLambda = lambda item : item[:2]
+print(f"{'-'*73}\nWelcome to Boogle\t\t\t\t\t\t\t|\n{'-'*73}")
+while True:
+    try:
+        search = input("Search: ")
+        clean_search = clean_text(search)
+        results = database.search_index(clean_search, searchLambda)
+        print("\tResults:")
+        for i, elt in enumerate(results):
+            print(f"\t\t{i}: {elt}")
+    except Exception as e:
+        print(f'ERROR: {e}')
 
 ## Document vectorization ##
 # from flashtext import KeywordProcessor

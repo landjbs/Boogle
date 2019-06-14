@@ -9,7 +9,8 @@ from threading import Thread
 import crawlers.urlAnalyzer as urlAnalyzer
 import crawlers.htmlAnalyzer as htmlAnalyzer
 import models.knowledge.knowledgeBuilder as knowledgeBuilder
-from dataStructures.simpleStructures import Thicctable, Metrics
+from dataStructures.simpleStructures import Metrics
+from dataStructures.thicctable import Thicctable
 from dataStructures.objectSaver import save, load
 
 def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath=""):
@@ -45,15 +46,15 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
                 urlQueue.put(url)
 
     def worker():
-        """ Scrapes popped URL from urlQueue and stores data in outStore()"""
+        """ Scrapes popped URL from urlQueue and stores data in database"""
         while True:
             # pop top url from queue
             url = urlQueue.get()
             try:
                 pageList = htmlAnalyzer.scrape_url(url, knowledgeProcessor, freqDict)
-                print(pageList[2])
+                database.bucket_page(pageList)
                 # pull list of links from pageDict and enqueue
-                enqueue_urlList(pageList[3])
+                # enqueue_urlList(pageList[3])
                 # update scrape metrics
                 scrapeMetrics.add(error=False)
             except:
@@ -77,4 +78,4 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
     # ensure all urlQueue processes are complete before proceeding
     urlQueue.join()
 
-    return outStore
+    return database
