@@ -67,13 +67,13 @@ def scrape_url(url, knowledgeProcessor, freqDict):
     """
     Fetches and processes url and returns list of page info.
     Data Returned:
-        -url: unedited url of the page
-        -title: title of the page
+        -url: url of the page (cleaned by urlAnalyzer.clean_url)
+        -title: cleanedd title of the page
         -knowledgeTokens: dict of knowledge tokens and their scores
         -linkList: list of urls found on the page
+        -pageLength: rough number of words in page (by splitting cleanText)
         -loadTime: Time in seconds the page took to load (rounded to 10ths)
         -loadDate: Time at which the page was loaded in days since 1970
-        -
     """
     # fetch page string and save time to load
     loadStart = time.time()
