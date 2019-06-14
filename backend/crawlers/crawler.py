@@ -6,12 +6,12 @@
 import sys, os
 from queue import Queue
 from threading import Thread
-import urlAnalyzer as ua
-import htmlAnalyzer as ha
+import urlAnalyzer as urlAnalyzer
+import htmlAnalyzer as htmlAnalyzer
 
-sys.path.append(os.path.abspath(os.path.join('..', '..', 'dataStructures')))
-from simpleStructures import Simple_List, Metrics
-from objectSaver import save
+sys.path.append(os.path.abspath(os.path.join('..')))
+from dataStructures.impleStructures import Simple_List, Metrics
+from dataStructures.objectSaver import save
 
 def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath=""):
     """
@@ -38,7 +38,7 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
                 # add unclean url to set of scraped urls
                 scrapedSet.add(url)
                 # clean url and add to urlQueue
-                urlQueue.put(ua.clean_url(url))
+                urlQueue.put(url)
 
     def worker():
         """ Scrapes popped URL from urlQueue and stores data in outStore()"""
@@ -46,10 +46,7 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
             # pop top url from queue
             url = urlQueue.get()
             try:
-                # convert url to string of html contents
-                pageString = ua.url_to_pageString(url, timeout=1)
-                # grab data from html
-                pageDict = ha.analyze_html(pageString)
+                pageList = htmlAnalyzer.scrape_url(url)
                 # add pageDict to outStore
                 outStore.add(pageDict)
                 # pull list of links from pageDict and enqueue
@@ -70,7 +67,8 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
         t.daemon = True
         t.start()
 
-    # load cleaned urls into url_queue
+    # load cleaned initial urls into url_queue
+    urlList = list(map(lambda url:urlAnalyzer.clean_url(url), urlList))
     enqueue_urlList(urlList)
 
     # ensure all urlQueue processes are complete before proceeding

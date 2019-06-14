@@ -5,31 +5,17 @@ from dataStructures.thicctable import Thicctable
 import models.binning.docVecs as docVecs
 import crawlers.htmlAnalyzer as htmlAnalyzer
 
+knowledgeSet = {'harvard'}
+knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor(knowledgeSet)
+freqDict = {'harvard':0}
+
 while True:
     url = input("search: ")
-    print(htmlAnalyzer.scrape_url(url))
+    print(htmlAnalyzer.scrape_url(url, knowledgeProcessor, freqDict))
     # try:
     #
     # except Exception as e:
     #     print(e)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

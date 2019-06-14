@@ -63,17 +63,20 @@ def detect_language(pageString):
     return lang
 
 
-def scrape_url(url):  #knowledgeProcessor
+def scrape_url(url, knowledgeProcessor, freqDict):
     """
     Fetches and processes url and returns list of page info.
     Data Returned:
+        -url: unedited url of the page
+        -title: title of the page
+        -
         -loadTime: Time in seconds the page took to load (rounded to 10ths)
         -loadDate: Time at which the page was loaded in days since 1970
-
+        -
     """
     # fetch page string and save time to load
     loadStart = time.time()
-    rawString = urlAnalyzer.url_to_pageString(url)
+    rawString = urlAnalyzer.url_to_pageString(url, timeout=4)
     loadEnd = time.time()
 
     # round time page took to load to 10ths
@@ -101,8 +104,8 @@ def scrape_url(url):  #knowledgeProcessor
     # find dict mapping knowledge tokens in divDict to their score
     knowledgeTokens = score_divDict(divDict, knowledgeProcessor, freqDict)
 
-    # get list of links in soup object
-    linkList = get_links(curSoup)
+    # find and clean list of links from soup object
+    linkList = list(map(lambda link:urlAnalyzer.clean_url(url), get_links(curSoup)))
 
     # find roungh number of words in page
     pageLength = len(cleanedText.split(" "))
