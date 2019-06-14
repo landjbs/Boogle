@@ -13,7 +13,8 @@ import os
 # urlList = list(map(lambda url:url[:-4], os.listdir('data/outData/dmozProcessed/All')[:500]))
 urlList = ['www.harvard.edu', 'www.wikipedia.org']
 
-knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
+# knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
+knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor({'harvard', 'juice'})
 print("Processor loaded")
 
 database = scrape_urlList(urlList, knowledgeProcessor)
@@ -27,9 +28,9 @@ while True:
     try:
         search = input("Search: ")
         clean_search = clean_text(search)
-        searchList = knowledgeFinder.find_rawTokens(clean_search)
+        searchList = knowledgeFinder.find_rawTokens(clean_search, knowledgeProcessor)
         for token in searchList:
-            results = database.search_index(clean_search, searchLambda)
+            results = database.search_index(token, searchLambda)
             print(f"\t{token} Results:")
             for i, elt in enumerate(results):
                 print(f"\t\t{i}: {elt}")

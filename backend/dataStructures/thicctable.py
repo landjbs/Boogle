@@ -91,8 +91,6 @@ class Thicctable():
             scoredList.append(pageScore)
             # insert scored list into appropriate bin
             self.insert_value(token, scoredList)
-            print(token, end=" | ")
-        print(f"{'-'*80}")
 
     ### SEARCH FUNCTIONS ###
     def search_index(self, key, indexLambda, n=20):
