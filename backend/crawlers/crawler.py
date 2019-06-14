@@ -29,11 +29,6 @@ def scrape_urlList(urlList, knowledgeProcessor, queueDepth=10, workerNum=20, max
     # load knowledge data
     freqDict = load('data/outData/knowledge/freqDict.sav')
 
-    # knowledgeSet = {'harvard'}
-    # database = Thicctable(knowledgeSet)
-    #
-    # freqDict = {'harvard':0}
-
     # queue to hold urlList
     urlQueue = Queue(queueDepth)
     # set to hold , previously scraped URLs

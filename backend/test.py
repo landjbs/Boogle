@@ -10,19 +10,16 @@ from crawlers.crawler import scrape_urlList
 
 import os
 
-# urlList = list(map(lambda url:url[:-4], os.listdir('data/outData/dmozProcessed/All')[:500]))
-urlList = ['www.harvard.edu', 'www.wikipedia.org']
+urlList = list(map(lambda url:url[:-4], os.listdir('data/outData/dmozProcessed/All')[:30000]))
 
-# knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
-knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor({'harvard', 'juice'})
+knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
 print("Processor loaded")
 
 database = scrape_urlList(urlList, knowledgeProcessor)
 
-
 searchLambda = lambda item : item[:2]
 
-print(f"{'-'*73}\nWelcome to Boogle\t\t\t\t\t\t\t|\n{'-'*73}")
+print(f"\n{'-'*73}\nWelcome to Boogle\t\t\t\t\t\t\t|\n{'-'*73}")
 
 while True:
     try:

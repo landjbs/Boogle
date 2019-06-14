@@ -85,7 +85,7 @@ def score_divDict(divDict, knowledgeProcessor, freqDict):
         # get text inside div
         divText = divDict[div]
         # get dict of tokens in divText and their scores
-        divScores = find_scoredTokens(divText, div, knowledgeProcessor, freqDict, 0)
+        divScores = find_scoredTokens(divText, div, knowledgeProcessor, freqDict, 0.001)
         # iterate over found tokens, adding their scores to the divDict
         for token in divScores:
             if token in scoreDict:
