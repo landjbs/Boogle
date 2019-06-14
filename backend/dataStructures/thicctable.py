@@ -81,7 +81,7 @@ class Thicctable():
         return True
 
     def bucket_page(self, pageList):
-        """ """
+        """ Sort page into all applicable buckets """
         # iterate over tokens in pageList
         for token in pageList[2]:
             # get score of page from pageRanker
