@@ -2,6 +2,7 @@ from dataStructures.objectSaver import save, load
 import matplotlib.pyplot as plt
 import numpy as np
 import models.ranking.pageRanker as pageRanker
+import json
 
 class Thicctable():
     """
@@ -108,17 +109,17 @@ class Thicctable():
         """ Returns the top n elements of the list mapped by key in topDict """
         return self.topDict[key][:n]
 
-    ### DATA MODIFICATION FUNCTIONS ###
+    ### SAVE/LOAD FUNCTIONS ###
     def save(self, outPath):
-        """ Writes contents of Thicctable to files in outPath for storage """
-        # for key in self.topDict:
-        #     with open(f"{outPath}/{key}", 'w+', ) as FileObj:
-        #         FileObj.write()
+        """ Writes contents of Thicctable to json file in outPath.json """
+        with open(f"{outPath}.json", 'w+') as FileObj:
+            json.dump(self.topDict, FileObj)
         return True
 
     def load(self, inPath):
-        """ Reads Thicctable in from files in inPath """
-        self.topDict = load(inPath)
+        """ Loads topDict saved in json file """
+        with open(f"{inPath}.json", 'r') as FileObj:
+            self.topDict = json.load(FileObj)
         return True
 
     ### VISUALIZATION FUNCTIONS ###

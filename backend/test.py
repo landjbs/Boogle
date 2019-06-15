@@ -8,11 +8,15 @@ import os
 
 db = Thicctable({'harvard'})
 
-db.insert_value('harvard', [1,2,3,4])
+db.insert_value('harvard', [[1,2],[3,4]])
 
-print(db.topDict['harvard'])
+db.save("data/thicctable/test")
 
+db2 = Thicctable({})
 
+db2.load('data/thicctable/test')
+
+db2.plot_lengths()
 
 
 # testFiles = [chr(i) for i in range(97,123)]
