@@ -9,11 +9,7 @@ from crawlers.crawler import scrape_urlList
 
 import os
 
-# urlList = list(map(lambda url:url[:-4], os.listdir('data/outData/dmozProcessed/All')[1000:2000]))
-
-urlList = ['https://www.harvard.edu', 'https://en.wikipedia.org/wiki/Harvard_University',
-            'https://en.wikipedia.org/wiki/Harvard_College', 'https://www.espn.com/college-football/game?gameId=401029858',
-            'https://en.wikipedia.org/wiki/Dartmouth–Harvard_football_rivalry']
+urlList = list(map(lambda url:url[:-4], os.listdir('data/outData/dmozProcessed/All')[:2]))
 
 knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
 print("Processor loaded")

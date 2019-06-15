@@ -6,18 +6,22 @@ from models.processing.cleaner import clean_text
 from crawlers.crawler import scrape_urlList
 import os
 
-db = Thicctable({'harvard'})
+from dataStructures.simpleStructures import Simple_List
 
-db.insert_value('harvard', [[1,2],[3,4]])
+x = Simple_List()
 
-db.save("data/thicctable/test")
+x.add(4)
 
-db2 = Thicctable({})
+x.save('test')
 
-db2.load('data/thicctable/test')
+del x
 
-db2.plot_lengths()
+x = Simple_List()
 
+x.load('test')
+
+for i in x.data:
+    print(i)
 
 # testFiles = [chr(i) for i in range(97,123)]
 # for file in testFiles:

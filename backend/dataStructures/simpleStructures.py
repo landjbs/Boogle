@@ -1,6 +1,8 @@
 # Defines class for wide column store of web data gathered in crawler.py
 ####### TO BE UPDATED ########
 
+import json
+
 class Simple_List():
     """ Class reimplementing list for easy threading """
     def __init__(self):
@@ -9,6 +11,16 @@ class Simple_List():
     def add(self, elt):
         """ Adds element to data list """
         self.data.append(elt)
+
+    def save(self, outPath):
+        with open(f"{outPath}.json", 'w+') as FileObj:
+            json.dump(self.data, FileObj)
+        return True
+
+    def load(self, inPath):
+        with open(f"{inPath}.json", 'r') as FileObj:
+            self.data = json.load(FileObj)
+        return True
 
     def to_csv(self, path, sep=","):
         """ Saves dict list as csv in path """

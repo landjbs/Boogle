@@ -9,7 +9,7 @@ from threading import Thread
 import crawlers.urlAnalyzer as urlAnalyzer
 import crawlers.htmlAnalyzer as htmlAnalyzer
 import models.knowledge.knowledgeBuilder as knowledgeBuilder
-from dataStructures.simpleStructures import Metrics
+from dataStructures.simpleStructures import Simple_List, Metrics
 from dataStructures.thicctable import Thicctable
 from dataStructures.objectSaver import save, load
 
@@ -28,6 +28,8 @@ def scrape_urlList(urlList, knowledgeProcessor, queueDepth=10, workerNum=20, max
 
     # load knowledge data
     freqDict = load('data/outData/knowledge/freqDict.sav')
+
+    testSimple = Simple_List()
 
     # queue to hold urlList
     urlQueue = Queue(queueDepth)
@@ -53,7 +55,8 @@ def scrape_urlList(urlList, knowledgeProcessor, queueDepth=10, workerNum=20, max
             url = urlQueue.get()
             try:
                 pageList = htmlAnalyzer.scrape_url(url, knowledgeProcessor, freqDict)
-                database.bucket_page(pageList)
+                # database.bucket_page(pageList)
+                testSimple.add(pageList)
                 # pull list of links from pageDict and put in urlQueue
                 # enqueue_urlList(pageList[3])
                 # update scrape metrics
