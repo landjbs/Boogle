@@ -3,10 +3,11 @@ Functions for all text processing involding knowledgeSet and knowledgeProcessor
 built in models.knowledge.knowledgeBuilder.
 """
 
+import re
 import models.knowledge.knowledgeBuilder as knowledgeBuilder
 
 # dict mapping html divs to score  multiplier
-divScores = {'url':15, 'title':20, 'headers':5, 'all':1}
+divScores = {'title':20, 'headers':5, 'all':1}
 
 
 def find_rawTokens(inStr, knowledgeProcessor):
@@ -42,11 +43,11 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
         to average frequency and multiplier associated with page div
         """
         # find number of occurences of a token in divText
-        if not (div=='url'):
-            tokenNum = knowledgeBuilder.count_token(token, divText)
-        else:
+        # if not (div=='url'):
+        tokenNum = knowledgeBuilder.count_token(token, divText)
+        # else:
             # url tokens are not delimited by spaces
-            tokenNum = re.findall(token, divText, flags=re.IGNORECASE)
+            # tokenNum = re.findall(token, divText, flags=re.IGNORECASE)
         # find frequency of token usage in divText
         tokenFrequency = tokenNum / divLen
         # find average frequency of token from freqDict; if no key in freqDict, avgFreq <- 0
