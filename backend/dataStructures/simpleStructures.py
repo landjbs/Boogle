@@ -8,6 +8,9 @@ class Simple_List():
     def __init__(self):
         self.data = []
 
+    def clear(self):
+        self.data = []
+
     def add(self, elt):
         """ Adds element to data list """
         self.data.append(elt)

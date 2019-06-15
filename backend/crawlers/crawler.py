@@ -22,9 +22,9 @@ def scrape_urlList(urlList, knowledgeProcessor, queueDepth=10, workerNum=20, max
     Returns: wide column store of data from each url
     """
     # # load knowledge set and use to initialize databasse
-    knowledgeSet = load('data/outData/knowledge/knowledgeSet.sav')
-    database = Thicctable(knowledgeSet)
-    del knowledgeSet
+    # knowledgeSet = load('data/outData/knowledge/knowledgeSet.sav')
+    # database = Thicctable(knowledgeSet)
+    # del knowledgeSet
 
     # load knowledge data
     freqDict = load('data/outData/knowledge/freqDict.sav')
@@ -66,6 +66,9 @@ def scrape_urlList(urlList, knowledgeProcessor, queueDepth=10, workerNum=20, max
                 # update scrape metrics
                 scrapeMetrics.add(error=True)
             # log progress
+            if (scrapeMetrics.count % 2 == 0):
+                testSimple.save(f"data/thicctable/tempLists/{str(scrapeMetrics.count)}")
+                testSimple.clear()
             print(f"\t{scrapeMetrics.count} URLs analyzed with {scrapeMetrics.errors} errors!", end="\r")
             # signal completion
             urlQueue.task_done()
@@ -84,4 +87,4 @@ def scrape_urlList(urlList, knowledgeProcessor, queueDepth=10, workerNum=20, max
     urlQueue.join()
 
 
-    return database
+    return True
