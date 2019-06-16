@@ -22,11 +22,13 @@ def find_rawTokens(inStr, knowledgeProcessor):
     allTokens = greedyTokens.copy()
     # iterate over greedy tokens
     for token in greedyTokens:
-        # iterate over white-space delimited words in each token
-        for word in token.split():
-            # find all tokens within the word and add to all tokens
-            smallTokens = knowledgeProcessor.extract_keywords(word)
-            allTokens += smallTokens
+        splitToken = token.split()
+        if not (len(splitToken)==1):
+            # iterate over white-space delimited words in each token
+            for word in token.split():
+                # find all tokens within the word and add to all tokens
+                smallTokens = knowledgeProcessor.extract_keywords(word)
+                allTokens += smallTokens
     return allTokens
 
 
