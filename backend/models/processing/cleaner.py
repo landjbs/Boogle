@@ -24,7 +24,7 @@ spaceMatcher = re.compile(r"[\t|\n|\s|-|_]+")
 # matches \t \r and \n in titles
 slashMatcher = re.compile(r"[.\r|.\n|.\t]")
 # matches for special parts of url
-urlMatcher = re.compile(r"[https|http|www|com|org|edu]")
+urlMatcher = re.compile(r"https|http|www|com|org|edu")
 
 
 ## Funcitons ##
@@ -55,14 +55,14 @@ def clean_title(rawTitle):
     return spacedTitle
 
 
-def clean_linkSting(rawURL):
+def clean_url(rawURL):
     """
-    Cleans url by stripping punctuation and removing http, www, com, etc.
-    Not to be confused with urlAnalyzer.clean_url!
+    Cleans url for knowledge tokenization by stripping punctuation and removing
+    http, www, com, etc. Not to be confused with urlAnalyzer.fix_url!
     """
-    strippedURL = re.sub(stripMathcer, "", rawURL)
-    cleanedURL = re.sub(urlMathcer, "", rawURL)
-    return cleanedURL
+    cleanedURL = re.sub(urlMatcher, "", rawURL)
+    strippedURL = re.sub(stripMatcher, "", cleanedURL)
+    return strippedURL
 
 
 def end_test(rawString):

@@ -22,7 +22,7 @@ def parsable(url):
     return canParse
 
 
-def clean_url(url):
+def fix_url(url):
     """ Add proper headings URLs for crawler analysis """
     # cast url to string
     urlString = str(url)
@@ -40,7 +40,7 @@ def clean_url(url):
 def url_to_pageString(url, timeout=5):
     """ Cleans and converts string of URL link to string of page contents """
     # add proper headers to url
-    cleanedURL = clean_url(url)
+    cleanedURL = fix_url(url)
     try:
         # get response object of url, failing after timeout seconds
         page = urllib.request.urlopen(cleanedURL, timeout=timeout)

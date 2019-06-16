@@ -9,7 +9,7 @@ import time # to find the loadTime of a page
 import langid # to classify language of pageString
 from bs4 import BeautifulSoup
 import crawlers.urlAnalyzer as urlAnalyzer
-from models.processing.cleaner import clean_text, clean_title
+from models.processing.cleaner import clean_text, clean_title, clean_url
 from models.knowledge.knowledgeFinder import score_divDict
 # from models.knowledge.knowledgeReader import find_knowledgeTokens
 
@@ -67,7 +67,7 @@ def scrape_url(url, knowledgeProcessor, freqDict):
     """
     Fetches and processes url and returns list of page info.
     Data Returned:
-        -url: url of the page (cleaned by urlAnalyzer.clean_url)
+        -url: url of the page (cleaned by urlAnalyzer.fix_url)
         -title: cleanedd title of the page
         -knowledgeTokens: dict of knowledge tokens and their scores
         -linkList: list of urls found on the page
@@ -106,12 +106,12 @@ def scrape_url(url, knowledgeProcessor, freqDict):
     knowledgeTokens = score_divDict(divDict, knowledgeProcessor, freqDict)
 
     # find and clean list of links from soup object
-    linkList = list(map(lambda url:urlAnalyzer.clean_url(url), get_links(curSoup)))
+    linkList = list(map(lambda url : urlAnalyzer.fix_url(url), get_links(curSoup)))
 
     # DOC VEC BELOW
 
     # return list of information about page
-    return [url, clean_title(title), knowledgeTokens, linkList, loadTime, loadDate]
+    return [clean_url(url), clean_title(title), knowledgeTokens, linkList, loadTime, loadDate]
 
 
 
