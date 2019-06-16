@@ -14,12 +14,10 @@ def search_database(rawSearch, knowledgeProcessor, database, n=20):
     searchTokens = get_search_tokens(rawSearch, knowledgeProcessor)
     # if only one search token is used, simply search the bucket
     if (len(searchTokens)==1):
-        print("Type 1")
         finalResults = database.search_index(key=searchTokens[0],
                                             indexLambda=(lambda result : result[:2]),
                                             n=n)
     else:
-        print('Type 2')
         # query database for n results for each searchToken
         unfilteredResults = [database.search_full(token, n=10000) for token in searchTokens]
         # intialize list to hold newly scored pages
@@ -37,7 +35,7 @@ def search_database(rawSearch, knowledgeProcessor, database, n=20):
                 filteredResults.append((result[0], result[1], pageScore))
             # skip page if it doesn't have a score for any one of the search tokens
             except Exception as e:
-                print(e)
+                pass
         # sort filtered results based on lat elt of each result (the score)
         filteredResults.sort(key=(lambda result:result[-1]), reverse=True)
         # final results is list of url and title of sorted pages

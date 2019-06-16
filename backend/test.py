@@ -26,7 +26,10 @@ database.sort_all()
 
 while True:
     search = input("search: ")
-    print(search_database(search, knowledgeProcessor, database))
+    results = search_database(search, knowledgeProcessor, database)
+    print('\tResults:')
+    for i, result in enumerate(results):
+        print(f"\t{i}: {result}")
 
 ## Document vectorization ##
 # from flashtext import KeywordProcessor
