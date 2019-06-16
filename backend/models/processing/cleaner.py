@@ -23,7 +23,9 @@ stripMatcher = re.compile(r"[^a-zA-Z\s\t\n_-]")
 spaceMatcher = re.compile(r"[\t|\n|\s|-|_]+")
 # matches \t \r and \n in titles
 slashMatcher = re.compile(r"[.\r|.\n|.\t]")
-# url
+# matches for special parts of url
+urlMatcher = re.compile(r"[https|http|www|com|org|edu]")
+
 
 ## Funcitons ##
 def clean_text(rawString):
@@ -53,14 +55,15 @@ def clean_title(rawTitle):
     return spacedTitle
 
 
-# def clean_linkSting(rawURL):
-#     """
-#     Cleans url by stripping punctuation and removing http, www, com, etc.
-#     Not to be confused with urlAnalyzer.clean_url!
-#     """
-#     # remove punctuation
-#     firstPeriod, lastPeriod = rawURL.find('.'), rawURL.rfind('.')
-#     print(firstPeriod, lastPeriod)
+def clean_linkSting(rawURL):
+    """
+    Cleans url by stripping punctuation and removing http, www, com, etc.
+    Not to be confused with urlAnalyzer.clean_url!
+    """
+    strippedURL = re.sub(stripMathcer, "", rawURL)
+    cleanedURL = re.sub(urlMathcer, "", rawURL)
+    return cleanedURL
+
 
 def end_test(rawString):
     """ Adds space before sentence-ending punctuation. Not yet used. """
