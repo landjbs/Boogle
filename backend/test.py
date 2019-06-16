@@ -8,25 +8,17 @@ import os
 
 from dataStructures.simpleStructures import Simple_List
 
-x = Simple_List()
+from flashtext import KeywordProcessor
+import re
 
-x.add(4)
 
-x.save('test')
+"""
+Parse syntax:
+    (optional=int) {unit} to {unit} (optional=conversion)
+"""
 
-del x
+print("conver" in "asdaconversdf")
 
-x = Simple_List()
-
-x.load('test')
-
-for i in x.data:
-    print(i)
-
-# testFiles = [chr(i) for i in range(97,123)]
-# for file in testFiles:
-#     with open(f"data/thicctable/{file}", 'w+') as FileObj:
-#         FileObj.write("")
 
 
 ## Document vectorization ##

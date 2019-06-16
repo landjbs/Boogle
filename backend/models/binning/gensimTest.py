@@ -63,15 +63,11 @@ def train_d2v(data, path='d2v.model', max_epochs=100, vec_size=300, alpha=0.025)
     print(f"Model saved to '{path}'.\n{'-'*40}")
 
 
-def vectorize_document(doc, modelPath="test.model"):
+def vectorize_document(doc, model):
     """ Vectorizes document with d2v model stored at modelPath """
-    # load saved model
-    model= Doc2Vec.load("test.model")
     # tokenize input doc
-    tokenizedDoc = nltk.tokenize.word_tokenize(doc.lower())
-    # create document vector for tokenizedDoc
-    docVector = model.infer_vector(tokenizedDoc)
-    return docVector
+    # tokenizedDoc = nltk.tokenize.word_tokenize(doc.lower())
+    return model.infer_vector(doc)
 
 
 def docVec_to_dict(docVec):

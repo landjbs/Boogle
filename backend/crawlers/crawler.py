@@ -66,8 +66,8 @@ def scrape_urlList(urlList, knowledgeProcessor, queueDepth=10, workerNum=20, max
                 # update scrape metrics
                 scrapeMetrics.add(error=True)
             # log progress
-            if (scrapeMetrics.count % 2 == 0):
-                testSimple.save(f"data/thicctable/tempLists/{str(scrapeMetrics.count)}")
+            if (scrapeMetrics.count % 500 == 0):
+                testSimple.save(f"data/thicctable/tempLists/{str(scrapeMetrics.count+13000)}")
                 testSimple.clear()
             print(f"\t{scrapeMetrics.count} URLs analyzed with {scrapeMetrics.errors} errors!", end="\r")
             # signal completion
