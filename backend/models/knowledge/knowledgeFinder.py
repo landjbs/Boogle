@@ -19,19 +19,19 @@ def find_rawTokens(inStr, knowledgeProcessor):
     greedyTokens = set(knowledgeProcessor.extract_keywords(inStr))
     print(greedyTokens)
     # create list of tokens split by whitespace
-    splitTokens = []
-    for token in greedyTokens:
-        words = token.split()
+    for word in set(map(lambda greedyToken : greedyToken.split(), greedyTokens)):
         for word in words:
             print(knowledgeProcessor.extract_keywords(word))
+
 
 def find_countedTokens(inStr, knowledgeProcessor):
     """
     Finds dict mapping tokens used in inStr to number of times used.
     Does not normalize by length, div, or average frequency.
     """
-    tokensFound = knowledgeProcessor.extract_keywords(inStr)
+    tokensFound = find_rawTokens(inStr)
     return {token:knowledgeBuilder.count_token(token, inStr) for token in tokensFound}
+
 
 def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
     """
