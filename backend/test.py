@@ -1,19 +1,32 @@
 # import models.knowledge.knowledgeFinder as knowledgeFinder
 import models.knowledge.knowledgeBuilder as knowledgeBuilder
 # from dataStructures.objectSaver import load
-# from dataStructures.thicctable import Thicctable
+from dataStructures.thicctable import Thicctable
 # from models.processing.cleaner import clean_text, clean_linkSting
 # from crawlers.crawler import scrape_urlList
 # import os
 #
 # from dataStructures.simpleStructures import Simple_List
-from searchers.searchTokenizer import search_tokens
+from searchers.databaseSearcher import search_database
 
-knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor({'harvard', 'harvard university'})
+knowledgeSet = {'apple','orange','crisp'}
+
+knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor(knowledgeSet)
+
+database = Thicctable(knowledgeSet)
+
+pageList = [['all.com', 'all', {'apple':1, 'orange':2,'crisp':3}, [], 0.5, 1],
+            ['appleorange.com', 'appleorange', {'apple':3, 'orange':4}, [], 0.5, 1]]
+
+for page in pageList:
+    print(page)
+    database.bucket_page(page)
+
+database.sort_all()
 
 while True:
     search = input("search: ")
-    print(search_tokens(search, knowledgeProcessor))
+    print(search_database(search, knowledgeProcessor, database))
 
 ## Document vectorization ##
 # from flashtext import KeywordProcessor

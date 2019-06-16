@@ -28,9 +28,9 @@ def score_intersection(scoreList, loadTime):
     Scores page by load time and score list of multiple tokens
     """
     # sum scoreList and normalize by number of search tokens
-    tokenScore = reduce(lambda x,y: x+y, scoreList) / len(scoreList)
+    tokenScore = sum(scoreList) / len(scoreList)
     # score page based on loading speed
-    loadPenalty = loadLambda(loadtime)
+    loadPenalty = loadLambda(loadTime)
     aggregateScore = tokenScore - loadPenalty
     normalizedScore = normalizationLambda(aggregateScore)
     return normalizedScore
