@@ -8,6 +8,7 @@ from models.processing.cleaner import clean_text
 from crawlers.crawler import scrape_urlList
 import json
 import os
+from searchers.databaseSearcher import search_database
 
 ### url Reading ###
 # urlList = list(map(lambda url:(url[:-4]), os.listdir('data/outData/dmozProcessed/All')[13000:20000]))
@@ -42,11 +43,14 @@ print("Processor loaded")
 print(f"\n{'-'*73}\nWelcome to Boogle\t\t\t\t\t\t\t|\n{'-'*73}")
 while True:
     try:
-        search = input("Search: ")
-        clean_search = clean_text(search)
-        searchList = knowledgeFinder.find_rawTokens(clean_search, knowledgeProcessor)
-        resultsList = [database.search_index(token, searchLambda, n=10000) for token in searchList]
-        showList = [result for result in resultsList[0] if all((result in other) for other in resultsList[1:])]
+        rawSearch = input("Search: ")
+        showList = search_database(rawSearch, database)
+
+        ## Old but different ##
+        # clean_search = clean_text(search)
+        # searchList = knowledgeFinder.find_rawTokens(clean_search, knowledgeProcessor)
+        # resultsList = [database.search_index(token, searchLambda, n=10000) for token in searchList]
+        # showList = [result for result in resultsList[0] if all((result in other) for other in resultsList[1:])]
         for i, result in enumerate(showList[:20]):
             print(f"\t\t{i}: {result}")
         print('\r')

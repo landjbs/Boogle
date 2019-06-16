@@ -5,7 +5,7 @@ loadLambda = lambda loadTime : loadTime**(2)
 normalizationLambda = lambda aggregateScore : aggregateScore
 
 
-def score(pageList, token):
+def score_single(pageList, token):
     """
     Ranks page based on attributes
     """
@@ -18,6 +18,19 @@ def score(pageList, token):
     # TO DO: Use ML on docVec to categorize page into topic area
     # Use topic area to score page's freshness (eg. news needs to be fresh)
 
+    aggregateScore = tokenScore - loadPenalty
+    normalizedScore = normalizationLambda(aggregateScore)
+    return normalizedScore
+
+
+def score_intersection(scoreList, loadTime):
+    """
+    Scores page by load time and score list of multiple tokens
+    """
+    # sum scoreList and normalize by number of search tokens
+    tokenScore = reduce(lambda x,y: x+y, scoreList) / len(scoreList)
+    # score page based on loading speed
+    loadPenalty = loadLambda(loadtime)
     aggregateScore = tokenScore - loadPenalty
     normalizedScore = normalizationLambda(aggregateScore)
     return normalizedScore

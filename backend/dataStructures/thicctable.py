@@ -89,7 +89,7 @@ class Thicctable():
         # iterate over tokens in pageList
         for token in pageList[2]:
             # get score of page from pageRanker
-            pageScore = pageRanker.score(pageList, token)
+            pageScore = pageRanker.score_single(pageList, token)
             print(f"{token}: {pageScore}")
             scoredList = pageList.copy()
             scoredList.append(pageScore)

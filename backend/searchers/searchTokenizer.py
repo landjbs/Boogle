@@ -2,7 +2,7 @@
 from models.processing.cleaner import clean_text
 from models.knowledge.knowledgeFinder import find_rawTokens
 
-def search_tokens(rawSearch, knowledgeProcessor):
+def get_search_tokens(rawSearch, knowledgeProcessor):
     """
     Finds knowledge tokens of any size in searchString.
     """
