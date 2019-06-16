@@ -15,7 +15,15 @@ def find_rawTokens(inStr, knowledgeProcessor):
     Finds set of tokens used in inStr without scoring or count.
     Used to tokenize search queries.
     """
-    return set(knowledgeProcessor.extract_keywords(inStr))
+    # use greedy matching of flashtext algorithm to find keywords
+    greedyTokens = set(knowledgeProcessor.extract_keywords(inStr))
+    print(greedyTokens)
+    # create list of tokens split by whitespace
+    splitTokens = []
+    for token in greedyTokens:
+        words = token.split()
+        for word in words:
+            print(knowledgeProcessor.extract_keywords(word))
 
 def find_countedTokens(inStr, knowledgeProcessor):
     """

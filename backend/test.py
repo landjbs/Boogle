@@ -1,25 +1,18 @@
 import models.knowledge.knowledgeFinder as knowledgeFinder
 import models.knowledge.knowledgeBuilder as knowledgeBuilder
-from dataStructures.objectSaver import load
-from dataStructures.thicctable import Thicctable
-from models.processing.cleaner import clean_text
-from crawlers.crawler import scrape_urlList
-import os
+# from dataStructures.objectSaver import load
+# from dataStructures.thicctable import Thicctable
+# from models.processing.cleaner import clean_text
+# from crawlers.crawler import scrape_urlList
+# import os
+#
+# from dataStructures.simpleStructures import Simple_List
 
-from dataStructures.simpleStructures import Simple_List
+knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor({'harvard', 'harvard university'})
 
-from flashtext import KeywordProcessor
-import re
-
-
-"""
-Parse syntax:
-    (optional=int) {unit} to {unit} (optional=conversion)
-"""
-
-print("conver" in "asdaconversdf")
-
-
+while True:
+    search = input("search: ")
+    knowledgeFinder.find_rawTokens(search, knowledgeProcessor)
 
 ## Document vectorization ##
 # from flashtext import KeywordProcessor

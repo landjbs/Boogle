@@ -49,6 +49,6 @@ while True:
         showList = [result for result in resultsList[0] if all((result in other) for other in resultsList[1:])]
         for i, result in enumerate(showList[:20]):
             print(f"\t\t{i}: {result}")
-
+        print('\r')
     except Exception as e:
         print(f'ERROR: {e}')
