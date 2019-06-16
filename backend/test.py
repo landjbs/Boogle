@@ -1,18 +1,19 @@
 # import models.knowledge.knowledgeFinder as knowledgeFinder
-# import models.knowledge.knowledgeBuilder as knowledgeBuilder
+import models.knowledge.knowledgeBuilder as knowledgeBuilder
 # from dataStructures.objectSaver import load
 # from dataStructures.thicctable import Thicctable
-from models.processing.cleaner import clean_text, clean_linkSting
+# from models.processing.cleaner import clean_text, clean_linkSting
 # from crawlers.crawler import scrape_urlList
 # import os
 #
 # from dataStructures.simpleStructures import Simple_List
+from searchers.searchTokenizer import search_tokens
 
-# knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor({'harvard', 'harvard university'})
+knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor({'harvard', 'harvard university'})
 
 while True:
     search = input("search: ")
-    print(clean_linkSting(search))
+    print(search_tokens(search, knowledgeProcessor))
 
 ## Document vectorization ##
 # from flashtext import KeywordProcessor

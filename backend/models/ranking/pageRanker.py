@@ -1,9 +1,8 @@
 # scoring lambdas that map page-related scalars onto functions
+# function to penalize long load times
 loadLambda = lambda loadTime : loadTime**(2)
-
-# import matplotlib.pyplot as plt
-# plt.plot([loadLambda(i) for i in range(1,10)])
-# plt.show()
+# function to normalize aggregateScore of page to avoid huge outliers NO IMP YET!
+normalizationLambda = lambda aggregateScore : aggregateScore
 
 
 def score(pageList, token):
@@ -19,5 +18,6 @@ def score(pageList, token):
     # TO DO: Use ML on docVec to categorize page into topic area
     # Use topic area to score page's freshness (eg. news needs to be fresh)
 
-    totalScore = tokenScore
-    return totalScore
+    aggregateScore = tokenScore - loadPenalty
+    normalizedScore = normalizationLambda(aggregateScore)
+    return normalizedScore
