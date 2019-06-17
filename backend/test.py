@@ -7,16 +7,18 @@
 # import os
 # from dataStructures.simpleStructures import Simple_List
 # from searchers.databaseSearcher import search_database
-import flashtext
-
-processor = flashtext.KeywordProcessor()
-
-processor.add_keyword("test", 'test')
-processor.add_keyword('exam', 'test')
+from models.processing.cleaner import clean_wiki
+import re
 
 while True:
-    raw = input('Test: ')
-    print(processor.extract_keywords(raw))
+    test = input("Test: ")
+    print(clean_wiki(test))
+
+# with open('data/inData/wikiTitles.txt') as knowledgeData:
+#     for line in knowledgeData:
+#         if (re.compile(r'[0-9]')).match(line):
+#             print(line)
+#             clean_wiki(line)
 
 ## Document vectorization ##
 # from flashtext import KeywordProcessor

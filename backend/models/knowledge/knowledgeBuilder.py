@@ -30,7 +30,7 @@ def build_knowledgeSet(knowledgeFile, outPath=""):
     # open file from knowledge
     with open(knowledgeFile) as knowledgeData:
         # build set of cleaned lines in knowledgeData
-        knowledgeSet = {clean_text(token) for token in knowledgeData}
+        knowledgeSet = {clean_wiki(token) for token in knowledgeData}
         # remove empty token from knowledgeSet (only one because set)
         knowledgeSet.remove("")
     # save knowledge to outPath if specified
