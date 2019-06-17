@@ -37,10 +37,8 @@ def clean_text(rawString):
     """
     # replace spaceMatcher and tagMatcher with " "
     detaggedString = re.sub(tagMatcher, " ", rawString)
-    # converts anything that looks like a year range (eg. 1910-11) into two years (eg. 1910 1911)
-    rangedString = re.sub(r'\b(?P<firstTwo>[0-9]{2})(?P<secondTwo>[0-9]{2})-(?P<lastTwo>[0-9]{2})', "\g<firstTwo>\g<secondTwo> \g<firstTwo>\g<lastTwo>", detaggedString)
     # replace stripMatcher with ""
-    cleanedString = re.sub(stripMatcher, "", rangedString)
+    cleanedString = re.sub(stripMatcher, "", detaggedString)
     # replace spaceMatcher with " " and strip surround whitespace
     spacedString = re.sub(spaceMatcher, " ", cleanedString).strip()
     # lowercase the alpha chars that remain
@@ -55,8 +53,10 @@ def clean_wiki(rawWiki):
     """
     # remove special wiki words
     dewikiedWiki = re.sub(wikiMatcher, "", rawWiki)
+    # converts anything that looks like a year range (eg. 1910-11) into two years (eg. 1910 1911)
+    rangedString = re.sub(r'\b(?P<firstTwo>[0-9]{2})(?P<secondTwo>[0-9]{2})-(?P<lastTwo>[0-9]{2})', "\g<firstTwo>\g<secondTwo> \g<firstTwo>\g<lastTwo>", dewikiedWiki)
     # use clean_text to do the rest
-    cleanedWiki = clean_text(dewikiedWiki)
+    cleanedWiki = clean_text(rangedString)
     return cleanedWiki
 
 def clean_title(rawTitle):
