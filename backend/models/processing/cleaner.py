@@ -21,6 +21,8 @@ tagMatcher = re.compile(r"<[^\s][^<]*>")
 stripMatcher = re.compile(r"[^a-zA-Z\s\t\n_]")
 # matches any sequence of tabs, newlines, spaces, underscores, and dashes
 spaceMatcher = re.compile(r"[\t|\n|\s|_]+")
+# matches for special wiki words like '(disambiguation)'
+wikiMatcher = re.compile(r"(disambiguation)")
 # matches \t \r and \n in titles
 slashMatcher = re.compile(r"[.\r|.\n|.\t]")
 # matches for special parts of url
@@ -43,6 +45,17 @@ def clean_text(rawString):
     loweredString = spacedString.lower()
     return loweredString
 
+
+def clean_wiki(rawWiki):
+    """
+    Cleans wikipedia title during knowledgeSet construction. Wraps clean_text
+    but removes special wikipedia words like '(disambiguation)'.
+    """
+    # remove special wiki words
+    dewikiedWiki = re.sub(wikiMatcher, "", rawWiki)
+    # use clean_text to do the rest
+    cleanedWiki = clean_text(dewikiedWiki)
+    return cleanedWiki
 
 def clean_title(rawTitle):
     """
