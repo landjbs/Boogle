@@ -18,9 +18,9 @@ import re
 # matches things that look like a single html tag
 tagMatcher = re.compile(r"<[^\s][^<]*>")
 # matches non-alpha, space, or sentence-ending punctuation (dash must be at end)
-stripMatcher = re.compile(r"[^a-zA-Z\s\t\n_-]")
+stripMatcher = re.compile(r"[^a-zA-Z\s\t\n_]")
 # matches any sequence of tabs, newlines, spaces, underscores, and dashes
-spaceMatcher = re.compile(r"[\t|\n|\s|-|_]+")
+spaceMatcher = re.compile(r"[\t|\n|\s|_]+")
 # matches \t \r and \n in titles
 slashMatcher = re.compile(r"[.\r|.\n|.\t]")
 # matches for special parts of url
