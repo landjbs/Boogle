@@ -28,21 +28,25 @@ def build_knowledgeSet(knowledgeFile, additionalTokens=None, numberRange=None, o
     numberRange tuple of range of integer tokens to add, and outPath to which to save set.
     Returns: set (for fast lookup) of cleaned tokens stripped from knowledgeData
     """
-    # open file from knowledge
+    # open base knowledgeFile
     with open(knowledgeFile) as knowledgeData:
         # build set of cleaned lines in knowledgeData
         knowledgeSet = {clean_wiki(token) for token in knowledgeData}
+
     # add tokens from additionalTokens set
     if additionalTokens:
         for token in additionalTokens:
             knowledgeSet.add(clean_wiki(token))
+
     # add integers between first and last elt of numberRange tuple
     if numberRange:
         assert isinstance(numberRange, tuple), "numberRange must be a tuple of integers"
         for num in range(numberRange[0], numberRange[1]):
             knowledgeSet.add(str(num))
+
     # remove empty token from knowledgeSet (only one because set)
     knowledgeSet.remove("")
+    
     # save knowledge to outPath if specified
     if not (outPath==""):
         save(knowledgeSet, outPath)
