@@ -17,7 +17,7 @@ knowledgeFinder.
 import os, re
 from flashtext import KeywordProcessor
 from dataStructures.objectSaver import save, load
-from models.processing.cleaner import clean_text
+from models.processing.cleaner import clean_text, clean_wiki
 
 
 ## Functions ##
@@ -46,7 +46,7 @@ def build_knowledgeSet(knowledgeFile, additionalTokens=None, numberRange=None, o
 
     # remove empty token from knowledgeSet (only one because set)
     knowledgeSet.remove("")
-    
+
     # save knowledge to outPath if specified
     if not (outPath==""):
         save(knowledgeSet, outPath)

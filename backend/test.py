@@ -1,5 +1,5 @@
-# import models.knowledge.knowledgeFinder as knowledgeFinder
-# import models.knowledge.knowledgeBuilder as knowledgeBuilder
+import models.knowledge.knowledgeFinder as knowledgeFinder
+import models.knowledge.knowledgeBuilder as knowledgeBuilder
 # from dataStructures.objectSaver import load
 # from dataStructures.thicctable import Thicctable
 # from models.processing.cleaner import clean_text, clean_url
@@ -7,12 +7,16 @@
 # import os
 # from dataStructures.simpleStructures import Simple_List
 # from searchers.databaseSearcher import search_database
-from models.processing.cleaner import clean_wiki
-import re
+# from models.processing.cleaner import clean_wiki
+# import re
+
+
+test = knowledgeBuilder.build_knowledgeSet(knowledgeFile="data/inData/test.txt", additionalTokens={'a','b','c'}, numberRange=(0,10))
+checker = knowledgeBuilder.build_knowledgeProcessor(test)
 
 while True:
-    test = input("Test: ")
-    print(clean_wiki(test))
+    me = input("Test: ")
+    print(knowledgeFinder.find_rawTokens(me, checker))
 
 # with open('data/inData/wikiTitles.txt') as knowledgeData:
     # for line in knowledgeData:
