@@ -15,10 +15,12 @@ while True:
     print(clean_wiki(test))
 
 # with open('data/inData/wikiTitles.txt') as knowledgeData:
-#     for line in knowledgeData:
-#         if (re.compile(r'[0-9]')).match(line):
-#             print(line)
-#             clean_wiki(line)
+    # for line in knowledgeData:
+    #     # if (re.compile(r'[0-9]')).match(line):
+    #     clean = clean_wiki(line)
+    #     if 'dr dre' in clean:
+    #         print(line,end='')
+    #         print(f"\t{clean_wiki(line)}")
 
 ## Document vectorization ##
 # from flashtext import KeywordProcessor
