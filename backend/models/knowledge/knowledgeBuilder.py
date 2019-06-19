@@ -23,9 +23,10 @@ from models.processing.cleaner import clean_text, clean_wiki
 ## Functions ##
 def build_knowledgeSet(knowledgeFile, additionalTokens=None, numberRange=None, outPath=""):
     """
-    Args: \n delimited file of words to treat as knowledge tokens (tokens for
-    strict word search), additionalTokens set of tokens not in knowledgeFile,
-    numberRange tuple of range of integer tokens to add, and outPath to which to save set.
+    Args: \n delimited knowledgeFile of phrases to treat as knowledge tokens
+    (tokens for strict word search), additionalTokens set of tokens not in
+    knowledgeFile, numberRange tuple of range of integer tokens to add, and
+    outPath to which to save set
     Returns: set (for fast lookup) of cleaned tokens stripped from knowledgeData
     """
     # open base knowledgeFile
