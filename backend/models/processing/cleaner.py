@@ -17,10 +17,10 @@ import re
 ## Matchers ##
 # matches things that look like a single html tag
 tagMatcher = re.compile(r"<[^\s][^<]*>")
-# matches non-alpha, space, or sentence-ending punctuation (dash must be at end)
-stripMatcher = re.compile(r"[^a-zA-Z\s\t\n_-]")
+# matches non-alphanumeric, space, or sentence-ending punctuation (dash must be at end)
+stripMatcher = re.compile(r"[^0-9a-zA-Z\s\t\n_-]")
 # matches any sequence of tabs, newlines, spaces, underscores, and dashes
-spaceMatcher = re.compile(r"[\t\n\s_-]+")
+spaceMatcher = re.compile(r"[\t\n\s_]+")
 # matches for special wiki words like '(disambiguation)'
 wikiMatcher = re.compile(r"(disambiguation)")
 # matches \t \r and \n in titles
@@ -31,6 +31,13 @@ urlMatcher = re.compile(r"https|http|www|com|org|edu")
 
 # converts anything that looks like a year range (eg. 1910-11) into two years (eg. 1910 1911)
 # rangedString = re.sub(r'\b(?P<firstTwo>[0-9]{2})(?P<secondTwo>[0-9]{2})-(?P<lastTwo>[0-9]{2}) ', "\g<firstTwo>\g<secondTwo> \g<firstTwo>\g<lastTwo>", dewikiedWiki)
+
+# def convert_ordinal_number(inStr):
+#     """
+#     Converts ordinal numbers (eg. 1st) to their english
+#     representation (eg. first)
+#     """
+#
 
 
 ## Funcitons ##

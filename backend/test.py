@@ -10,13 +10,11 @@ import models.knowledge.knowledgeBuilder as knowledgeBuilder
 # from models.processing.cleaner import clean_wiki
 # import re
 
-
-test = knowledgeBuilder.build_knowledgeSet(knowledgeFile="data/inData/test.txt", additionalTokens={'a','b','c'}, numberRange=(0,10))
-checker = knowledgeBuilder.build_knowledgeProcessor(test)
+from models.processing.cleaner import clean_wiki
 
 while True:
     me = input("Test: ")
-    print(knowledgeFinder.find_rawTokens(me, checker))
+    print(clean_wiki(me))
 
 # with open('data/inData/wikiTitles.txt') as knowledgeData:
     # for line in knowledgeData:
