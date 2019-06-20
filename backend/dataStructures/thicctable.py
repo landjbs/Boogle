@@ -88,13 +88,16 @@ class Thicctable():
         """
         # iterate over tokens in pageList
         for token in pageList[2]:
-            # get score of page from pageRanker
-            pageScore = pageRanker.score_single(pageList, token)
-            # print(f"{token}: {pageScore}")
-            scoredList = pageList.copy()
-            scoredList.append(pageScore)
-            # insert tuple of score and pageLists list into appropriate bin
-            self.insert_value(token, scoredList)
+            try:
+                # get score of page from pageRanker
+                pageScore = pageRanker.score_single(pageList, token)
+                # print(f"{token}: {pageScore}")
+                scoredList = pageList.copy()
+                scoredList.append(pageScore)
+                # insert tuple of score and pageLists list into appropriate bin
+                self.insert_value(token, scoredList)
+            except Exception as e:
+                print(e)
         return True
 
     ### SEARCH FUNCTIONS ###

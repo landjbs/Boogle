@@ -9,6 +9,7 @@ from crawlers.crawler import scrape_urlList
 import json
 import os
 from searchers.databaseSearcher import search_database
+from crawlers.urlAnalyzer import parsable
 
 ### url Reading ###
 # urlList = list(map(lambda url:(url[:-4]), os.listdir('data/outData/dmozProcessed/All')[13000:20000]))
@@ -22,6 +23,8 @@ from searchers.databaseSearcher import search_database
 print('Loading Knowledge Database')
 knowledgeSet = load("data/outData/knowledge/knowledgeSet.sav")
 print('Knowledge Database Loaded')
+knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor(knowledgeSet, 'data/outData/knowledge/knowledgeProcessor.sav')
+print('processor built')
 database = Thicctable(knowledgeSet)
 del knowledgeSet
 
