@@ -127,7 +127,7 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=4):
     # DOC VEC BELOW
 
     # return list of information about page
-return [clean_url(url), clean_title(title), knowledgeTokens, linkList, loadTime, loadDate, windowText]
+    return [clean_url(url), clean_title(title), knowledgeTokens, linkList, loadTime, loadDate, windowText]
 
 
 

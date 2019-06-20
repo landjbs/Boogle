@@ -20,7 +20,7 @@ freqDict = {}
 while True:
     url = input("URL: ")
     pageInfo = scrape_url(url, knowledgeProcessor, freqDict, timeout=20)
-    print(pageInfo[1])
+    print(pageInfo[2])
     print(bold_window(['contents'], pageInfo[-1]))
 
 
