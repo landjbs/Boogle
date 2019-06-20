@@ -9,41 +9,14 @@
 # from dataStructures.simpleStructures import Simple_List
 # from searchers.databaseSearcher import or_search
 # from models.processing.cleaner import clean_wiki
+import operator
 import re
+from searchers.displayWindow import bold_window
 
-def bold_tokens(tokenList, text, windowSize=40):
-    """ Puts <strong></strong> around all  """
-    # create matcher for all tokens in tokenList
-    tokenString = "|".join(tokenList)
-    # find list position of all starting locs of tokens in text
-    locList = [elt.span()[0] for elt in re.finditer(tokenString, text)]
+with open('testpage.txt', 'r') as f:
+    test = f.read()
 
-    def best_loc(locList):
-        """
-        Finds the number of tokens that start within windowSize of each loc.
-        Returns loc with most tokens
-        """
-        # iterate over starting locations in locList
-        for start in locList:
-
-
-    print(locList)
-    for loc in locList:
-        print(loc)
-        qualCount = 0
-        for other in locList:
-            print(f'\t{loc}')
-            if other in range(loc, loc+1):
-                qualCount += 1
-                print('yes')
-    # sub token matches for token surrounded by <strong> tags
-    boldedText = re.sub(f"(?P<token>{tokenString})", "<strong>\g<token></strong>", text)
-
-    return boldedText
-
-
-test = 'hi how is harvard'
-print(bold_tokens(['harvard', 'hi'], test))
+print(bold_window(['league'], test))
 
 # with open('data/inData/wikiTitles.txt') as knowledgeData:
     # for line in knowledgeData:
