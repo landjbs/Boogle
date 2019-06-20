@@ -45,7 +45,7 @@ def url_to_pageString(url, timeout=5):
         # get response object of url, failing after timeout seconds
         page = urllib.request.urlopen(cleanedURL, timeout=timeout)
     except:
-        raise ParseError(f"Unable to access '{cleanedURL}''")
+        raise ParseError(f"Unable to access '{cleanedURL}'")
     pageString = page.read()
     page.close()
     return(pageString)

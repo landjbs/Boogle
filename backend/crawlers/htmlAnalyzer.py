@@ -100,15 +100,20 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=4):
     # join cleaned headers into space delimited string
     headers = " ".join(clean_text(str(header)) for header in headerList)
 
-    # find list of discription tags in soup object
-    descriptionList = curSoup.find_all('meta', attrs={'name': 'description'})
-    print(descriptionList[0].get_text())
-    if descriptionList:
-        descriptions = " ".join(clean_text(str(description.string)) for description in descriptionList)
-        print(descriptions)
+    # find contents of discription tag in soup object if it exists
+    try:
+        description = curSoup.find('meta', attrs={'name': 'description'}).get('content')
+    except:
+        description = ""
+
+    # find contents of keyword tag in soup object if it exists
+    try:
+        keywords = curSoup.find('meta', attrs={'name':'keywords'}).get('content')
+    except:
+        keywords = ""
 
     # create dict of divs and contents for knowledge tokenization
-    divDict = {'url':url,'title':title, 'headers':headers, 'all':cleanedText}
+    divDict = {'url':url,'title':title, 'headers':headers, 'description':clean_text(description), 'keywords':clean_text(keywords),'all':cleanedText}
 
     # find dict mapping knowledge tokens in divDict to their score
     knowledgeTokens = score_divDict(divDict, knowledgeProcessor, freqDict)
@@ -116,10 +121,13 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=4):
     # find and clean list of links from soup object
     linkList = list(map(lambda url : urlAnalyzer.fix_url(url), get_links(curSoup)))
 
+    # decide text to use for window display; description if possible
+    windowText = description if (description != "") else cleanedText
+
     # DOC VEC BELOW
 
     # return list of information about page
-    return [clean_url(url), clean_title(title), knowledgeTokens, linkList, loadTime, loadDate, cleanedText]
+return [clean_url(url), clean_title(title), knowledgeTokens, linkList, loadTime, loadDate, windowText]
 
 
 
