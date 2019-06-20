@@ -11,22 +11,25 @@ import os
 import pandas as pd
 from dataStructures.objectSaver import save, load
 from models.processing.cleaner import clean_text
+from keras.models import Sequential
+from keras.layers import Dense, Activation
+from keras.utils import to_categorical
 
 #  584156 URLs analyzed with 396544 errors!
 
 PATH = 'data/outData/dmozProcessed'
 
-# for folder in os.listdir(PATH):
-#     print(folder)
-#     for i, file in enumerate(os.listdir(f"{PATH}/{folder}")):
-#         if i < 10:
-#             with open(f"{PATH}/{folder}/{file}", 'r') as oldFile:
-#                 pageText = oldFile.read()
-#                 with open(f"{PATH}/All/{file}", 'w+') as newFile:
-#                     newFile.write(pageText)
-#                 print(f"Analyzing {i}", end="\r")
-#         else:
-#             break
+for folder in os.listdir(PATH):
+    print(folder)
+    for i, file in enumerate(os.listdir(f"{PATH}/{folder}")):
+        if i < 1000:
+            with open(f"{PATH}/{folder}/{file}", 'r') as oldFile:
+                pageText = oldFile.read()
+                with open(f"{PATH}/All/{file}", 'w+') as newFile:
+                    newFile.write(pageText)
+                print(f"Analyzing {i}", end="\r")
+        else:
+            break
 
 
 dv.train_d2v(folderPath="data/outData/dmozProcessed/All",
@@ -43,28 +46,32 @@ for folder in os.listdir(PATH):
     if folder not in ['.DS_Store', 'All']:
         print(folder)
         for i, file in enumerate(os.listdir(f"{PATH}/{folder}")):
-            if i < 100:
+            if i < 1000:
                 with open(f"{PATH}/{folder}/{file}", 'r') as oldFile:
                     text = clean_text(oldFile.read())
                     vec = dv.vectorize_document(text, model)
-                    vecDict = docVec_to_dict(vec)
-                    fileDict = vecDict.update('folder':folderNums[folder])
-                    dataList.append(fileDict)
+                    vecDict = dv.docVec_to_dict(vec)
+                    vecDict.update({'folder':folderNums[folder]})
+                    dataList.append(vecDict)
+                    print(f"\tVectorizing: {i}", end="\r")
+            else:
+                break
 
 df = pd.DataFrame(dataList)
 
 print(df)
 
-load(df, 'folderVecs.sav')
+folderScores = to_categorical(df['folder'])
+df = df.drop("folder", axis=1)
 
-from keras.models import Sequential
-from keras.layers import Dense, Activation
-from keras.utils import to_categorical
+print(df)
+
+# load(df, 'folderVecs.sav')
 
 model = Sequential([
     Dense(300, input_shape=(300,)),
     Activation('relu'),
-    Dense(15),
+    Dense(16),
     Activation('softmax'),
 ])
 
@@ -72,9 +79,6 @@ model.compile(optimizer='rmsprop',
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
-trainDF = df.copy()
-trainDF.drop("folder",axis=1)
-
-model.fit(trainDF, to_categorical(df['folder']), epochs=10)
+model.fit(df, folderScores, epochs=10)
 
 model.save('data/outData/binning/classificationModel.sav')

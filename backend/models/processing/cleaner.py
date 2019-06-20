@@ -20,7 +20,7 @@ tagMatcher = re.compile(r"<[^\s][^<]*>")
 # matches non-alphanumeric, space, or sentence-ending punctuation (dash must be at end)
 stripMatcher = re.compile(r"[^0-9a-zA-Z\s\t\n_-]")
 # matches any sequence of tabs, newlines, spaces, underscores, and dashes
-spaceMatcher = re.compile(r"[\t\n\s_]+")
+spaceMatcher = re.compile(r"[\t\n\s_-]+")
 # matches for special wiki words like '(disambiguation)'
 wikiMatcher = re.compile(r"(disambiguation)")
 # matches \t \r and \n in titles
