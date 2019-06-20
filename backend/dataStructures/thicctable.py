@@ -122,7 +122,14 @@ class Thicctable():
             self.topDict = json.load(FileObj)
         return True
 
-    ### VISUALIZATION FUNCTIONS ###
+    ### METRICS FUNCTIONS ###
+    def key_length(self, key):
+        """
+        Returns the length of the value list associated with a key.
+        Useful metric for comparing importance of keys.
+        """
+        return len(self.topDict[key])
+
     def plot_lengths(self, outPath=""):
         """
         Plot bar chart of lengths of value lists associated with topDict
