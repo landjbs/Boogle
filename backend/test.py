@@ -10,11 +10,11 @@ import models.knowledge.knowledgeBuilder as knowledgeBuilder
 # from models.processing.cleaner import clean_wiki
 # import re
 
-from models.processing.cleaner import clean_wiki
 
-while True:
-    me = input("Test: ")
-    print(clean_wiki(me))
+test = knowledgeBuilder.build_knowledgeSet(knowledgeFile="data/inData/wikiTitles.txt", numberRange=(0,1000000), outPath="data/outData/knowledge/knowledgeSet.sav")
+print('set built')
+checker = knowledgeBuilder.build_knowledgeProcessor(knowledgeSet=test, outPath="data/outData/knowledge/knowledgeProcessor.sav")
+
 
 # with open('data/inData/wikiTitles.txt') as knowledgeData:
     # for line in knowledgeData:
