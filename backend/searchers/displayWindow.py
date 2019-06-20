@@ -19,12 +19,14 @@ def bold_window(tokenList, text, windowSize=200):
         curScore = len([otherStart for otherStart in startList if otherStart in range(loc, end)])
         return curScore
 
-    # create dict mapping each starting location to its score and find location with the highest score
+    # create dict mapping each starting location to its score
     scoredLocs = {start:score_loc(start) for start in startList}
 
+    # find location with the highest score
     if scoredLocs != {}:
         bestLoc = max(scoredLocs.items(), key=operator.itemgetter(1))[0]
         bestStart = max(0, bestLoc-10)
+    # if not locations are scored (this would only happen in a bug), window starts at the beginning
     else:
         bestStart = 0
 

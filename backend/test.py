@@ -1,5 +1,5 @@
 # import models.knowledge.knowledgeFinder as knowledgeFinder
-# import models.knowledge.knowledgeBuilder as knowledgeBuilder
+import models.knowledge.knowledgeBuilder as knowledgeBuilder
 # import searchers.fuzzyMatcher as fuzzyMatcher
 # from dataStructures.objectSaver import load
 # from dataStructures.thicctable import Thicctable
@@ -9,14 +9,19 @@
 # from dataStructures.simpleStructures import Simple_List
 # from searchers.databaseSearcher import or_search
 # from models.processing.cleaner import clean_wiki
-import operator
-import re
+
+from crawlers.htmlAnalyzer import scrape_url
 from searchers.displayWindow import bold_window
 
-with open('testpage.txt', 'r') as f:
-    test = f.read()
 
-print(bold_window(['league'], test))
+knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor({'harvard'})
+freqDict = {}
+
+while True:
+    url = input("URL: ")
+    pageInfo = scrape_url(url, knowledgeProcessor, freqDict, timeout=20)
+    print(bold_window(['harvard'], pageInfo[-1]))
+
 
 # with open('data/inData/wikiTitles.txt') as knowledgeData:
     # for line in knowledgeData:

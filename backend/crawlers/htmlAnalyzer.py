@@ -20,12 +20,13 @@ imageMatcher = re.compile('(?<=src=")\S+(?=")')
 # matcher for all h-number tages in html text
 headerMatcher = re.compile('^h[1-6$]')
 
+
 def clean_pageText(rawText, title):
     """ Removes junk from output of soup.get_text() """
-    # find location of title in rawText
-    titleLoc = rawText.find(title)
+    # find location of end of the title in rawText
+    titleEnd = rawText.find(title) + len(title)
     # filter out everything before the title
-    afterTitle = rawText[titleLoc:]
+    afterTitle = rawText[titleEnd:]
     # call clean_text from models.textProcessor.cleaner
     cleanedText = clean_text(afterTitle)
     return cleanedText
@@ -63,7 +64,7 @@ def detect_language(pageString):
     return lang
 
 
-def scrape_url(url, knowledgeProcessor, freqDict):
+def scrape_url(url, knowledgeProcessor, freqDict, timeout=4):
     """
     Fetches and processes url and returns list of page info.
     Data Returned:
@@ -77,7 +78,7 @@ def scrape_url(url, knowledgeProcessor, freqDict):
 
     # fetch page string and save time to load
     loadStart = time.time()
-    rawString = urlAnalyzer.url_to_pageString(url, timeout=4)
+    rawString = urlAnalyzer.url_to_pageString(url, timeout=timeout)
     loadEnd = time.time()
 
     # round time page took to load to 10ths
@@ -92,12 +93,19 @@ def scrape_url(url, knowledgeProcessor, freqDict):
     cleanedText = clean_pageText(curSoup.get_text(), title)
 
     # validate language
-    assert (detect_language(cleanedText)=='en'), f"{url} not in English"
+    assert (detect_language(cleanedText)=='en'), f"{url} contents not in English"
 
     # find list of headers in soup object
-    headerList = curSoup.findAll(headerMatcher)
+    headerList = curSoup.find_all(headerMatcher)
     # join cleaned headers into space delimited string
     headers = " ".join(clean_text(str(header)) for header in headerList)
+
+    # find list of discription tags in soup object
+    descriptionList = curSoup.find_all('meta', attrs={'name': 'description'})
+    print(descriptionList[0].get_text())
+    if descriptionList:
+        descriptions = " ".join(clean_text(str(description.string)) for description in descriptionList)
+        print(descriptions)
 
     # create dict of divs and contents for knowledge tokenization
     divDict = {'url':url,'title':title, 'headers':headers, 'all':cleanedText}
@@ -111,7 +119,7 @@ def scrape_url(url, knowledgeProcessor, freqDict):
     # DOC VEC BELOW
 
     # return list of information about page
-    return [clean_url(url), clean_title(title), knowledgeTokens, linkList, loadTime, loadDate]
+    return [clean_url(url), clean_title(title), knowledgeTokens, linkList, loadTime, loadDate, cleanedText]
 
 
 
