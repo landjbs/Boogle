@@ -3,6 +3,22 @@
 
 from searchers.searchTokenizer import get_search_tokens
 from models.ranking.pageRanker import score_intersection
+from itertools import chain
+
+def or_search(tokenList, database, n=20):
+    """
+    Performs an OR search accross a list of tokens.
+    Ranks based on original score, since no intersectional re-ranking is
+    necessary.
+    NB: The presence of multiple tokens from tokenList in a page does not
+    influence it's ranking.
+    """
+    # gets list of all result bukcets associate with each tokens in the token list
+    bucketLists = [database.search_full(key=token, n=10000) for token in tokenList]
+    # combine bucketLists into a single, sorted list
+    sortedResults = (itertools.chain.from_iterable(bucketLists)).sort(key=(lambda result:result[-1]), reverse=True)
+    return sortedResults[:n]
+
 
 def search_database(rawSearch, knowledgeProcessor, database, n=20):
     """

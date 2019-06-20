@@ -1,20 +1,28 @@
-import models.knowledge.knowledgeFinder as knowledgeFinder
-import models.knowledge.knowledgeBuilder as knowledgeBuilder
+# import models.knowledge.knowledgeFinder as knowledgeFinder
+# import models.knowledge.knowledgeBuilder as knowledgeBuilder
+# import searchers.fuzzyMatcher as fuzzyMatcher
 # from dataStructures.objectSaver import load
 # from dataStructures.thicctable import Thicctable
 # from models.processing.cleaner import clean_text, clean_url
 # from crawlers.crawler import scrape_urlList
 # import os
 # from dataStructures.simpleStructures import Simple_List
-# from searchers.databaseSearcher import search_database
+# from searchers.databaseSearcher import or_search
 # from models.processing.cleaner import clean_wiki
-# import re
+import re
+import flask
+
+def bold_tokens(tokenList, text):
+    """ bolds tokens found in text """
+    # create matcher for all tokens in tokenList
+    tokenString = "|".join(tokenList)
+    # bold text
+    boldedText = re.sub(f"(?P<token>{tokenString})", "<strong>\g<token></strong>", text)
+    return boldedText
 
 
-test = knowledgeBuilder.build_knowledgeSet(knowledgeFile="data/inData/wikiTitles.txt", numberRange=(0,1000000), outPath="data/outData/knowledge/knowledgeSet.sav")
-print('set built')
-checker = knowledgeBuilder.build_knowledgeProcessor(knowledgeSet=test, outPath="data/outData/knowledge/knowledgeProcessor.sav")
-
+test = 'hi how is harvard'
+print(bold_tokens(['harvard', 'how'], test))
 
 # with open('data/inData/wikiTitles.txt') as knowledgeData:
     # for line in knowledgeData:

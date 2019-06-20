@@ -18,6 +18,7 @@ import os, re
 from flashtext import KeywordProcessor
 from dataStructures.objectSaver import save, load
 from models.processing.cleaner import clean_text, clean_wiki
+from collections import Counter
 
 
 ## Functions ##
@@ -86,11 +87,11 @@ def build_freqDict(folderPath, knowledgeProcessor, outPath=""):
     Returns: dict mapping knowledge tokens to average frequency of occurence in
     files. Only tokens found in files will have associated frequency.
     """
-    # initialize dict to store sum of frequencies and number of with token
-    rawDict = {}
+    # initialize counter to map knowledge token to raw number of occurences
+    tokenCounts = Counter()
+    
     # find and iterate over list of files within folderPath
-    files = os.listdir(folderPath)
-    for i, file in enumerate(files):
+    for i, file in enumerate(os.listdir(folderPath)):
         print(f"\t{i}", end='\r')
         if i > 1000:
             break
@@ -100,28 +101,53 @@ def build_freqDict(folderPath, knowledgeProcessor, outPath=""):
             # find number of words in the current file
             textLen = len(text.split())
             # find tokens in the current file
-            tokensFound = set(knowledgeProcessor.extract_keywords(text))
-            # iterate over tokensFound
-            for token in tokensFound:
-                # find number of occurences of token in current file
-                tokenNum = count_token(token,text)
-                # find frequency of token use in current file
-                tokenFreq = tokenNum / textLen
-                # check if token has been seen before
-                if not token in rawDict:
-                    # if not seen before, add token map to current freq and one occurence
-                    rawDict.update({token:[tokenFreq, 1]})
-                else:
-                    # if see before, add current freq to first elt of token map and increment number occurences
-                    rawDict[token][0] += tokenFreq
-                    rawDict[token][1] += 1
-    # lambda to normalize tokenFreq by number of pages
-    normalizeFreq = lambda val : val[0] / val[1]
-    # create normalized freqDict
-    freqDict = {token:normalizeFreq(rawDict[token]) for token in rawDict}
-    if (outPath != ""):
-        save(freqDict, outPath)
+            tokensFound = list(knowledgeProcessor.extract_keywords(text))
+            # find dict mapping tokens to use number in text
+            curCounts = {token:count_token(token, text) for token in tokensFound}
+            # add tokens counts to wordCounts counter
+            tokenCounts.update(curCounts)
+
+    # find total number of tokens used with repetition
+    totalNum = sum(tokenCounts.values())
+    # use total num to normalize tokenCounts and find frequency for each token
+    freqDict = {token:(tokenCounts[token]/totalNum) for token in tokenCounts}
     return freqDict
+
+
+
+    # # find and iterate over list of files within folderPath
+    # for i, file in enumerate(os.listdir(folderPath)):
+    #     print(f"\t{i}", end='\r')
+    #     if i > 1000:
+    #         break
+    #     with open(f"{folderPath}/{file}") as FileObj:
+    #         # read in the current file
+    #         text = FileObj.read()
+    #         # find number of words in the current file
+    #         textLen = len(text.split())
+    #         # find tokens in the current file
+    #         tokensFound = set(knowledgeProcessor.extract_keywords(text))
+    #         # iterate over tokensFound
+    #         for token in tokensFound:
+    #             # find number of occurences of token in current file
+    #             tokenNum = count_token(token,text)
+    #             # find frequency of token use in current file
+    #             tokenFreq = tokenNum / textLen
+    #             # check if token has been seen before
+    #             if not token in rawDict:
+    #                 # if not seen before, add token map to current freq and one occurence
+    #                 rawDict.update({token:[tokenFreq, 1]})
+    #             else:
+    #                 # if see before, add current freq to first elt of token map and increment number occurences
+    #                 rawDict[token][0] += tokenFreq
+    #                 rawDict[token][1] += 1
+    # # lambda to normalize tokenFreq by number of pages
+    # normalizeFreq = lambda val : val[0] / val[1]
+    # # create normalized freqDict
+    # freqDict = {token:normalizeFreq(rawDict[token]) for token in rawDict}
+    # if (outPath != ""):
+    #     save(freqDict, outPath)
+    # return freqDict
 
 
 
