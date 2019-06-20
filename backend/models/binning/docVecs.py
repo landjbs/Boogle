@@ -103,8 +103,7 @@ def load_model(path):
 def vectorize_document(doc, model):
     """ Vectorizes document with d2v model stored at modelPath """
     # return document vector for tokenized input doc
-    # vector_tokenize(doc) ## Removed for time currently
-    return model.infer_vector(doc)
+    return model.infer_vector(vector_tokenize(doc))
 
 
 def docVec_to_dict(docVec):
