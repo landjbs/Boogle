@@ -15,19 +15,17 @@ from dataStructures.objectSaver import save, load
 
 import time
 
-def scrape_urlList(urlList, knowledgeProcessor, d2vModel, queueDepth=10, workerNum=20, maxLen=100, outPath=""):
+def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath=""):
     """
     Builds wide column store of url data from urlList with recursive search
     Args: urlList to scrape, depth of url_queue, number of workers to spawn
     Returns: wide column store of data from each url
     """
-    # # load knowledge set and use to initialize databasse
-    # knowledgeSet = load('data/outData/knowledge/knowledgeSet.sav')
-    # database = Thicctable(knowledgeSet)
-    # del knowledgeSet
 
-    # load knowledge data
+    # load models and datasets
+    knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
     freqDict = load('data/outData/knowledge/freqDict.sav')
+    d2vModel = load('data/outData/binning/d2vModel.sav')
 
     testSimple = Simple_List()
 
@@ -57,7 +55,7 @@ def scrape_urlList(urlList, knowledgeProcessor, d2vModel, queueDepth=10, workerN
                 pageObj = htmlAnalyzer.scrape_url(url, knowledgeProcessor, freqDict, d2vModel)
                 # database.bucket_page(pageList)
                 print(pageObj.url)
-                # testSimple.add(pageObj)
+                testSimple.add(pageObj)
                 # pull list of links from pageDict and put in urlQueue
                 # enqueue_urlList(pageList[3])
                 # update scrape metrics
@@ -68,8 +66,8 @@ def scrape_urlList(urlList, knowledgeProcessor, d2vModel, queueDepth=10, workerN
                 scrapeMetrics.add(error=True)
             # log progress
             if (scrapeMetrics.count % 500 == 0):
-                # testSimple.save(f"data/thicctable/tempLists/{str(scrapeMetrics.count+13000)}")
-                # testSimple.clear()
+                testSimple.save(f"data/thicctable/tempLists/{str(scrapeMetrics.count+13000)}")
+                testSimple.clear()
                 pass
             print(f"\t{scrapeMetrics.count} URLs analyzed with {scrapeMetrics.errors} errors!", end="\r")
             # signal completion
