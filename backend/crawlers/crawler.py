@@ -15,7 +15,7 @@ from dataStructures.objectSaver import save, load
 
 import time
 
-def scrape_urlList(urlList, knowledgeProcessor, queueDepth=10, workerNum=20, maxLen=100, outPath=""):
+def scrape_urlList(urlList, knowledgeProcessor, d2vModel, queueDepth=10, workerNum=20, maxLen=100, outPath=""):
     """
     Builds wide column store of url data from urlList with recursive search
     Args: urlList to scrape, depth of url_queue, number of workers to spawn
@@ -54,9 +54,10 @@ def scrape_urlList(urlList, knowledgeProcessor, queueDepth=10, workerNum=20, max
             # pop top url from queue
             url = urlQueue.get()
             try:
-                pageObj = htmlAnalyzer.scrape_url(url, knowledgeProcessor, freqDict)
+                pageObj = htmlAnalyzer.scrape_url(url, knowledgeProcessor, freqDict, d2vModel)
                 # database.bucket_page(pageList)
-                testSimple.add(pageObj)
+                print(pageObj.url)
+                # testSimple.add(pageObj)
                 # pull list of links from pageDict and put in urlQueue
                 # enqueue_urlList(pageList[3])
                 # update scrape metrics
@@ -67,8 +68,9 @@ def scrape_urlList(urlList, knowledgeProcessor, queueDepth=10, workerNum=20, max
                 scrapeMetrics.add(error=True)
             # log progress
             if (scrapeMetrics.count % 500 == 0):
-                testSimple.save(f"data/thicctable/tempLists/{str(scrapeMetrics.count+13000)}")
-                testSimple.clear()
+                # testSimple.save(f"data/thicctable/tempLists/{str(scrapeMetrics.count+13000)}")
+                # testSimple.clear()
+                pass
             print(f"\t{scrapeMetrics.count} URLs analyzed with {scrapeMetrics.errors} errors!", end="\r")
             # signal completion
             urlQueue.task_done()
@@ -80,7 +82,7 @@ def scrape_urlList(urlList, knowledgeProcessor, queueDepth=10, workerNum=20, max
         t.start()
 
     # load cleaned initial urls into url_queue
-    urlList = list(map(lambda url:urlAnalyzer.clean_url(url), urlList))
+    urlList = list(map(lambda url:urlAnalyzer.fix_url(url), urlList))
     enqueue_urlList(urlList)
 
     # ensure all urlQueue processes are complete before proceeding

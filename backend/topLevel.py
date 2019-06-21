@@ -12,12 +12,15 @@ from searchers.databaseSearcher import search_database
 from crawlers.urlAnalyzer import parsable
 
 ### url Reading ###
-# urlList = list(map(lambda url:(url[:-4]), os.listdir('data/outData/dmozProcessed/All')[13000:20000]))
-#
+urlList = list(map(lambda url:(url[:-4]), os.listdir('data/outData/dmozProcessed/All')[13000:20000]))
+
 # knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
-# print("Processor loaded")
-#
-# scrape_urlList(urlList, knowledgeProcessor)
+knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor({'test'})
+print("Processor loaded")
+
+d2vModel = load('data/outData/binning/')
+
+scrape_urlList(urlList, knowledgeProcessor)
 
 ### Table initialization ###
 print('Loading Knowledge Database')
