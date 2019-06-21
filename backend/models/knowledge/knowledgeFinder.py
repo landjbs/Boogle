@@ -6,8 +6,9 @@ built in models.knowledge.knowledgeBuilder.
 import re
 import models.knowledge.knowledgeBuilder as knowledgeBuilder
 
+
 # dict mapping html divs to score  multiplier
-divScores = {'title':20, 'headers':5, 'description':13, 'keywords':18, 'all':1}
+divScores = {'title':20, 'headers':5, 'description':18, 'keywords':19, 'all':1}
 
 
 def find_rawTokens(inStr, knowledgeProcessor):
@@ -83,7 +84,7 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
             except:
                 divMultipier = 1
             # token score is normalized frequency times div multiplier
-            score = (normFreq**3) * divMultipier
+            score = (normFreq) * divMultipier
         return score
 
     # apply analyze_token to create dict mapping tokens to scores
@@ -113,6 +114,7 @@ def score_divDict(divDict, knowledgeProcessor, freqDict):
                 scoreDict[token] += divScores[token]
             else:
                 scoreDict.update({token:divScores[token]})
+    print(scoreDict)
     return scoreDict
 
 

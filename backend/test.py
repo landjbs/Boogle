@@ -20,7 +20,7 @@ knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor(knowledgeSet)
 database = Thicctable(knowledgeSet)
 
 url = input("URL: ")
-pageObj = scrape_url(url, knowledgeProcessor, {'harvard':0.5})
+pageObj = scrape_url(url, knowledgeProcessor, {'harvard':0})
 
 database.bucket_page(pageObj)
 
