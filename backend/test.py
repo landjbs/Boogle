@@ -1,7 +1,7 @@
 # import models.knowledge.knowledgeFinder as knowledgeFinder
-import models.knowledge.knowledgeBuilder as knowledgeBuilder
+# import models.knowledge.knowledgeBuilder as knowledgeBuilder
 # import searchers.fuzzyMatcher as fuzzyMatcher
-from dataStructures.objectSaver import load, save
+# from dataStructures.objectSaver import load, save
 # from dataStructures.thicctable import Thicctable
 # from models.processing.cleaner import clean_text, clean_url
 # from crawlers.crawler import scrape_urlList
@@ -11,12 +11,11 @@ from dataStructures.objectSaver import load, save
 # from models.processing.cleaner import clean_wiki
 # from crawlers.htmlAnalyzer import scrape_url
 # from searchers.displayWindow import bold_window
+from dataStructures.pageObj import Page
 
-knowledgeSet = load('data/outData/knowledge/knowledgeSet.sav')
-knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor(knowledgeSet, 'data/outData/knowledge/knowledgeProcessor.sav')
-print('Processor Built')
-del knowledgeSet
-freqDict = knowledgeBuilder.build_freqDict('data/outData/dmozProcessed/All', knowledgeProcessor, 'data/outData/knowledge/freqDict.sav')
+x = Page('www.harvard.edu', 'harvard', {}, [], 0.4, 1, "hi harvard")
+
+print(x.display(['hi']))
 
 
 # while True:

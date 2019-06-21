@@ -1,8 +1,8 @@
 import operator
 import re
 
-    
-def bold_window(tokenList, text, windowSize=200):
+
+def bold_and_window(tokenList, text, windowSize=200):
     """ Gets relevant window from pageText and bolds search tokens """
     # create matcher for all tokens in tokenList
     tokenString = ""
