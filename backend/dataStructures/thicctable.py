@@ -91,21 +91,22 @@ class Thicctable():
                 # create bucket-specific pageTuple of score and pageObj
                 scoredTuple = (pageScore, pageObj)
                 # insert tuple of score and pageObj into appropriate bin
-                self.insert_pageTuple(key=token, )
+                self.insert_pageTuple(key=token, pageTuple=pageTuple)
             except Exception as e:
                 print(e)
         return True
 
     ### SEARCH FUNCTIONS ###
-    def search_index(self, key, indexLambda, n=20):
+    def search_display(self, key, tokenList, n=20):
         """
-        Returns the data at index pulled by lambda of the top n elements of the
-        list mapped by key in topDict
+        Returns display tuple from top n pages from (sorted) key with
+        window text according to token list
         """
-        return list(map(indexLambda, self.topDict[key][:n]))
+        display_pageTuple = lambda pageTuple : pageTuple[1].display(tokenList)
+        return list(map(display_pageTuple, self.topDict[key][:n]))
 
     def search_full(self, key, n=20):
-        """ Returns the top n elements of the list mapped by key in topDict """
+        """ Returns the top n pageTuples of the list mapped by key in topDict """
         return self.topDict[key][:n]
 
     ### SAVE/LOAD FUNCTIONS ###
