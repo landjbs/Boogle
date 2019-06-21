@@ -14,6 +14,7 @@ from models.processing.cleaner import clean_text
 from keras.models import Sequential, load_model
 from keras.layers import Dense, Activation
 from keras.utils import to_categorical
+import matplotlib.pyplot as plt
 
 #  584156 URLs analyzed with 396544 errors!
 
@@ -76,7 +77,12 @@ PATH = 'data/outData/dmozProcessed'
 #
 # print(df)
 # save(df, 'data/outData/binning/binaryTrainingVecs.sav')
-# # df = load('data/outData/binning/trainingVectors.sav')
+df = load('data/outData/binning/binaryTrainingVecs.sav')
+described = df.describe()
+std = described.loc['std']
+plt.plot(std)
+plt.show()
+
 #
 # model = Sequential([
 #     Dense(300, input_shape=(300,)),
