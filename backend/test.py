@@ -2,7 +2,7 @@
 # import models.knowledge.knowledgeBuilder as knowledgeBuilder
 # import searchers.fuzzyMatcher as fuzzyMatcher
 # from dataStructures.objectSaver import load, save
-# from dataStructures.thicctable import Thicctable
+from dataStructures.thicctable import Thicctable
 # from models.processing.cleaner import clean_text, clean_url
 # from crawlers.crawler import scrape_urlList
 # import os
@@ -13,9 +13,7 @@
 # from searchers.displayWindow import bold_window
 from dataStructures.pageObj import Page
 
-x = Page('www.harvard.edu', 'harvard', {}, [], 0.4, 1, "hi harvard")
 
-print(x.display(['hi']))
 
 
 # while True:

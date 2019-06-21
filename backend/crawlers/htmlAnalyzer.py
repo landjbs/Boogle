@@ -1,6 +1,10 @@
-# Responsible for gathering and processing data from HTML pageStrings.
-# pageStrings generally passed from crawler.py after being cleaned by
-# urlAnalyzer.py. Outsources all NLP and ML to backend/models.
+"""
+Responsible for gathering and processing data from HTML pageStrings.
+pageStrings generally passed from crawler.py after being cleaned by
+urlAnalyzer.py. Outsources all NLP and ML to backend/models.
+Bulkiest function is scrape_url which takes in a url and returns a
+page object of page info.
+"""
 
 # import sys, os
 # sys.path.append(os.path.abspath(os.path.join('..')))
@@ -11,8 +15,7 @@ from bs4 import BeautifulSoup
 import crawlers.urlAnalyzer as urlAnalyzer
 from models.processing.cleaner import clean_text, clean_title, clean_url
 from models.knowledge.knowledgeFinder import score_divDict
-# from models.knowledge.knowledgeReader import find_knowledgeTokens
-
+from dataStructures.pageObj import Page
 
 # image matcher
 imageMatcher = re.compile('(?<=src=")\S+(?=")')
@@ -127,7 +130,7 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=4):
     # DOC VEC BELOW
 
     # return list of information about page
-    return [clean_url(url), clean_title(title), knowledgeTokens, linkList, loadTime, loadDate, windowText]
+    return Page(clean_url(url), clean_title(title), knowledgeTokens, linkList, loadTime, loadDate, windowText)
 
 
 
