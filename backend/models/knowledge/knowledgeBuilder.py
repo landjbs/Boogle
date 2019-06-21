@@ -89,7 +89,8 @@ def build_freqDict(folderPath, knowledgeProcessor, outPath=""):
     """
     # initialize counter to map knowledge token to raw number of occurences
     tokenCounts = Counter()
-    
+    # initialize variable to keep track of total number of words used
+    totalLength = 0
     # find and iterate over list of files within folderPath
     for i, file in enumerate(os.listdir(folderPath)):
         print(f"\t{i}", end='\r')
@@ -98,19 +99,22 @@ def build_freqDict(folderPath, knowledgeProcessor, outPath=""):
         with open(f"{folderPath}/{file}") as FileObj:
             # read in the current file
             text = FileObj.read()
-            # find number of words in the current file
-            textLen = len(text.split())
             # find tokens in the current file
             tokensFound = list(knowledgeProcessor.extract_keywords(text))
             # find dict mapping tokens to use number in text
             curCounts = {token:count_token(token, text) for token in tokensFound}
             # add tokens counts to wordCounts counter
             tokenCounts.update(curCounts)
+            # find number of words in the current file
+            textLen = len(text.split())
+            # add number of words in current file to totalLength
+            totalLength += textLen
 
-    # find total number of tokens used with repetition
-    totalNum = sum(tokenCounts.values())
     # use total num to normalize tokenCounts and find frequency for each token
-    freqDict = {token:(tokenCounts[token]/totalNum) for token in tokenCounts}
+    freqDict = {token:(tokenCounts[token]/totalLength) for token in tokenCounts}
+
+    if (outPath != ""):
+        save(freqDict, outPath)
     return freqDict
 
 
@@ -145,8 +149,7 @@ def build_freqDict(folderPath, knowledgeProcessor, outPath=""):
     # normalizeFreq = lambda val : val[0] / val[1]
     # # create normalized freqDict
     # freqDict = {token:normalizeFreq(rawDict[token]) for token in rawDict}
-    # if (outPath != ""):
-    #     save(freqDict, outPath)
+
     # return freqDict
 
 

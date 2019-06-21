@@ -1,7 +1,7 @@
 # import models.knowledge.knowledgeFinder as knowledgeFinder
 import models.knowledge.knowledgeBuilder as knowledgeBuilder
 # import searchers.fuzzyMatcher as fuzzyMatcher
-# from dataStructures.objectSaver import load
+from dataStructures.objectSaver import load, save
 # from dataStructures.thicctable import Thicctable
 # from models.processing.cleaner import clean_text, clean_url
 # from crawlers.crawler import scrape_urlList
@@ -9,19 +9,21 @@ import models.knowledge.knowledgeBuilder as knowledgeBuilder
 # from dataStructures.simpleStructures import Simple_List
 # from searchers.databaseSearcher import or_search
 # from models.processing.cleaner import clean_wiki
+# from crawlers.htmlAnalyzer import scrape_url
+# from searchers.displayWindow import bold_window
 
-from crawlers.htmlAnalyzer import scrape_url
-from searchers.displayWindow import bold_window
+knowledgeSet = load('data/outData/knowledge/knowledgeSet.sav')
+knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor(knowledgeSet, 'data/outData/knowledge/knowledgeProcessor.sav')
+print('Processor Built')
+del knowledgeSet
+freqDict = knowledgeBuilder.build_freqDict('data/outData/dmozProcessed/All', knowledgeProcessor, 'data/outData/knowledge/freqDict.sav')
 
 
-knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor({'harvard'})
-freqDict = {}
-
-while True:
-    url = input("URL: ")
-    pageInfo = scrape_url(url, knowledgeProcessor, freqDict, timeout=20)
-    print(pageInfo[2])
-    print(bold_window(['contents'], pageInfo[-1]))
+# while True:
+#     url = input("URL: ")
+#     pageInfo = scrape_url(url, knowledgeProcessor, freqDict, timeout=20)
+#     print(pageInfo[2])
+#     print(bold_window(['contents'], pageInfo[-1]))
 
 
 # with open('data/inData/wikiTitles.txt') as knowledgeData:

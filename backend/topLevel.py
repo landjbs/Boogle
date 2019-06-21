@@ -23,7 +23,7 @@ from crawlers.urlAnalyzer import parsable
 print('Loading Knowledge Database')
 knowledgeSet = load("data/outData/knowledge/knowledgeSet.sav")
 print('Knowledge Database Loaded')
-knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor(knowledgeSet, 'data/outData/knowledge/knowledgeProcessor.sav')
+knowledgeBuilder = load("data/outData/knowledge/knowledgeProcessor.sav")
 print('processor built')
 database = Thicctable(knowledgeSet)
 del knowledgeSet
