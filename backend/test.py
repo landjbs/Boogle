@@ -1,5 +1,5 @@
 # import models.knowledge.knowledgeFinder as knowledgeFinder
-# import models.knowledge.knowledgeBuilder as knowledgeBuilder
+import models.knowledge.knowledgeBuilder as knowledgeBuilder
 # import searchers.fuzzyMatcher as fuzzyMatcher
 # from dataStructures.objectSaver import load, save
 from dataStructures.thicctable import Thicctable
@@ -9,12 +9,23 @@ from dataStructures.thicctable import Thicctable
 # from dataStructures.simpleStructures import Simple_List
 # from searchers.databaseSearcher import or_search
 # from models.processing.cleaner import clean_wiki
-# from crawlers.htmlAnalyzer import scrape_url
+from crawlers.htmlAnalyzer import scrape_url
 # from searchers.displayWindow import bold_window
 from dataStructures.pageObj import Page
 
+knowledgeSet = {'harvard', 'excellence'}
 
+knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor(knowledgeSet)
 
+database = Thicctable(knowledgeSet)
+
+url = input("URL: ")
+pageObj = scrape_url(url, knowledgeProcessor, {'harvard':0.5})
+
+database.bucket_page(pageObj)
+
+for elt in database.search_display('excellence', ['harvard', 'excellence']):
+    print(elt)
 
 # while True:
 #     url = input("URL: ")
