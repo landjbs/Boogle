@@ -66,7 +66,7 @@ def detect_language(pageString):
     return lang
 
 
-def scrape_url(url, knowledgeProcessor, freqDict, timeout=4):
+def scrape_url(url, knowledgeProcessor, freqDict, d2vModel, timeout=4):
     """
     Fetches and processes url and returns list of page info.
     Data Returned:
@@ -128,9 +128,8 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=4):
     windowText = description if (description != "") else cleanedText
 
     # DOC VEC BELOW
-    d2vModel  = docVecs.load_model('d2vModel.sav')
     pageVec = docVecs.vectorize_document(cleanedText, d2vModel)
-    print(pageVec)
+
     # return Page() object of information about the page
     return Page(url=url,
                 title=cleanedTitle,
