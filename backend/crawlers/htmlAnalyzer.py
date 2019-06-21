@@ -6,12 +6,10 @@ Bulkiest function is scrape_url which takes in a url and returns a
 page object of page info.
 """
 
-# import sys, os
-# sys.path.append(os.path.abspath(os.path.join('..')))
 import re # to match for patterns in pageStrings
 import time # to find the loadTime of a page
 import langid # to classify language of pageString
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup # to parse html
 import crawlers.urlAnalyzer as urlAnalyzer
 from models.processing.cleaner import clean_text, clean_title, clean_url
 from models.knowledge.knowledgeFinder import score_divDict
@@ -129,8 +127,14 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=4):
 
     # DOC VEC BELOW
 
-    # return list of information about page
-    return Page(clean_url(url), clean_title(title), knowledgeTokens, linkList, loadTime, loadDate, windowText)
+    # return Page() object of information about the page
+    return Page(url=clean_url(url),
+                title=clean_title(title),
+                knowledgeTokens=knowledgeTokens,
+                linkList=linkList,
+                loadTime=loadTime,
+                loadData=loadDate,
+                windowText=windowText)
 
 
 
