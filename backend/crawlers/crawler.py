@@ -54,9 +54,9 @@ def scrape_urlList(urlList, knowledgeProcessor, queueDepth=10, workerNum=20, max
             # pop top url from queue
             url = urlQueue.get()
             try:
-                pageList = htmlAnalyzer.scrape_url(url, knowledgeProcessor, freqDict)
+                pageObj = htmlAnalyzer.scrape_url(url, knowledgeProcessor, freqDict)
                 # database.bucket_page(pageList)
-                testSimple.add(pageList)
+                testSimple.add(pageObj)
                 # pull list of links from pageDict and put in urlQueue
                 # enqueue_urlList(pageList[3])
                 # update scrape metrics
