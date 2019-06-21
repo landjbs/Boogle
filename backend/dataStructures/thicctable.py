@@ -7,7 +7,7 @@ import json
 class Thicctable():
     """
     Class to store indexed webdata as keys mapping to
-    list of tuples of page data.
+    list of tuples of Page() objects and their score
     """
 
     def __init__(self, keys):
@@ -35,7 +35,7 @@ class Thicctable():
         return True
 
     ### FUNCTIONS FOR MODIFYING KEY-MAPPED LISTS ###
-    def clean_key(self, key):
+    def clear_key(self, key):
         """
         Clears the list associated with a key in the topDict
         Same funcitonality as clip_key(key, 0).
@@ -48,54 +48,50 @@ class Thicctable():
         self.topDict[key] = self.topDict[key][:n]
         return True
 
-    def insert_value(self, key, value):
+    def insert_pageTuple(self, key, pageTuple):
         """ Adds value to the list mapped by key in topDict """
-        self.topDict[key].append(value)
+        self.topDict[key].append(pageTuple)
         return True
 
-    def remove_value(self, key, domainReverse):
+    def remove_value(self, key, url):
         """
-        Removes element with given domainReverse from list
-        mapped by key in topDict
+        Removes elements with given url from list mapped by key in topDict
         """
-        domainEqual = lambda elt : (elt[1] != domainReverse)
-        self.topDict[key] = list(filter(domainEqual, self.topDict[key]))
+        # check url examines the url from a page obj (second elt of page tuple)
+        check_url = lambda pageTuple : (pageTuple[1].url != url)
+        self.topDict[key] = list(filter(check_url, self.topDict[key]))
         return True
 
-    def sort_key(self, key, index=1):
-        """
-        Sorts key based on index of elts.
-        Default index is 0, aka pageRank score
-        """
-        # create lambda to pull element for sorting
-        indexLambda = lambda elt : elt[index]
+    def sort_key(self, key):
+        """ Sorts key list based on page scores (first elt of tuple) """
+        # get_score gets the score from a page tuple (the first elt)
+        get_score = lambda pageTuple : pageTuple[0]
         self.topDict[key].sort(key=indexLambda, reverse=True)
         return True
 
-    def sort_all(self, index=-1):
+    def sort_all(self):
         """ Sorts list mapped by each key in topDict based on index """
-        # create lambda to pull element for sorting
-        indexLambda = lambda elt : elt[index]
         # iterate over keys and sort
         for key in self.topDict:
-            self.topDict[key].sort(key=indexLambda, reverse=True)
+            self.topDict[key] = self.sort_key(key)
         return True
 
-    def bucket_page(self, pageList):
+    def bucket_page(self, pageObj):
         """
+        Args: Page object to insert into relevent buckets and score.
         Wraps insert_value and calls models.ranking to score page and sort
         into all applicable buckets
         """
-        # iterate over tokens in pageList
-        for token in pageList[2]:
+        # pull tokens from pageObj
+        pageTokens = pageObj.knowledgeTokens
+        for token in pageTokens:
             try:
                 # get score of page from pageRanker
                 pageScore = pageRanker.score_single(pageList, token)
-                # print(f"{token}: {pageScore}")
-                scoredList = pageList.copy()
-                scoredList.append(pageScore)
-                # insert tuple of score and pageLists list into appropriate bin
-                self.insert_value(token, scoredList)
+                # create bucket-specific pageTuple of score and pageObj
+                scoredTuple = (pageScore, pageObj)
+                # insert tuple of score and pageObj into appropriate bin
+                self.insert_pageTuple(key=token, )
             except Exception as e:
                 print(e)
         return True

@@ -23,18 +23,17 @@ from crawlers.urlAnalyzer import parsable
 print('Loading Knowledge Database')
 knowledgeSet = load("data/outData/knowledge/knowledgeSet.sav")
 print('Knowledge Database Loaded')
-knowledgeBuilder = load("data/outData/knowledge/knowledgeProcessor.sav")
-print('processor built')
 database = Thicctable(knowledgeSet)
 del knowledgeSet
 
 # Read lists from files into thicctable
 print('Loading Page Files')
-for file in os.listdir('data/thicctable/tempLists'):
+for i, file in enumerate(os.listdir('data/thicctable/tempLists')):
     with open(f'data/thicctable/tempLists/{file}', 'r') as FileObj:
         tempList = json.loads(FileObj.read())
         for pageList in tempList:
             database.bucket_page(pageList)
+    print(f"Loading: {i*500}")
 print("Files Loaded")
 
 searchLambda = lambda item : item[:2]
