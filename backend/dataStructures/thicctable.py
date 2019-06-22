@@ -12,8 +12,6 @@ check_url = lambda pageTuple : (pageTuple[1].url != url)
 get_score = lambda pageTuple : pageTuple[0]
 # get_pageObj gets the pageObj from a pageTuple (the second elt)
 get_pageObj = lambda pageTuple : pageTuple[1]
-# get pageObj from pageTuple and apply .describe method
-display_pageTuple = lambda pageTuple : pageTuple[1].display(tokenList)
 
 
 class Thicctable():
@@ -110,6 +108,8 @@ class Thicctable():
         Returns display tuple from top n pages from (sorted) key with
         window text according to token list
         """
+        # get pageObj from pageTuple and apply .describe method
+        display_pageTuple = lambda pageTuple : pageTuple[1].display(tokenList)
         return list(map(display_pageTuple, self.topDict[key][:n]))
 
     def search_pageObjs(self, key, n=20):

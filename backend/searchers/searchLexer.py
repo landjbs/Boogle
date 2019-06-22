@@ -14,4 +14,4 @@ def topSearch(rawSearch, database, knowledgeProcessor):
     if (len(tokenList) == 1):
         return databaseSearcher.single_search(tokenList[0], database)
     else:
-        return databaseSearcher.and_search(tokenList, databases)
+        return databaseSearcher.and_search(tokenList, database)
