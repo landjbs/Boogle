@@ -49,11 +49,12 @@ while True:
     try:
         rawSearch = input("Search: ")
         cleanSearch = clean_text(rawSearch)
+        cleanSearch2 = clean_text(input('Search2: '))
         if rawSearch=="OS.CLEAR":
             os.system('clear')
         else:
             start = time.time()
-            resultList = single_search(cleanSearch, database)
+            resultList = and_search([cleanSearch, cleanSearch2], database)
             end = time.time()
             # resultList = search_database(rawSearch, knowledgeProcessor, database)
             ## Old but different ##

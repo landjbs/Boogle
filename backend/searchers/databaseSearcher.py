@@ -45,7 +45,8 @@ def and_search(tokenList, database, n=20):
     otherBuckets = list(itertools.chain.from_iterable(bucketList))
     # cast shortestBucket to a set and get its interesction with otherBuckets
     intersectionPages = set(shortestBucket).interesction(otherBuckets)
-    
+    # rank intersection pages according to all tokens
+    return intersectionPages
 
 def search_database(rawSearch, knowledgeProcessor, database, n=20):
     """
