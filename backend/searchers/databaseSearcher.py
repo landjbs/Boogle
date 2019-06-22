@@ -13,6 +13,7 @@ def single_search(token, database, n=20):
     """
     return database.search_display(key=token, tokenList=[token], n=n)
 
+
 def or_search(tokenList, database, n=20):
     """
     Performs an OR search accross a list of tokens.
@@ -21,7 +22,7 @@ def or_search(tokenList, database, n=20):
     NB: The presence of multiple tokens from tokenList in a page does not
     influence it's ranking.
     """
-    # gets list of all result bukcets associate with each tokens in the token list
+    # get list of all result bukcets associate with each tokens in the token list
     bucketLists = [database.search_full(key=token, n=10000) for token in tokenList]
     # combine bucketLists into a single, sorted list
     sortedResults = (itertools.chain.from_iterable(bucketLists)).sort(key=(lambda result:result[-1]), reverse=True)
@@ -31,9 +32,14 @@ def or_search(tokenList, database, n=20):
 def and_search(tokenList, database, n=20):
     """
     Preforms an AND search for the intersection multiple search tokens.
-    Only results wcontaining every token are shown.
+    Slower than single_search or or_search as
     """
-
+    # get list of all result bukcets associate with each tokens in the token list
+    bucketList = [database.search_full(key=token, n=10000) for token in tokenList]
+    # get list of the length of each bucket in bucketList
+    lengthList = [len(bucket) for bucket in bucketList]
+    # pop shortest bucket from bucketList
+    shortestBucket = bucketLists.pop(min(lengthList))
 
 def search_database(rawSearch, knowledgeProcessor, database, n=20):
     """
