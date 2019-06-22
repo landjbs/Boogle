@@ -12,6 +12,7 @@ from searchers.databaseSearcher import search_database
 from crawlers.urlAnalyzer import parsable
 from dataStructures.pageObj import Page
 import time
+from searchers.databaseSearcher import single_search
 
 ### url Reading ###
 # urlList = list(map(lambda url:(url[:-4]), os.listdir('data/outData/dmozProcessed/All')[0:3000]))
@@ -52,7 +53,7 @@ while True:
             os.system('clear')
         else:
             start = time.time()
-            resultList = database.search_display(cleanSearch, [cleanSearch], n=10000)
+            resultList = single_search(cleanSearch, database)
             end = time.time()
             # resultList = search_database(rawSearch, knowledgeProcessor, database)
             ## Old but different ##

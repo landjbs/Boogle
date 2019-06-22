@@ -5,6 +5,14 @@ from searchers.searchTokenizer import get_search_tokens
 from models.ranking.pageRanker import score_intersection
 from itertools import chain
 
+def single_search(token, database, n=20):
+    """
+    Performs a a databases search for a single token and returns the display
+    attributes of the top n items.
+    Fastest type of search: no intersection and no re-ranking.
+    """
+    return database.search_display(key=token, tokenList=[token], n=n)
+
 def or_search(tokenList, database, n=20):
     """
     Performs an OR search accross a list of tokens.
