@@ -4,6 +4,18 @@ import numpy as np
 import models.ranking.pageRanker as pageRanker
 import json
 
+### LAMBDAS CALLED BY LATER FUNCTIONS ###
+# check_url examines the url from a page obj (second elt of page tuple)
+check_url = lambda pageTuple : (pageTuple[1].url != url)
+# get_score gets the score from a page tuple (the first elt)
+get_score = lambda pageTuple : pageTuple[0]
+# get_pageObj gets the pageObj from a pageTuple (the second elt)
+get_pageObj = lambda pageTuple : pageTuple[1]
+# get pageObj from pageTuple and apply .describe method
+display_pageTuple = lambda pageTuple : pageTuple[1].display(tokenList)
+
+
+
 class Thicctable():
     """
     Class to store indexed webdata as keys mapping to
@@ -14,18 +26,6 @@ class Thicctable():
         """ Initialize branch as key-val store mapping keys to empty lists """
         self.topDict = {key:[] for key in keys}
         print(f"Table initialized with {len(keys)} buckets.")
-
-    ### LAMBDAS CALLED BY LATER FUNCTIONS ###
-    # self.check_url examines the url from a page obj (second elt of page tuple)
-    check_url = lambda pageTuple : (pageTuple[1].url != url)
-    # self.get_score gets the score from a page tuple (the first elt)
-    get_score = lambda pageTuple : pageTuple[0]
-    # self.get_pageObj gets the pageObj from a pageTuple (the second elt)
-    get_pageObj = lambda pageTuple : pageTuple[1]
-    # get pageObj from pageTuple and apply .describe method
-    display_pageTuple = lambda pageTuple : pageTuple[1].display(tokenList)
-
-
 
     ### FUNCTIONS FOR MODIFYING KEYS ###
     def add_key(self, key):
@@ -69,12 +69,12 @@ class Thicctable():
         """
         Removes elements with given url from list mapped by key in topDict
         """
-        self.topDict[key] = list(filter(self.check_url, self.topDict[key]))
+        self.topDict[key] = list(filter(check_url, self.topDict[key]))
         return True
 
     def sort_key(self, key):
         """ Sorts key list based on page scores (first elt of tuple) """
-        self.topDict[key].sort(key=self.get_score, reverse=True)
+        self.topDict[key].sort(key=get_score, reverse=True)
         return True
 
     def sort_all(self):
@@ -110,14 +110,14 @@ class Thicctable():
         Returns display tuple from top n pages from (sorted) key with
         window text according to token list
         """
-        return list(map(self.display_pageTuple, self.topDict[key][:n]))
+        return list(map(display_pageTuple, self.topDict[key][:n]))
 
     def search_pageObjs(self, key, n=20):
         """
         Returns list of page objects in key, discarding scores.
         Useful if pages need to be reranked (eg. and_search).
         """
-        return list(map(self.get_pageObj, self.topDict[key][:n]))
+        return list(map(get_pageObj, self.topDict[key][:n]))
 
     def search_full(self, key, n=20):
         """ Returns the top n pageTuples of the list mapped by key in topDict """
