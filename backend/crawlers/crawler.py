@@ -24,8 +24,7 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
     """
 
     # load models and datasets
-    knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor({'GTA'})
-    # knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
+    knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
     freqDict = load('data/outData/knowledge/freqDict.sav')
     d2vModel = load_model('data/outData/binning/d2vModel.sav')
 
@@ -66,9 +65,11 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
                 # update scrape metrics
                 scrapeMetrics.add(error=True)
             # log progress
-            if (scrapeMetrics.count % 5 == 0):
+            if (scrapeMetrics.count % 10 == 0):
                 testSimple.save(f"data/thicctable/tempLists/{str(scrapeMetrics.count)}")
                 testSimple.clear()
+                os.system('clear')
+                print(testSimple.data)
             print(f"\t{scrapeMetrics.count} URLs analyzed with {scrapeMetrics.errors} errors!", end="\r")
             # signal completion
             urlQueue.task_done()

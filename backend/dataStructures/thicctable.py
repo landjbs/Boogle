@@ -66,14 +66,14 @@ class Thicctable():
         """ Sorts key list based on page scores (first elt of tuple) """
         # get_score gets the score from a page tuple (the first elt)
         get_score = lambda pageTuple : pageTuple[0]
-        self.topDict[key].sort(key=indexLambda, reverse=True)
+        self.topDict[key].sort(key=get_score, reverse=True)
         return True
 
     def sort_all(self):
         """ Sorts list mapped by each key in topDict based on index """
         # iterate over keys and sort
         for key in self.topDict:
-            self.topDict[key] = self.sort_key(key)
+            self.sort_key(key)
         return True
 
     def bucket_page(self, pageObj):
