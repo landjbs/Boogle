@@ -1,4 +1,8 @@
 """
+Database searcher provides several methods for searching a Thicctable database
+for lists of results.
+    Methods:
+        single_search:
 """
 
 from searchers.searchTokenizer import get_search_tokens
@@ -25,10 +29,9 @@ def or_search(tokenList, database, n=20):
     # get list of all result bukcets associate with each tokens in the token list
     bucketLists = [database.search_full(key=token, n=10000) for token in tokenList]
     # combine bucketLists into a single, sorted list
-    sortedResults = (itertools.chain.from_iterable(bucketLists)).sort(key=(lambda result:result[-1]), reverse=True)
+    sortedResults = (chain.from_iterable(bucketLists)).sort(key=(lambda result:result[-1]), reverse=True)
     return sortedResults[:n]
 
-# lambda to concatenate lists via reduce method
 
 def and_search(tokenList, database, n=20):
     """
@@ -37,14 +40,14 @@ def and_search(tokenList, database, n=20):
     """
     # get list of all result bukcets associate with each tokens in the token list
     bucketList = [database.search_pageObjs(key=token, n=10000) for token in tokenList]
-    # get index of the shortest bucket in bucketList
-    shortestIndex = min([len(bucket) for bucket in bucketList])
-    # pop shortest bucket from bucketList
-    shortestBucket = bucketList.pop(shortestIndex)
+    # get list of length of each bucket in bucketList
+    shortestIndex = [len(bucket) for bucket in bucketList]
+    # pop shortest bucket from bucketList and cast as set
+    shortestBucket = set(bucketList.pop(shortestIndex.index(min(shortestIndex))))
     # concatenate all buckets but the shortest
-    otherBuckets = list(itertools.chain.from_iterable(bucketList))
+    otherBuckets = list(chain.from_iterable(bucketList))
     # cast shortestBucket to a set and get its interesction with otherBuckets
-    intersectionPages = set(shortestBucket).interesction(otherBuckets)
+    intersectionPages = shortestBucket.intersection(otherBuckets)
     # rank intersection pages according to all tokens
     return intersectionPages
 

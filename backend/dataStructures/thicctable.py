@@ -4,7 +4,8 @@ import numpy as np
 import models.ranking.pageRanker as pageRanker
 import json
 
-### LAMBDAS CALLED BY LATER FUNCTIONS ###
+
+### LAMBDAS CALLED BY THICCTABLE FUNCTIONS ###
 # check_url examines the url from a page obj (second elt of page tuple)
 check_url = lambda pageTuple : (pageTuple[1].url != url)
 # get_score gets the score from a page tuple (the first elt)
@@ -13,7 +14,6 @@ get_score = lambda pageTuple : pageTuple[0]
 get_pageObj = lambda pageTuple : pageTuple[1]
 # get pageObj from pageTuple and apply .describe method
 display_pageTuple = lambda pageTuple : pageTuple[1].display(tokenList)
-
 
 
 class Thicctable():
