@@ -24,7 +24,7 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
     """
 
     # load models and datasets
-    knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor({'test'})
+    knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor({'GTA'})
     # knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
     freqDict = load('data/outData/knowledge/freqDict.sav')
     d2vModel = load_model('data/outData/binning/d2vModel.sav')

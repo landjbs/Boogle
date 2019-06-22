@@ -13,33 +13,39 @@ from crawlers.urlAnalyzer import parsable
 from dataStructures.pageObj import Page
 
 ### url Reading ###
-urlList = list(map(lambda url:(url[:-4]), os.listdir('data/outData/dmozProcessed/All')[0:10]))
-
-scrape_urlList(urlList)
+# urlList = list(map(lambda url:(url[:-4]), os.listdir('data/outData/dmozProcessed/All')[0:10]))
+#
+# scrape_urlList(urlList)
 
 ### Table initialization ###
 print('Loading Knowledge Database')
-knowledgeSet = load("data/outData/knowledge/knowledgeSet.sav")
+# knowledgeSet = load("data/outData/knowledge/knowledgeSet.sav")\
+knowledgeSet = {'GTA'}
 print('Knowledge Database Loaded')
 database = Thicctable(knowledgeSet)
 del knowledgeSet
 
 # Read lists from files into thicctable
-print('Loading Page Files')
 for i, file in enumerate(os.listdir('data/thicctable/tempLists')):
-    with open(f'data/thicctable/tempLists/{file}', 'r', encoding='utf-8') as FileObj:
-        tempList = json.loads(FileObj.read())
-        for pageList in tempList:
-            pageObj = Page(pageList[0], pageList[1], pageList[2], pageList[3], pageList[4], pageList[5], pageList[6], pageList[7])
-            database.bucket_page(pageList)
-    print(f"Loading: {i*500}")
+    if not file=='.DS_Store':
+        with open(f'data/thicctable/tempLists/{file}', 'r', encoding='utf-8') as FileObj:
+            tempList = json.loads(FileObj.read())
+            for pageList in tempList:
+                pageObj = Page(pageList[0], pageList[1], pageList[2], pageList[3], pageList[4], pageList[5], pageList[6], pageList[7])
+                database.bucket_page(pageObj)
+        print(f'Loading Page Files: {i*500}')
+    else:
+        pass
 print("Files Loaded")
 
 searchLambda = lambda item : item[:2]
 
 print('Loading Knowledge Processor')
-knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
+# knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
+knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor({'GTA'})
 print("Processor loaded")
+
+print(database.search_display('GTA', ['GTA']))
 
 print(f"\n{'-'*73}\nWelcome to Boogle\t\t\t\t\t\t\t|\n{'-'*73}")
 while True:
