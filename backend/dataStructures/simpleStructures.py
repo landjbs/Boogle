@@ -16,7 +16,7 @@ class Simple_List():
         self.data.append(elt)
 
     def save(self, outPath):
-        with open(f"{outPath}.json", 'w+') as FileObj:
+        with open(f"{outPath}.json", 'w+', encoding="utf-8") as FileObj:
             json.dump(self.data, FileObj)
         return True
 

@@ -128,14 +128,17 @@ def scrape_url(url, knowledgeProcessor, freqDict, d2vModel, timeout=4):
     windowText = description if (description != "") else cleanedText
 
     # DOC VEC BELOW
-    pageVec = docVecs.vectorize_document(cleanedText, d2vModel)
+    # pageVec = docVecs.vectorize_document(cleanedText, d2vModel)
+    pageVec = {}
+    # # return Page() object of information about the page
+    # return Page(url=url,
+    #             title=cleanedTitle,
+    #             knowledgeTokens=knowledgeTokens,
+    #             pageVec=pageVec,
+    #             linkList=linkList,
+    #             loadTime=loadTime,
+    #             loadDate=loadDate,
+    #             windowText=windowText)
 
-    # return Page() object of information about the page
-    return Page(url=url,
-                title=cleanedTitle,
-                knowledgeTokens=knowledgeTokens,
-                pageVec=pageVec,
-                linkList=linkList,
-                loadTime=loadTime,
-                loadDate=loadDate,
-                windowText=windowText)
+    # return list of information about the page
+    return [url, cleanedTitle, knowledgeTokens, pageVec, linkList, loadTime, loadDate, windowText]

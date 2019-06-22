@@ -10,9 +10,10 @@ import json
 import os
 from searchers.databaseSearcher import search_database
 from crawlers.urlAnalyzer import parsable
+from dataStructures.pageObj import Page
 
 ### url Reading ###
-urlList = list(map(lambda url:(url[:-4]), os.listdir('data/outData/dmozProcessed/All')[13000:20000]))
+urlList = list(map(lambda url:(url[:-4]), os.listdir('data/outData/dmozProcessed/All')[0:10]))
 
 scrape_urlList(urlList)
 
@@ -26,9 +27,10 @@ del knowledgeSet
 # Read lists from files into thicctable
 print('Loading Page Files')
 for i, file in enumerate(os.listdir('data/thicctable/tempLists')):
-    with open(f'data/thicctable/tempLists/{file}', 'r') as FileObj:
+    with open(f'data/thicctable/tempLists/{file}', 'r', encoding='utf-8') as FileObj:
         tempList = json.loads(FileObj.read())
         for pageList in tempList:
+            pageObj = Page(pageList[0], pageList[1], pageList[2], pageList[3], pageList[4], pageList[5], pageList[6], pageList[7])
             database.bucket_page(pageList)
     print(f"Loading: {i*500}")
 print("Files Loaded")

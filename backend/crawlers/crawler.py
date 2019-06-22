@@ -12,6 +12,7 @@ import models.knowledge.knowledgeBuilder as knowledgeBuilder
 from dataStructures.simpleStructures import Simple_List, Metrics
 from dataStructures.thicctable import Thicctable
 from dataStructures.objectSaver import save, load
+from models.binning.docVecs import load_model
 
 import time
 
@@ -23,9 +24,10 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
     """
 
     # load models and datasets
-    knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
+    knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor({'test'})
+    # knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
     freqDict = load('data/outData/knowledge/freqDict.sav')
-    d2vModel = load('data/outData/binning/d2vModel.sav')
+    d2vModel = load_model('data/outData/binning/d2vModel.sav')
 
     testSimple = Simple_List()
 
@@ -52,10 +54,9 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
             # pop top url from queue
             url = urlQueue.get()
             try:
-                pageObj = htmlAnalyzer.scrape_url(url, knowledgeProcessor, freqDict, d2vModel)
+                pageList = htmlAnalyzer.scrape_url(url, knowledgeProcessor, freqDict, d2vModel)
                 # database.bucket_page(pageList)
-                print(pageObj.url)
-                testSimple.add(pageObj)
+                testSimple.add(pageList)
                 # pull list of links from pageDict and put in urlQueue
                 # enqueue_urlList(pageList[3])
                 # update scrape metrics
@@ -65,10 +66,9 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
                 # update scrape metrics
                 scrapeMetrics.add(error=True)
             # log progress
-            if (scrapeMetrics.count % 500 == 0):
-                testSimple.save(f"data/thicctable/tempLists/{str(scrapeMetrics.count+13000)}")
+            if (scrapeMetrics.count % 5 == 0):
+                testSimple.save(f"data/thicctable/tempLists/{str(scrapeMetrics.count)}")
                 testSimple.clear()
-                pass
             print(f"\t{scrapeMetrics.count} URLs analyzed with {scrapeMetrics.errors} errors!", end="\r")
             # signal completion
             urlQueue.task_done()
@@ -85,6 +85,5 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
 
     # ensure all urlQueue processes are complete before proceeding
     urlQueue.join()
-
 
     return True
