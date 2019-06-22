@@ -14,8 +14,8 @@ from dataStructures.pageObj import Page
 import time
 
 ### url Reading ###
-urlList = list(map(lambda url:(url[:-4]), os.listdir('data/outData/dmozProcessed/All')[0:1000]))
-scrape_urlList(urlList)
+# urlList = list(map(lambda url:(url[:-4]), os.listdir('data/outData/dmozProcessed/All')[0:3000]))
+# scrape_urlList(urlList)
 
 ### Table initialization ###
 print('Loading Knowledge Database')
@@ -60,7 +60,7 @@ while True:
             # searchList = knowledgeFinder.find_rawTokens(clean_search, knowledgeProcessor)
             # resultsList = [database.search_index(token, searchLambda, n=10000) for token in searchList]
             # showList = [result for result in resultsList[0] if all((result in other) for other in resultsList[1:])]
-            resultString = f"<u><strong>BOOGLE SEARCH</strong></u><br><i>{len(resultList)} results returned in {end-start} seconds!<br></i><ul>"
+            resultString = f"<u><strong>BOOGLE SEARCH</strong></u><br><i>{len(resultList)} results returned in {round(end-start, 5)} seconds!<br></i><ul>"
             for i, result in enumerate(resultList[:20]):
                 url, title, windowText = result
                 resultString += f"<li><u><strong>{title}</strong></u><br><i>{url}</i><br>{windowText}</li>"

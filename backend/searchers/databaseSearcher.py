@@ -20,6 +20,13 @@ def or_search(tokenList, database, n=20):
     return sortedResults[:n]
 
 
+def and_search(tokenList, database, n=20):
+    """
+    Preforms an AND search for the intersection multiple search tokens.
+    Only results wcontaining every token are shown.
+    """
+
+
 def search_database(rawSearch, knowledgeProcessor, database, n=20):
     """
     Parses search and finds results in database.
