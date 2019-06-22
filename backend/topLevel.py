@@ -40,10 +40,6 @@ print("Files Loaded")
 
 database.sort_all()
 
-# print('Loading Knowledge Processor')
-# knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
-# print("Processor loaded")
-knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor({'cake'})
 
 print(f"\n{'-'*73}\nWelcome to Boogle\t\t\t\t\t\t\t|\n{'-'*73}")
 while True:
@@ -53,15 +49,17 @@ while True:
             os.system('clear')
         else:
             start = time.time()
-            correctionDisplay, resultList = topSearch(rawSearch, database, knowledgeProcessor)
+            correctionDisplay, resultList = topSearch(rawSearch, database)
             end = time.time()
 
-            resultString = f"<u><strong>BOOGLE SEARCH</strong></u><br><i>{len(resultList)} results returned in {round(end-start, 3)} seconds!<br></i><ul>"
+            resultString = f"<u><strong>BOOGLE SEARCH</strong></u><br><i>{len(resultList)} results returned in {round(end-start, 3)} seconds!</i><br>"
 
             # inform the user if a correction was made
-            if correctionDisplay:
-                resultString += f"<br>Showing results for <u>{correctionDisplay}</u><br>"
+            if correctionDisplay != None:
+                resultString += f"Showing results for <u>{correctionDisplay}.</u><br>"
 
+            resultString += "<br><ul>"
+            # iterate through the results, adding each page to the <ul>
             for i, result in enumerate(resultList[:20]):
                 url, title, windowText = result
                 resultString += f"<li><u><strong>{title}</strong></u><br><i>{url}</i><br>{windowText}</li>"

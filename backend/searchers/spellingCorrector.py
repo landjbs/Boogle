@@ -5,7 +5,10 @@ from dataStructures.objectSaver import load
 def words(text):
     return re.findall(r'\w+', text.lower())
 
-WORDS = Counter(load('data/outData/knowledge/knowledgeSet.sav'))
+
+knowledgeSet = load('data/outData/knowledge/knowledgeSet.sav')
+WORDS = Counter(knowledgeSet)
+del knowledgeSet
 
 def P(word, N=sum(WORDS.values())):
     "Probability of `word`."
