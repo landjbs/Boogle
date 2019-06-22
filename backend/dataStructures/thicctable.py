@@ -15,6 +15,18 @@ class Thicctable():
         self.topDict = {key:[] for key in keys}
         print(f"Table initialized with {len(keys)} buckets.")
 
+    ### LAMBDAS CALLED BY LATER FUNCTIONS ###
+    # check_url examines the url from a page obj (second elt of page tuple)
+    check_url = lambda pageTuple : (pageTuple[1].url != url)
+    # get_score gets the score from a page tuple (the first elt)
+    get_score = lambda pageTuple : pageTuple[0]
+    # get_pageObj gets the pageObj from a pageTuple (the second elt)
+    get_pageObj = lambda pageTuple : pageTuple[1]
+    # get pageObj from pageTuple and apply .describe method
+    display_pageTuple = lambda pageTuple : pageTuple[1].display(tokenList)
+
+
+
     ### FUNCTIONS FOR MODIFYING KEYS ###
     def add_key(self, key):
         """ Adds key and corresponding empty list to topDict """
@@ -57,15 +69,11 @@ class Thicctable():
         """
         Removes elements with given url from list mapped by key in topDict
         """
-        # check url examines the url from a page obj (second elt of page tuple)
-        check_url = lambda pageTuple : (pageTuple[1].url != url)
         self.topDict[key] = list(filter(check_url, self.topDict[key]))
         return True
 
     def sort_key(self, key):
         """ Sorts key list based on page scores (first elt of tuple) """
-        # get_score gets the score from a page tuple (the first elt)
-        get_score = lambda pageTuple : pageTuple[0]
         self.topDict[key].sort(key=get_score, reverse=True)
         return True
 
@@ -102,8 +110,14 @@ class Thicctable():
         Returns display tuple from top n pages from (sorted) key with
         window text according to token list
         """
-        display_pageTuple = lambda pageTuple : pageTuple[1].display(tokenList)
         return list(map(display_pageTuple, self.topDict[key][:n]))
+
+    def search_pageObjs(self, key, n=20):
+        """
+        Returns list of page objects in key, discarding scores.
+        Useful if pages need to be reranked (eg. and_search).
+        """
+        return list(map(get_pageObj, self.topDict[key][:n]))
 
     def search_full(self, key, n=20):
         """ Returns the top n pageTuples of the list mapped by key in topDict """
