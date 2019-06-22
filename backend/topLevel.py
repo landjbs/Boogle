@@ -12,7 +12,7 @@ from searchers.databaseSearcher import search_database
 from crawlers.urlAnalyzer import parsable
 from dataStructures.pageObj import Page
 import time
-from searchers.databaseSearcher import single_search, and_search, or_search
+from searchers.searchLexer import topSearch
 
 ### url Reading ###
 # urlList = list(map(lambda url:(url[:-4]), os.listdir('data/outData/dmozProcessed/All')[0:3000]))
@@ -43,18 +43,17 @@ database.sort_all()
 # print('Loading Knowledge Processor')
 # knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
 # print("Processor loaded")
+knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor({'cake', 'company'})
 
 print(f"\n{'-'*73}\nWelcome to Boogle\t\t\t\t\t\t\t|\n{'-'*73}")
 while True:
     try:
         rawSearch = input("Search: ")
-        cleanSearch = clean_text(rawSearch)
-        cleanSearch2 = clean_text(input('Search2: '))
         if rawSearch=="OS.CLEAR":
             os.system('clear')
         else:
             start = time.time()
-            resultList = or_search([cleanSearch, cleanSearch2], database)
+            resultList = topSearch(rawSearch, database, knowledgeProcessor)
             end = time.time()
             # resultList = search_database(rawSearch, knowledgeProcessor, database)
             ## Old but different ##

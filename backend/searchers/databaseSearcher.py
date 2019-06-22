@@ -25,12 +25,14 @@ def or_search(tokenList, database, n=20):
     necessary.
     NB: The presence of multiple tokens from tokenList in a page does not
     influence it's ranking.
+    STILL BROKEN
     """
     # get list of all result bukcets associate with each tokens in the token list
     bucketLists = [database.search_full(key=token, n=10000) for token in tokenList]
     # combine bucketLists into a single, sorted list
-    sortedResults = (chain.from_iterable(bucketLists)).sort(key=(lambda result:result[-1]), reverse=True)
-    return sortedResults[:n]
+    sortedResults = list(chain.from_iterable(bucketLists)).sort(key=(lambda result:result[-1]), reverse=True)
+    displayResults = [page.display(tokenList) for page in sortedResults]
+    return displayResults[:n]
 
 
 def and_search(tokenList, database, n=20):
