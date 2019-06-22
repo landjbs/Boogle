@@ -13,7 +13,6 @@ def P(word, N=sum(WORDS.values())):
 
 def correction(word):
     "Most probable spelling correction for word."
-    print(f"IN: {word in WORDS}")
     return max(candidates(word), key=P)
 
 def candidates(word):

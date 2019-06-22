@@ -43,29 +43,29 @@ database.sort_all()
 # print('Loading Knowledge Processor')
 # knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
 # print("Processor loaded")
-knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor({'cake', 'company'})
+knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor({'cake'})
 
 print(f"\n{'-'*73}\nWelcome to Boogle\t\t\t\t\t\t\t|\n{'-'*73}")
 while True:
-    # try:
-    rawSearch = input("Search: ")
-    if rawSearch=="OS.CLEAR":
-        os.system('clear')
-    else:
-        start = time.time()
-        resultList = topSearch(rawSearch, database, knowledgeProcessor)
-        end = time.time()
-        # resultList = search_database(rawSearch, knowledgeProcessor, database)
-        ## Old but different ##
-        # clean_search = clean_text(search)
-        # searchList = knowledgeFinder.find_rawTokens(clean_search, knowledgeProcessor)
-        # resultsList = [database.search_index(token, searchLambda, n=10000) for token in searchList]
-        # showList = [result for result in resultsList[0] if all((result in other) for other in resultsList[1:])]
-        resultString = f"<u><strong>BOOGLE SEARCH</strong></u><br><i>{len(resultList)} results returned in {round(end-start, 5)} seconds!<br></i><ul>"
-        for i, result in enumerate(resultList[:20]):
-            url, title, windowText = result
-            resultString += f"<li><u><strong>{title}</strong></u><br><i>{url}</i><br>{windowText}</li>"
-        resultString += "</ul>"
+    try:
+        rawSearch = input("Search: ")
+        if rawSearch=="OS.CLEAR":
+            os.system('clear')
+        else:
+            start = time.time()
+            correctionDisplay, resultList = topSearch(rawSearch, database, knowledgeProcessor)
+            end = time.time()
+
+            resultString = f"<u><strong>BOOGLE SEARCH</strong></u><br><i>{len(resultList)} results returned in {round(end-start, 3)} seconds!<br></i><ul>"
+
+            # inform the user if a correction was made
+            if correctionDisplay:
+                resultString += f"<br>Showing results for <u>{correctionDisplay}</u><br>"
+
+            for i, result in enumerate(resultList[:20]):
+                url, title, windowText = result
+                resultString += f"<li><u><strong>{title}</strong></u><br><i>{url}</i><br>{windowText}</li>"
+            resultString += "</ul>"
         print(resultString)
-    # except Exception as e:
-    #     print(f'ERROR: {e}')
+    except Exception as e:
+        print(f'ERROR: {e}')
