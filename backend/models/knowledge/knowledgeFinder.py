@@ -122,7 +122,6 @@ def score_divDict(divDict, knowledgeProcessor, freqDict):
                 scoreDict[token] += divScores[token]
             else:
                 scoreDict.update({token:divScores[token]})
-    print(scoreDict)
     return scoreDict
 
 

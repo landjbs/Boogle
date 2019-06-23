@@ -10,13 +10,12 @@ import crawlers.urlAnalyzer as urlAnalyzer
 import crawlers.htmlAnalyzer as htmlAnalyzer
 import models.knowledge.knowledgeBuilder as knowledgeBuilder
 from dataStructures.simpleStructures import Simple_List, Metrics
-from dataStructures.thicctable import Thicctable
 from dataStructures.objectSaver import save, load
 from models.binning.docVecs import load_model
 
 import time
 
-def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath=""):
+def scrape_urlList(urlList, runTime=100000000, queueDepth=1000000, workerNum=20):
     """
     Builds wide column store of url data from urlList with recursive search
     Args: urlList to scrape, depth of url_queue, number of workers to spawn
@@ -37,6 +36,9 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
     # struct to keep track of metrics
     scrapeMetrics = Metrics()
 
+    # find time at which to stop analyzing
+    stopTime = round(time.time() + runTime)
+
     def enqueue_urlList(urlList):
         """
         Cleans and enqueues URLs contained in urlList, checking if
@@ -50,27 +52,35 @@ def scrape_urlList(urlList, queueDepth=10, workerNum=20, maxLen=100, outPath="")
     def worker():
         """ Scrapes popped URL from urlQueue and stores data in database"""
         while True:
+            # if time.time() >= stopTime:
+            #     print(f"\nDONE AT {time.time()}", end='\r')
+            #     with urlQueue.mutex:
+            #         urlQueue.queue.clear()
+            #     urlQueue.task_done()
+            # else:
+
             # pop top url from queue
             url = urlQueue.get()
+
             try:
                 pageList = htmlAnalyzer.scrape_url(url, knowledgeProcessor, freqDict, d2vModel)
                 # database.bucket_page(pageList)
                 testSimple.add(pageList)
                 # pull list of links from pageDict and put in urlQueue
-                # enqueue_urlList(pageList[3])
+                enqueue_urlList(pageList[4])
                 # update scrape metrics
                 scrapeMetrics.add(error=False)
-            except Exception as e:
-                print(e)
+            except:
                 # update scrape metrics
                 scrapeMetrics.add(error=True)
-            # log progress
-            if (scrapeMetrics.count % 10 == 0):
-                testSimple.save(f"data/thicctable/tempLists/{str(scrapeMetrics.count)}")
+
+            # save progress every 15 items
+            if (scrapeMetrics.count % 15 == 0):
+                testSimple.save(f"data/thicctable/harvardCrawl/{str(scrapeMetrics.count)}")
                 testSimple.clear()
-                os.system('clear')
-                print(testSimple.data)
-            print(f"\t{scrapeMetrics.count} URLs analyzed with {scrapeMetrics.errors} errors!", end="\r")
+
+            # log progress
+            print(f"\tURLs ANALYZED: {scrapeMetrics.count} | Errors: {scrapeMetrics.errors} | Queue Size: {urlQueue.qsize()}", end="\r")
             # signal completion
             urlQueue.task_done()
 
