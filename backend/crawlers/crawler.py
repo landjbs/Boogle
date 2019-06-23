@@ -8,13 +8,13 @@ from queue import Queue
 from threading import Thread
 import crawlers.urlAnalyzer as urlAnalyzer
 import crawlers.htmlAnalyzer as htmlAnalyzer
-from dataStructures.simpleStructures import Simple_List, Metrics
+from dataStructures.simpleStructures import Metrics
 from dataStructures.objectSaver import save, load
 from models.binning.docVecs import load_model
 
 import time
 
-def scrape_urlList(urlList, runTime=100000000, queueDepth=1000000, workerNum=20):
+def scrape_urlList(urlList, folderPath, runTime=100000000, queueDepth=1000000, workerNum=20):
     """
     Builds wide column store of url data from urlList with recursive search
     Args: urlList to scrape, depth of url_queue, number of workers to spawn
@@ -22,11 +22,9 @@ def scrape_urlList(urlList, runTime=100000000, queueDepth=1000000, workerNum=20)
     """
 
     # load models and datasets
-    knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
-    freqDict = load('data/outData/knowledge/freqDict.sav')
     d2vModel = load_model('data/outData/binning/d2vModel.sav')
-
-    testSimple = Simple_List()
+    freqDict = load('data/outData/knowledge/freqDict.sav')
+    knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
 
     # queue to hold urlList
     urlQueue = Queue(queueDepth)
@@ -62,9 +60,11 @@ def scrape_urlList(urlList, runTime=100000000, queueDepth=1000000, workerNum=20)
             url = urlQueue.get()
 
             try:
-                pageList = htmlAnalyzer.scrape_url(url, knowledgeProcessor, freqDict, d2vModel)
-                # database.bucket_page(pageList)
-                testSimple.add(pageList)
+                pageObj = htmlAnalyzer.scrape_url(url, knowledgeProcessor, freqDict, d2vModel)
+
+                for token in pageObj.knowledgeTokens:
+
+
                 # pull list of links from pageDict and put in urlQueue
                 enqueue_urlList(pageList[4])
                 # update scrape metrics
