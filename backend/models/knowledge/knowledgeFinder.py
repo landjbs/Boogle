@@ -4,11 +4,12 @@ built in models.knowledge.knowledgeBuilder.
 """
 
 import re
+import math
 import models.knowledge.knowledgeBuilder as knowledgeBuilder
 
 
 # dict mapping html divs to score  multiplier
-divScores = {'title':20, 'headers':5, 'description':18, 'keywords':19, 'all':1}
+divScores = {'title':5, 'headers':2, 'description':3, 'keywords':4, 'all':1}
 
 
 def find_rawTokens(inStr, knowledgeProcessor):
@@ -52,7 +53,7 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
     # find number of words in divText
     divLen = len(divText.split())
     # use knowledgeProcessor to extract tokens from page text
-    tokensFound = set(knowledgeProcessor.extract_keywords(divText))
+    tokensFound = set(find_rawTokens(divText, knowledgeProcessor))
 
     def score_token(token):
         """
@@ -62,12 +63,22 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
         # find number of occurences of a token in divText
         tokenNum = knowledgeBuilder.count_token(token, divText)
         # find frequency of token usage in divText
-        tokenFrequency = tokenNum / divLen
+        tokenFrequency = (tokenNum / divLen)
+
+        # if div is all, score the token based on how close it is to the start and normalize by optimal length
+        if (div=='all'):
+            # get page length relative to assumed average of 1200
+            relativeLength = divLen / 1200
+            # use sigmoid function on relative length to benefit longer pages with equal token freq to shorter
+            lengthNormalizaiton = (math.exp(0.2 * relativeLength) / (math.exp(0.2 * (relativeLength - 5.6)) + 1))
+            tokenFrequency *= lengthNormalizaiton
+
         # find average frequency of token from freqDict; if no key in freqDict, avgFreq <- 0
         try:
             avgFreq = freqDict[token]
         except:
             avgFreq = 0
+
         # normalize observed frequency by subtracting average frequency
         normFreq = tokenFrequency - avgFreq
         # if normalized frequency is less than or equal to zero, score is zero
@@ -81,6 +92,7 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
                 divMultipier = 1
             # token score is normalized frequency times div multiplier
             score = (normFreq ** (1/3)) * divMultipier
+
         return score
 
     # apply analyze_token to create dict mapping tokens to scores
@@ -110,6 +122,7 @@ def score_divDict(divDict, knowledgeProcessor, freqDict):
                 scoreDict[token] += divScores[token]
             else:
                 scoreDict.update({token:divScores[token]})
+    print(scoreDict)
     return scoreDict
 
 

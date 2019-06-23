@@ -93,9 +93,14 @@ puncDict = {'.':'period', ',':'comma', '!':'exclamation mark',
             '?':'question mark', '...':'ellipses', '"':'quotation mark',
             "'":'appostrophe', ':':'colon', ';':'semicolon', '&':'ampersand',
             '=':'equals', '{':'bracket', '}':'bracket', '+':'plus', '-':'minus',
-            '=':'equals','~':'tilda', "/":'slash', '$':'dollar sign',
+            '=':'equals','~':'tilda', '$':'dollar sign',
             '[':'square bracket', ']':'square bracket', '%':'percent',
             '_':'underscore'}
+
+puncDict = {'.':'period'}
+
+
+puncMatcher = re.compile(("|".join([punc for punc in puncDict.keys()])))
 
 def clean_search(rawSearch):
     """
@@ -103,7 +108,9 @@ def clean_search(rawSearch):
     Wraps clean_text, but solo punctuation is converted to english
     form rather than removed (eg. : meaning -> colon meaning)
     """
-
+    # to fix
+    puncSubbed = re.sub(r"?P<punc>{puncMatcher}", puncDict['\g<punc>'], rawSearch)
+    return clean_text(puncSubbed)
 
 
 def end_test(rawString):

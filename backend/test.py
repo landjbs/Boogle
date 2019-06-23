@@ -13,8 +13,9 @@ from crawlers.htmlAnalyzer import scrape_url
 # from searchers.displayWindow import bold_window
 from dataStructures.pageObj import Page
 import models.binning.docVecs as docVecs
+from models.processing.cleaner import clean_search
 
-knowledgeSet = {'harvard', 'excellence'}
+knowledgeSet = {'harvard', 'harvard university'}
 
 d2vModel  = docVecs.load_model('data/outData/binning/d2vModel.sav')
 
@@ -23,11 +24,11 @@ knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor(knowledgeSet)
 database = Thicctable(knowledgeSet)
 
 url = input("URL: ")
-pageObj = scrape_url(url, knowledgeProcessor, {'harvard':0}, d2vModel)
+pageList = scrape_url(url, knowledgeProcessor, {'harvard':0}, d2vModel)
 
-database.bucket_page(pageObj)
+database.bucket_page(Page(pageList))
 
-for elt in database.search_display('excellence', ['harvard', 'excellence']):
+for elt in database.search_display('harvard', ['harvard', 'harvard university']):
     print(elt)
 
 # while True:
