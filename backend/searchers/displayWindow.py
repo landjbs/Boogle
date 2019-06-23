@@ -2,6 +2,14 @@ import operator
 import re
 
 
+def score_loc(loc):
+    """ Finds number of tokens that start within windowSize of loc """
+    end = loc + windowSize
+    # find number of starts that are in window startin at current start
+    curScore = len([otherStart for otherStart in startList if otherStart in range(loc, end)])
+    return curScore
+
+
 def bold_and_window(tokenList, text, windowSize=200):
     """ Gets relevant window from pageText and bolds search tokens """
     # create matcher for all tokens in tokenList
@@ -13,21 +21,13 @@ def bold_and_window(tokenList, text, windowSize=200):
     # find list of positions of all starting locs of tokens in text
     startList = [elt.span()[0] for elt in re.finditer(tokenString, text, flags=re.IGNORECASE)]
 
-    def score_loc(loc):
-        """ Finds number of tokens that start within windowSize of loc """
-        end = loc + windowSize
-        # find number of starts that are in window startin at current start
-        curScore = len([otherStart for otherStart in startList if otherStart in range(loc, end)])
-        return curScore
-
     # create dict mapping each starting location to its score
     scoredLocs = {start:score_loc(start) for start in startList}
 
-    # find location with the highest score
+    # find location with the highest score if there is one, else start at the beginning
     if scoredLocs != {}:
         bestLoc = max(scoredLocs.items(), key=operator.itemgetter(1))[0]
         bestStart = max(0, bestLoc-10)
-    # if not locations are scored (this would only happen in a bug), window starts at the beginning
     else:
         bestStart = 0
 

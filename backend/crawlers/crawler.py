@@ -66,7 +66,7 @@ def scrape_urlList(urlList, runTime=100000000, queueDepth=1000000, workerNum=20)
                 # database.bucket_page(pageList)
                 testSimple.add(pageList)
                 # pull list of links from pageDict and put in urlQueue
-                # enqueue_urlList(pageList[4])
+                enqueue_urlList(pageList[4])
                 # update scrape metrics
                 scrapeMetrics.add(error=False)
             except:

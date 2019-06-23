@@ -1,35 +1,31 @@
-# import models.knowledge.knowledgeFinder as knowledgeFinder
-import models.knowledge.knowledgeBuilder as knowledgeBuilder
-# import searchers.fuzzyMatcher as fuzzyMatcher
-# from dataStructures.objectSaver import load, save
-from dataStructures.thicctable import Thicctable
-# from models.processing.cleaner import clean_text, clean_url
-# from crawlers.crawler import scrape_urlList
-# import os
-# from dataStructures.simpleStructures import Simple_List
-# from searchers.databaseSearcher import or_search
-# from models.processing.cleaner import clean_wiki
-from crawlers.htmlAnalyzer import scrape_url
-# from searchers.displayWindow import bold_window
-from dataStructures.pageObj import Page
-import models.binning.docVecs as docVecs
-from models.processing.cleaner import clean_search
+from queue import Queue
+import json
+import pickle
 
-knowledgeSet = {'harvard', 'harvard university'}
+test = Queue(maxsize=10)
 
-d2vModel  = docVecs.load_model('data/outData/binning/d2vModel.sav')
+for i in range(10):
+    test.put(item=i)
 
-knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor(knowledgeSet)
+print(json.dumps(test))
 
-database = Thicctable(knowledgeSet)
 
-url = input("URL: ")
-pageList = scrape_url(url, knowledgeProcessor, {'harvard':0}, d2vModel)
 
-database.bucket_page(Page(pageList))
-
-for elt in database.search_display('harvard', ['harvard', 'harvard university']):
-    print(elt)
+# knowledgeSet = {'harvard', 'harvard university'}
+#
+# d2vModel  = docVecs.load_model('data/outData/binning/d2vModel.sav')
+#
+# knowledgeProcessor = knowledgeBuilder.build_knowledgeProcessor(knowledgeSet)
+#
+# database = Thicctable(knowledgeSet)
+#
+# url = input("URL: ")
+# pageList = scrape_url(url, knowledgeProcessor, {'harvard':0}, d2vModel)
+#
+# database.bucket_page(Page(pageList))
+#
+# for elt in database.search_display('harvard', ['harvard', 'harvard university']):
+#     print(elt)
 
 # while True:
 #     url = input("URL: ")

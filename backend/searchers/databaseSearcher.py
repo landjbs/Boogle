@@ -18,7 +18,7 @@ def single_search(token, database, n=20):
     return database.search_display(key=token, tokenList=[token], n=n)
 
 
-def or_search(tokenList, database, n=20):
+def or_search(tokenList, database):
     """
     Performs an OR search accross a list of tokens.
     Ranks based on original score, since no intersectional re-ranking is
@@ -28,20 +28,19 @@ def or_search(tokenList, database, n=20):
     STILL BROKEN
     """
     # get list of all result bukcets associate with each tokens in the token list
-    bucketLists = [database.search_full(key=token, n=10000) for token in tokenList]
+    bucketLists = [database.search_full(key=token, n=100000) for token in tokenList]
     # combine bucketLists into a single, sorted list
     sortedResults = list(chain.from_iterable(bucketLists)).sort(key=(lambda result:result[-1]), reverse=True)
-    displayResults = [page.display(tokenList) for page in sortedResults]
-    return displayResults[:n]
+    return sortedResults
 
 
-def and_search(tokenList, database, n=20):
+def and_search(tokenList, database):
     """
     Preforms an AND search for the intersection multiple search tokens.
     Slower than single_search or or_search as pages need to be reranked.
     """
-    # get list of all result bukcets associate with each tokens in the token list
-    bucketList = [database.search_pageObjs(key=token, n=10000) for token in tokenList]
+    # get list of all result buckets associate with each tokens in the token list
+    bucketList = [database.search_full(key=token, n=100000) for token in tokenList]
     # get list of length of each bucket in bucketList
     lengthList = [len(bucket) for bucket in bucketList]
     # pop shortest bucket from bucketList and cast as set
@@ -52,6 +51,7 @@ def and_search(tokenList, database, n=20):
     intersectionPages = shortestBucket.intersection(otherBuckets)
     # rank intersection pages according to all tokens
     return list([page.display(tokenList) for page in intersectionPages])
+
 
 def search_database(rawSearch, knowledgeProcessor, database, n=20):
     """

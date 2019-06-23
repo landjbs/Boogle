@@ -23,7 +23,7 @@ del knowledgeSet
 from searchers.searchLexer import topSearch
 
 # Read lists from files into thicctable
-for i, file in enumerate(os.listdir('data/thicctable/tempLists')):
+for i, file in enumerate(listdir('data/thicctable/tempLists')):
     if not file=='.DS_Store':
         with open(f'data/thicctable/tempLists/{file}', 'r', encoding='utf-8') as FileObj:
             tempList = json.loads(FileObj.read())
