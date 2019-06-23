@@ -20,7 +20,6 @@ def topSearch(rawSearch, database):
     """
     cleanedSearch = clean_text(rawSearch)
     correctedSearch = " ".join([correction(token) for token in cleanedSearch.split()])
-    print(correctedSearch)
     #
     correctionDisplay = correctedSearch if not (cleanedSearch==correctedSearch) else None
 
