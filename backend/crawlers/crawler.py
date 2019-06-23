@@ -8,7 +8,6 @@ from queue import Queue
 from threading import Thread
 import crawlers.urlAnalyzer as urlAnalyzer
 import crawlers.htmlAnalyzer as htmlAnalyzer
-import models.knowledge.knowledgeBuilder as knowledgeBuilder
 from dataStructures.simpleStructures import Simple_List, Metrics
 from dataStructures.objectSaver import save, load
 from models.binning.docVecs import load_model
@@ -67,7 +66,7 @@ def scrape_urlList(urlList, runTime=100000000, queueDepth=1000000, workerNum=20)
                 # database.bucket_page(pageList)
                 testSimple.add(pageList)
                 # pull list of links from pageDict and put in urlQueue
-                enqueue_urlList(pageList[4])
+                # enqueue_urlList(pageList[4])
                 # update scrape metrics
                 scrapeMetrics.add(error=False)
             except:
@@ -75,8 +74,8 @@ def scrape_urlList(urlList, runTime=100000000, queueDepth=1000000, workerNum=20)
                 scrapeMetrics.add(error=True)
 
             # save progress every 15 items
-            if (scrapeMetrics.count % 15 == 0):
-                testSimple.save(f"data/thicctable/harvardCrawl/{str(scrapeMetrics.count)}")
+            if (scrapeMetrics.count % 10 == 0):
+                testSimple.save(f"data/thicctable/627amCrawl/{str(scrapeMetrics.count)}")
                 testSimple.clear()
 
             # log progress

@@ -1,23 +1,23 @@
-import models.knowledge.knowledgeFinder as knowledgeFinder
-import models.knowledge.knowledgeBuilder as knowledgeBuilder
-from dataStructures.objectSaver import load
-from dataStructures.thicctable import Thicctable
+# import models.knowledge.knowledgeFinder as knowledgeFinder
+# import models.knowledge.knowledgeBuilder as knowledgeBuilder
+# from dataStructures.objectSaver import load
+# from dataStructures.thicctable import Thicctable
 # import models.binning.docVecs as docVecs
-import crawlers.htmlAnalyzer as htmlAnalyzer
-from models.processing.cleaner import clean_text
+# import crawlers.htmlAnalyzer as htmlAnalyzer
+# from models.processing.cleaner import clean_text
 from crawlers.crawler import scrape_urlList
-import json
-import os
-from searchers.databaseSearcher import search_database
-from crawlers.urlAnalyzer import parsable
-from dataStructures.pageObj import Page
-import time
+from os import listdir
+# import json
+# import os
+# from searchers.databaseSearcher import search_database
+# from crawlers.urlAnalyzer import parsable
+# from dataStructures.pageObj import Page
+# import time
 
 ### url Reading ###
-# urlList = list(map(lambda url:(url[:-4]), os.listdir('data/outData/dmozProcessed/All')[0:3000]))
-# scrape_urlList(urlList)
+urlList = list(map(lambda url:(url[:-4]), listdir('data/outData/dmozProcessed/All')[3000:40000]))
+scrape_urlList(urlList)
 
-scrape_urlList(['www.harvard.edu'])
 
 # ### Table initialization ###
 # print('Loading Knowledge Database')
