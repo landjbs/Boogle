@@ -60,11 +60,7 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
         to average frequency and multiplier associated with page div
         """
         # find number of occurences of a token in divText
-        # if not (div=='url'):
         tokenNum = knowledgeBuilder.count_token(token, divText)
-        # else:
-            # url tokens are not delimited by spaces
-            # tokenNum = re.findall(token, divText, flags=re.IGNORECASE)
         # find frequency of token usage in divText
         tokenFrequency = tokenNum / divLen
         # find average frequency of token from freqDict; if no key in freqDict, avgFreq <- 0
@@ -84,7 +80,7 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
             except:
                 divMultipier = 1
             # token score is normalized frequency times div multiplier
-            score = (normFreq) * divMultipier
+            score = (normFreq ** (1/3)) * divMultipier
         return score
 
     # apply analyze_token to create dict mapping tokens to scores

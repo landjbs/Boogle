@@ -9,6 +9,7 @@ def words(text):
 knowledgeSet = load('data/outData/knowledge/knowledgeSet.sav')
 WORDS = Counter(knowledgeSet)
 del knowledgeSet
+print('Spelling dict loaded')
 
 def P(word, N=sum(WORDS.values())):
     "Probability of `word`."

@@ -9,17 +9,16 @@ class Page():
     """
     Stores attribues of a webpage. Thicctable buckets are lists of Page objects
     """
-    def __init__(self, url, title, knowledgeTokens, pageVec, linkList, loadTime, loadDate, windowText):
-        """ Initialize page object with page features """
-        self.url = url
-        self.title = title
-        self.knowledgeTokens = knowledgeTokens
-        self.pageVec = pageVec
-        self.linkList = linkList
-        self.loadTime = loadTime
-        self.loadDate = loadDate
-        self.windowText = windowText
-
+    def __init__(self, pageList):
+        """ Initialize page object with pageList of features """
+        self.url = pageList[0]
+        self.title = pageList[1]
+        self.knowledgeTokens = pageList[2]
+        self.pageVec = pageList[3]
+        self.linkList = pageList[4]
+        self.loadTime = pageList[5]
+        self.loadDate = pageList[6]
+        self.windowText = pageList[7]
 
     def display(self, tokenList):
         """

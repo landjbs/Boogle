@@ -12,7 +12,6 @@ from searchers.databaseSearcher import search_database
 from crawlers.urlAnalyzer import parsable
 from dataStructures.pageObj import Page
 import time
-from searchers.searchLexer import topSearch
 
 ### url Reading ###
 # urlList = list(map(lambda url:(url[:-4]), os.listdir('data/outData/dmozProcessed/All')[0:3000]))
@@ -25,13 +24,15 @@ print('Knowledge Database Loaded')
 database = Thicctable(knowledgeSet)
 del knowledgeSet
 
+from searchers.searchLexer import topSearch
+
 # Read lists from files into thicctable
 for i, file in enumerate(os.listdir('data/thicctable/tempLists')):
     if not file=='.DS_Store':
         with open(f'data/thicctable/tempLists/{file}', 'r', encoding='utf-8') as FileObj:
             tempList = json.loads(FileObj.read())
             for pageList in tempList:
-                pageObj = Page(pageList[0], pageList[1], pageList[2], pageList[3], pageList[4], pageList[5], pageList[6], pageList[7])
+                pageObj = Page(pageList)
                 database.bucket_page(pageObj)
         print(f'Loading Page Files: {i*10}', end='\r')
     else:
