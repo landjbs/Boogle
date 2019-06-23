@@ -61,10 +61,6 @@ def scrape_urlList(urlList, folderPath, runTime=100000000, queueDepth=1000000, w
 
             try:
                 pageObj = htmlAnalyzer.scrape_url(url, knowledgeProcessor, freqDict, d2vModel)
-
-                for token in pageObj.knowledgeTokens:
-
-
                 # pull list of links from pageDict and put in urlQueue
                 enqueue_urlList(pageList[4])
                 # update scrape metrics

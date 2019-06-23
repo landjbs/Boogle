@@ -24,14 +24,17 @@ headerMatcher = re.compile('^h[1-6$]')
 
 
 def clean_pageText(rawText, title):
-    """ Removes junk from output of soup.get_text() """
+    """
+    Removes junk from output of soup.get_text()
+    Returns: completely cleaned text and raw text with title removed
+    """
     # find location of end of the title in rawText
     titleEnd = rawText.find(title) + len(title)
     # filter out everything before the title
     afterTitle = rawText[titleEnd:]
     # call clean_text from models.textProcessor.cleaner
     cleanedText = clean_text(afterTitle)
-    return cleanedText
+    return (cleanedText, afterTitle)
 
 
 def get_pageText(url):
@@ -92,7 +95,7 @@ def scrape_url(url, knowledgeProcessor, freqDict, d2vModel, timeout=4):
     curSoup = BeautifulSoup(rawString, 'html.parser')
     # pull title and text from soup object
     title = (curSoup.title.string)
-    cleanedText = clean_pageText(curSoup.get_text(), title)
+    cleanedText, afterTitle = clean_pageText(curSoup.get_text(), title)
     cleanedTitle = clean_title(title)
 
     # validate language
@@ -125,20 +128,10 @@ def scrape_url(url, knowledgeProcessor, freqDict, d2vModel, timeout=4):
     linkList = list(map(lambda url : urlAnalyzer.fix_url(url), get_links(curSoup)))
 
     # decide text to use for window display; description if possible
-    windowText = description if (description != "") else cleanedText
+    windowText = description if (description != "") else afterTitle
 
     # DOC VEC BELOW
-    # pageVec = docVecs.vectorize_document(cleanedText, d2vModel)
-    pageVec = {}
-    # # return Page() object of information about the page
-    # return Page(url=url,
-    #             title=cleanedTitle,
-    #             knowledgeTokens=knowledgeTokens,
-    #             pageVec=pageVec,
-    #             linkList=linkList,
-    #             loadTime=loadTime,
-    #             loadDate=loadDate,
-    #             windowText=windowText)
+    pageVec = docVecs.vectorize_document(cleanedText, d2vModel)
 
     # return list of information about the page
     return [url, cleanedTitle, knowledgeTokens, pageVec, linkList, loadTime, loadDate, windowText]
