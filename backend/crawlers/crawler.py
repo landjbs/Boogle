@@ -6,7 +6,7 @@
 import os
 from queue import Queue
 from threading import Thread
-import crawlers.urlAnalyzer as urlAnalyzer
+from crawlers.urlAnalyzer import fix_url
 import crawlers.htmlAnalyzer as htmlAnalyzer
 from dataStructures.simpleStructures import Metrics
 from dataStructures.objectSaver import save, load
@@ -16,9 +16,6 @@ import time
 
 def scrape_urlList(urlList, folderPath, runTime=100000000, queueDepth=1000000, workerNum=20):
     """
-    Builds wide column store of url data from urlList with recursive search
-    Args: urlList to scrape, depth of url_queue, number of workers to spawn
-    Returns: wide column store of data from each url
     """
 
     # load models and datasets
@@ -86,7 +83,7 @@ def scrape_urlList(urlList, folderPath, runTime=100000000, queueDepth=1000000, w
         t.start()
 
     # load cleaned initial urls into url_queue
-    urlList = list(map(lambda url:urlAnalyzer.fix_url(url), urlList))
+    urlList = list(map(lambda url:fix_url(url), urlList))
     enqueue_urlList(urlList)
 
     # ensure all urlQueue processes are complete before proceeding
