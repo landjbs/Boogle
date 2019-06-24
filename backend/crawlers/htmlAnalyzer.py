@@ -23,7 +23,7 @@ imageMatcher = re.compile('(?<=src=")\S+(?=")')
 h1Matcher = re.compile('^h1$')
 h2Matcher = re.compile('^h2$')
 h3Matcher = re.compile('^h3$')
-headerMatcher = re.compile('^h[4-6$]')
+lowHeaderMatcher = re.compile('^h[4-6$]')
 
 
 def clean_pageText(rawText, title):
@@ -105,13 +105,15 @@ def scrape_url(url, knowledgeProcessor, freqDict, d2vModel, timeout=4):
     assert (detect_language(cleanedText)=='en'), f"{url} contents not in English"
 
     # find lists of headers in
-    h1sRaw = curSoup.find_all(h1Matcher)
-    h2sRaw = curSoup.find_all(h2Matcher)
-    h3sRaw = curSoup.find_all(h3Matcher)
-    lowHeadersRaw = curSoup.find_all(lowHeaderMatcher)
-
+    h1Raw = curSoup.find_all(h1Matcher)
+    h2Raw = curSoup.find_all(h2Matcher)
+    h3Raw = curSoup.find_all(h3Matcher)
+    lowHeaderRaw = curSoup.find_all(lowHeaderMatcher)
     # join cleaned headers into space delimited string
-    headers = " ".join(clean_text(str(header)) for header in headerList)
+    h1Clean = " ".join(clean_text(str(header)) for header in h1Raw)
+    h2Clean = " ".join(clean_text(str(header)) for header in h2Raw)
+    h3Clean = " ".join(clean_text(str(header)) for header in h3Raw)
+    lowHeaderClean = " ".join(clean_text(str(header)) for header in lowHeaderRaw)
 
     # find contents of discription tag in soup object, if it exists
     try:
@@ -125,8 +127,13 @@ def scrape_url(url, knowledgeProcessor, freqDict, d2vModel, timeout=4):
     except:
         keywords = ""
 
+
     # create dict of divs and contents for knowledge tokenization
-    divDict = {'url':clean_url(url),'title':cleanedTitle, 'headers':headers, 'description':clean_text(description), 'keywords':clean_text(keywords),'all':cleanedText}
+    divDict = {'url':clean_url(url),'title':cleanedTitle, 'h1':h1Clean,
+                'h2':h2Clean, 'h3':h3Clean, 'lowHeaders':lowHeaderClean,
+                'description':clean_text(description),
+                'keywords':clean_text(keywords),'all':cleanedText}
+
 
     # find dict mapping knowledge tokens in divDict to their score
     knowledgeTokens = score_divDict(divDict, knowledgeProcessor, freqDict)

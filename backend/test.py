@@ -1,13 +1,8 @@
-from queue import Queue
-import json
-import pickle
+from crawlers.htmlAnalyzer import scrape_url
 
-test = Queue(maxsize=10)
-
-for i in range(10):
-    test.put(item=i)
-
-print(json.dumps(test))
+while True:
+    url = input('url: ')
+    print(scrape_url(url, {}, {}, {}))
 
 
 

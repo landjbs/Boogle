@@ -9,7 +9,7 @@ import models.knowledge.knowledgeBuilder as knowledgeBuilder
 
 
 # dict mapping html divs to score  multiplier
-divScores = {'title':5, 'headers':2, 'description':3, 'keywords':4, 'all':1}
+divScores = {'title':6, 'h1':5, 'h2':4, 'h3':3, 'lowHeaders':2, 'description':3, 'keywords':3, 'all':1}
 
 
 def find_rawTokens(inStr, knowledgeProcessor):
