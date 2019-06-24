@@ -70,8 +70,9 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
             # get page length relative to assumed average of 1200
             relativeLength = divLen / 1200
             # use sigmoid function on relative length to benefit longer pages with equal token freq to shorter
-            lengthNormalizaiton = (math.exp(0.2 * relativeLength) / (math.exp(0.2 * (relativeLength - 5.6)) + 1))
-            tokenFrequency *= lengthNormalizaiton
+            # (multiplier asymptotes at 1 and ~5)
+            lengthMultiplier = (math.exp(0.25 * relativeLength) / (math.exp(0.25 * (relativeLength - 5.2)) + 1)) + 1
+            tokenFrequency *= lengthMultiplier
 
         # find average frequency of token from freqDict; if no key in freqDict, avgFreq <- 0
         try:
