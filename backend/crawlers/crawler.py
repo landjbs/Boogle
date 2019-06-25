@@ -1,9 +1,10 @@
-# Responsible for building database of page data from list of URLs.
-# Outsources URL processing to urlAnalyzer.py
-# Outsources HTML processing to htmlAnalyzer.py
-# Outsoucres database definitions to thicctable.py
+"""
+Responsible for building database of page data from list of URLs.
+Outsources URL processing to urlAnalyzer.py
+Outsources HTML processing to htmlAnalyzer.py
+Outsoucres database definitions to thicctable.py
+"""
 
-import os
 from queue import Queue
 from threading import Thread
 from crawlers.urlAnalyzer import fix_url
@@ -16,6 +17,8 @@ import time
 
 def scrape_urlList(urlList, folderPath, runTime=100000000, queueDepth=1000000, workerNum=20):
     """
+    Rescursively crawls internet from starting urlList and ends after runTime
+    seconds.
     """
 
     # load models and datasets
