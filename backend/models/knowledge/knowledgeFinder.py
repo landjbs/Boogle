@@ -9,14 +9,14 @@ import models.knowledge.knowledgeBuilder as knowledgeBuilder
 
 
 # dict mapping html divs to score  multiplier
-divScores = {'title':6, 'h1':5, 'h2':4, 'h3':3, 'lowHeaders':2, 'description':3, 'keywords':3, 'all':1}
+divScores = {'title':6, 'h1':5, 'h2':4, 'h3':3, 'lowHeaders':2, 'description':3, 'keywords':3, 'imageAlt':2, 'all':1}
 
 
 def find_rawTokens(inStr, knowledgeProcessor):
     """
     Finds set of tokens used in inStr without scoring or count.
     Used to tokenize search queries.
-    Looks for both full tokens from knowledgeSet and single-word tokens
+    Looks for both full tokens from knowledgeSet and single-word (sub) tokens
     """
     # use greedy matching of flashtext algorithm to find keywords
     greedyTokens = list(knowledgeProcessor.extract_keywords(inStr))
@@ -65,12 +65,19 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
         # find frequency of token usage in divText
         tokenFrequency = (tokenNum / divLen)
 
-        # if div is all, score the token based on how close it is to the start and normalize by optimal length
+        ### DIV SPECIFIC SCORING ###
+        # if div is all, score the token based on how close it is to the start and benefit longer pages
         if (div=='all'):
-            # get page length relative to assumed average of 1200
-            relativeLength = divLen / 1200
-            # use sigmoid function on relative length to benefit longer pages with equal token freq to shorter
-            # (multiplier asymptotes at 1 and ~5)
+            ########################
+            # find start and end location of each token usage in the text
+            tokenLocs = [(loc.span()[0], loc.span()[1]) for loc in re.finditer(token, divText, flags=re.IGNORECASE)]
+            # get loc of first token usage
+            firstUse = tokenLocs[0]
+            # spacing
+            ########################
+            # get page length relative to average word count (assumed 700)
+            relativeLength = divLen / 700
+            # use sigmoid function on relative length to benefit longer pages with equal token freq to shorter (multiplier asymptotes at 1 and ~5)
             lengthMultiplier = (math.exp(0.25 * relativeLength) / (math.exp(0.25 * (relativeLength - 5.2)) + 1)) + 1
             tokenFrequency *= lengthMultiplier
 
@@ -116,7 +123,7 @@ def score_divDict(divDict, knowledgeProcessor, freqDict):
         # get text inside div
         divText = divDict[div]
         # get dict of tokens in divText and their scores
-        divScores = find_scoredTokens(divText, div, knowledgeProcessor, freqDict, 0.001)
+        divScores = find_scoredTokens(divText, div, knowledgeProcessor, freqDict, 0.05)
         # iterate over found tokens, adding their scores to the divDict
         for token in divScores:
             if token in scoreDict:

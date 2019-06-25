@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+  <header>
+    <title>{{ correctionDisplay }} - Boogle Search</title>
+  </header>
+   <body>
+     <h1>🅱️oogle</h1>
+     <i>{{ searchStats[0] }} pages returned in {{ searchStats[1] }} seconds.</i>
+     <p>Showing results for <u>{{ correctionDisplay }}</u>.</p>
+
+     <form action = "http://localhost:5000/result" method = "POST">
+       <p>Search: <input type = "text" name = "Search" /></p>
+       <!-- <p><input type = "submit" value = "submit" /></p> -->
+     </form>
+
+     <ul>
+        {% for result in resultList %}
+          <li>
+            <a href='www.harvard.edu'><strong>{{ result[1] }}</strong></a>
+            <br>
+            <i>{{ result[0] }}</i><br>
+            {{ result[2] }}
+          </li>
+          <br>
+        {% endfor %}
+      </ul>
+   </body>
+</html>

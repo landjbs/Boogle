@@ -2,14 +2,6 @@ import operator
 import re
 
 
-def score_loc(loc):
-    """ Finds number of tokens that start within windowSize of loc """
-    end = loc + windowSize
-    # find number of starts that are in window startin at current start
-    curScore = len([otherStart for otherStart in startList if otherStart in range(loc, end)])
-    return curScore
-
-
 def bold_and_window(tokenList, text, windowSize=200):
     """ Gets relevant window from pageText and bolds search tokens """
     # create matcher for all tokens in tokenList
@@ -20,6 +12,13 @@ def bold_and_window(tokenList, text, windowSize=200):
 
     # find list of positions of all starting locs of tokens in text
     startList = [elt.span()[0] for elt in re.finditer(tokenString, text, flags=re.IGNORECASE)]
+
+    def score_loc(loc):
+        """ Finds number of tokens that start within windowSize of loc """
+        end = loc + windowSize
+        # find number of starts that are in window startin at current start
+        curScore = len([otherStart for otherStart in startList if otherStart in range(loc, end)])
+        return curScore
 
     # create dict mapping each starting location to its score
     scoredLocs = {start:score_loc(start) for start in startList}
@@ -36,10 +35,10 @@ def bold_and_window(tokenList, text, windowSize=200):
     windowText = text[bestStart : bestEnd]
 
     # add ellipses to beginning of windowText if bestStart isn't the beginning
-    if not (bestStart==0):
+    if not (bestStart<=0):
         windowText = "..." + windowText
     # add ellipses to end of windowText if bestEnd isn't the end
-    if not (bestEnd==len(text)):
+    if not (bestEnd>=len(text)):
         windowText += "..."
 
     # sub token matches for token surrounded by <strong> tags

@@ -1,21 +1,19 @@
 import searchers.databaseSearcher as databaseSearcher
 from models.processing.cleaner import clean_text
 from models.knowledge.knowledgeFinder import find_rawTokens
-# from searchers.spellingCorrector import correction
+from searchers.spellingCorrector import correction
 from dataStructures.objectSaver import load
+import re
 
 from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
-
-import re
 
 # load knowledgeProcessor for finding tokens in search
 print('Loading Knowledge Processor')
 # knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
-knowledgeProcessor = build_knowledgeProcessor({'harvard', 'college'})
+knowledgeProcessor = build_knowledgeProcessor({'largest', 'wooden', 'sculpture'})
 print("Processor loaded")
-
-lexicalParser = re.compile("AND|OR")
-
+# lexicalParser = re.compile("AND|OR")
+#
 
 def topSearch(rawSearch, database):
     """
@@ -24,17 +22,19 @@ def topSearch(rawSearch, database):
     CURRENTLY: Uses databaseSearcher.single_search if search contains
     one knowledge token, else uses databaseSearcher.and_search
     """
-    print(re.split(lexicalParser, rawSearch))
     cleanedSearch = clean_text(rawSearch)
 
+    cleanedSearch = re.sub('statue', 'sculpture', cleanedSearch)
 
+    correctedSearch = " ".join([correction(token) if not (token[0]=='"' and token[-1]=='"') else token
+                                for token in cleanedSearch.split()])
 
-    # correctedSearch = " ".join([correction(token) for token in cleanedSearch.split()])
-    # #
-    # correctionDisplay = correctedSearch if not (cleanedSearch==correctedSearch) else None
-    #
-    # tokenList = find_rawTokens(correctedSearch, knowledgeProcessor)
-    # if (len(tokenList) == 1):
-    #     return (correctionDisplay, databaseSearcher.single_search(tokenList[0], database))
-    # else:
-    #     return (correctionDisplay, databaseSearcher.and_search(tokenList, database))
+    correctionDisplay = correctedSearch
+    # correctionDisplay = None if (cleanedSearch==correctedSearch) else correctedSearch
+
+    tokenList = find_rawTokens(correctedSearch, knowledgeProcessor)
+    print(tokenList)
+    if (len(tokenList) == 1):
+        return (correctionDisplay, databaseSearcher.single_search(tokenList[0], database))
+    elif (len(tokenList)>1):
+        return (correctionDisplay, databaseSearcher.and_search(tokenList, database))

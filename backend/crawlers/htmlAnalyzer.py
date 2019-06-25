@@ -10,14 +10,11 @@ import re # to match for patterns in pageStrings
 import time # to find the loadTime of a page
 import langid # to classify language of pageString
 from bs4 import BeautifulSoup # to parse html
-import crawlers.urlAnalyzer as urlAnalyzer
+from crawlers.urlAnalyzer import fix_url, url_to_pageString, parsable
 from models.processing.cleaner import clean_text, clean_title, clean_url
 from models.knowledge.knowledgeFinder import score_divDict
 import models.binning.docVecs as docVecs
-from dataStructures.pageObj import Page
 
-# image matcher
-imageMatcher = re.compile('(?<=src=")\S+(?=")')
 
 # matcher for all h-number tages in html text
 h1Matcher = re.compile('^h1$')
@@ -46,7 +43,7 @@ def get_pageText(url):
     Requires recreation of BeautifulSoup() object so don't call in
     htmlAnalyzer.py.
     """
-    rawString = urlAnalyzer.url_to_pageString(url)
+    rawString = url_to_pageString(url)
     curSoup = BeautifulSoup(rawString, "html.parser")
     rawText = curSoup.get_text()
     title = curSoup.title.string
@@ -62,7 +59,7 @@ def get_links(soup):
     # get list of all <a> tags in soup
     a_list = soup.find_all('a', href=True)
     # get list of validated urls from <a> tag list
-    linkList = [link['href'] for link in a_list if urlAnalyzer.parsable(link['href'])]
+    linkList = [link['href'] for link in a_list if parsable(link['href'])]
     return linkList
 
 
@@ -72,7 +69,7 @@ def detect_language(pageString):
     return lang
 
 
-def scrape_url(url, knowledgeProcessor, freqDict, d2vModel, timeout=4):
+def scrape_url(url, knowledgeProcessor, freqDict, d2vModel, timeout=10):
     """
     Fetches and processes url and returns list of page info.
     Data Returned:
@@ -86,66 +83,81 @@ def scrape_url(url, knowledgeProcessor, freqDict, d2vModel, timeout=4):
 
     # fetch page string and save time to load
     loadStart = time.time()
-    rawString = urlAnalyzer.url_to_pageString(url, timeout=timeout)
+    rawString = url_to_pageString(url, timeout=timeout)
     loadEnd = time.time()
 
+    ### PROCESS TIMES ###
     # round time page took to load to 10ths
     loadTime = round(loadEnd - loadStart, ndigits=1)
     # number of days since 1970 when page was loaded
     loadDate = int(loadEnd / (86400))
 
-    # create soup object for parsing pageString
+    ### CREATE SOUP OBJECT ###
     curSoup = BeautifulSoup(rawString, 'html.parser')
-    # pull title and text from soup object
-    title = (curSoup.title.string)
+
+    ### GET TITLE AND CLEANED TEXT ###
+    title = curSoup.title.string
     cleanedText, afterTitle = clean_pageText(curSoup.get_text(), title)
     cleanedTitle = clean_title(title)
 
-    # validate language
+    ### VALIDATE LANGUAGE ###
     assert (detect_language(cleanedText)=='en'), f"{url} contents not in English"
 
-    # find lists of headers in
-    h1Raw = curSoup.find_all(h1Matcher)
-    h2Raw = curSoup.find_all(h2Matcher)
-    h3Raw = curSoup.find_all(h3Matcher)
-    lowHeaderRaw = curSoup.find_all(lowHeaderMatcher)
+    ### FIND HEADERS ###
+    h1Raw =         curSoup.find_all(h1Matcher)
+    h2Raw =         curSoup.find_all(h2Matcher)
+    h3Raw =         curSoup.find_all(h3Matcher)
+    lowHeaderRaw =  curSoup.find_all(lowHeaderMatcher)
     # join cleaned headers into space delimited string
-    h1Clean = " ".join(clean_text(str(header)) for header in h1Raw)
-    h2Clean = " ".join(clean_text(str(header)) for header in h2Raw)
-    h3Clean = " ".join(clean_text(str(header)) for header in h3Raw)
-    lowHeaderClean = " ".join(clean_text(str(header)) for header in lowHeaderRaw)
+    h1Clean =           " ".join(str(header) for header in h1Raw)
+    h2Clean =           " ".join(str(header) for header in h2Raw)
+    h3Clean =           " ".join(str(header) for header in h3Raw)
+    lowHeaderClean =    " ".join(str(header) for header in lowHeaderRaw)
 
-    # find contents of discription tag in soup object, if it exists
+    ### FIND META DESCRIPTION ###
     try:
         description = curSoup.find('meta', attrs={'name': 'description'}).get('content')
     except:
         description = ""
 
-    # find contents of keyword tag in soup object, if it exists
+    ### FIND META KEYWORDS ###
     try:
         keywords = curSoup.find('meta', attrs={'name':'keywords'}).get('content')
     except:
         keywords = ""
 
+    ### FIND IMAGES ALT TAGS ###
+    try:
+        images = curSoup.find_all('img')
+        imageAlts = " ".join(img['alt'] for img in images)
+        imageNum = len(images)
+    except:
+        imageAlts = ""
 
-    # create dict of divs and contents for knowledge tokenization
-    divDict = {'url':clean_url(url),'title':cleanedTitle, 'h1':h1Clean,
-                'h2':h2Clean, 'h3':h3Clean, 'lowHeaders':lowHeaderClean,
-                'description':clean_text(description),
-                'keywords':clean_text(keywords),'all':cleanedText}
-
+    ### ANALYZE AND SCORE KNOWLEDGE TOKENS ###
+    divDict = {'url':           clean_url(url),
+                'title':        cleanedTitle,
+                'h1':           clean_text(h1Clean),
+                'h2':           clean_text(h2Clean),
+                'h3':           clean_text(h3Clean),
+                'lowHeaders':   clean_text(lowHeaderClean),
+                'description':  clean_text(description),
+                'keywords':     clean_text(keywords),
+                'imageAlt':     clean_text(imageAlts),
+                'all':          cleanedText}
 
     # find dict mapping knowledge tokens in divDict to their score
     knowledgeTokens = score_divDict(divDict, knowledgeProcessor, freqDict)
 
-    # find and clean list of links from soup object
-    linkList = list(map(lambda url : urlAnalyzer.fix_url(url), get_links(curSoup)))
+    ### FIND LINKS ###
+    linkList = list(map(lambda url : fix_url(url), get_links(curSoup)))
 
-    # decide text to use for window display; description if possible
-    windowText = description if (description != "") else afterTitle
+    ### SET WINDOW TEXT TO DISPLAY ###
+    windowText = description if not (description=="") else afterTitle
 
-    # DOC VEC BELOW
-    pageVec = docVecs.vectorize_document(cleanedText, d2vModel)
+    ### VECTORIZE DOCUMENT ###
+    # pageVec = docVecs.vectorize_document(cleanedText, d2vModel)
+    pageVec = {}
 
-    # return list of information about the page
+    ### RETURN PAGE LIST ### imageNum
     return [url, cleanedTitle, knowledgeTokens, pageVec, linkList, loadTime, loadDate, windowText]

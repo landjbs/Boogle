@@ -112,7 +112,7 @@ class Thicctable():
         display_pageTuple = lambda pageTuple : pageTuple[1].display(tokenList)
         return list(map(display_pageTuple, self.topDict[key][:n]))
 
-    def search_pageObjs(self, key, n=20):
+    def search_pageObj(self, key, n=20):
         """
         Returns list of page objects in key, discarding scores.
         Useful if pages need to be reranked (eg. and_search).
@@ -190,48 +190,3 @@ class Thicctable():
         else:
             plt.show()
         return True
-
-
-
-# Testing
-
-# import time
-# import numpy as np
-#
-# NUM = 100000
-#
-# x = Thicctable(keys=['a','b','c'])
-#
-# keyList = np.random.choice(['a','b','c'], size=NUM)
-# v1List = np.random.randint(0, 10000, size=NUM)
-# v2List = np.random.choice(['a','b','c','d','e','f','g','c'], size=NUM)
-#
-# insertStart = time.time()
-# for i, key in enumerate(keyList):
-#     x.insert_value(key, (v1List[i], v2List[i]))
-# insertEnd = time.time()
-# print(f"Insertion: {insertEnd - insertStart}")
-#
-# sortStart = time.time()
-# x.sort_all(index=0)
-# sortEnd = time.time()
-# print(f"Sorting: {sortEnd - sortStart}")
-#
-# start = time.time()
-# print(x.search_index('a', indexLambda=(lambda x:x[1])))
-# end  = time.time()
-# iSearch = end - start
-#
-# start = time.time()
-# print(x.search_full('a'))
-# end  = time.time()
-# aSearch = end - start
-#
-# print(f"Search:\n\ti:  {iSearch}\n\ta: {aSearch}")
-#
-# x.plot_lengths()
-
-# saveStart = time.time()
-# x.save("test.thicc")
-# saveEnd = time.time()
-# print(f"Save: {saveEnd - saveStart}")

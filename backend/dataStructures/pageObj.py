@@ -18,6 +18,7 @@ class Page():
         self.linkList = pageList[4]
         self.loadTime = pageList[5]
         self.loadDate = pageList[6]
+        # self.imageNum = pageList[7]
         self.windowText = pageList[7]
 
     def display(self, tokenList):

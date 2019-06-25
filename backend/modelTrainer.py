@@ -77,11 +77,12 @@ PATH = 'data/outData/dmozProcessed'
 #
 # print(df)
 # save(df, 'data/outData/binning/binaryTrainingVecs.sav')
-df = load('data/outData/binning/binaryTrainingVecs.sav')
-described = df.describe()
-std = described.loc['std']
-plt.plot(std)
-plt.show()
+
+# df = load('data/outData/binning/binaryTrainingVecs.sav')
+# described = df.describe()
+# std = described.loc['std']
+# plt.plot(std)
+# plt.show()
 
 #
 # model = Sequential([
