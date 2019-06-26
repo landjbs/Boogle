@@ -43,7 +43,6 @@ database.sort_all()
 print('Sorting Complete')
 
 WORDS = database.all_lengths()
-print(WORDS)
 
 def flask_search(rawSearch):
     try:
