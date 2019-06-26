@@ -9,7 +9,8 @@ from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
 
 # load knowledgeProcessor for finding tokens in search
 print('Loading Knowledge Processor')
-knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
+# knowledgeProcessor = load('backend/data/outData/knowledge/knowledgeProcessor.sav')
+knowledgeProcessor = build_knowledgeProcessor({'harvard', 'radio'})
 print("Processor loaded")
 
 

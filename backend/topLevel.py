@@ -13,7 +13,7 @@ from searchers.spellingCorrector import correct
 
 # ### Table initialization ###
 print('Loading Knowledge Database')
-knowledgeSet = load("data/outData/knowledge/knowledgeSet.sav")
+knowledgeSet = load("backend/data/outData/knowledge/knowledgeSet.sav")
 print('Knowledge Database Loaded')
 database = Thicctable(knowledgeSet)
 del knowledgeSet
@@ -23,9 +23,9 @@ from searchers.searchLexer import topSearch
 loadedSet = set()
 
 # Read lists from files into thicctable
-for i, file in enumerate(listdir('data/thicctable/627amCrawl')):
+for i, file in enumerate(listdir('backend/data/thicctable/627amCrawl')):
     if not file=='.DS_Store':
-        with open(f'data/thicctable/627amCrawl/{file}', 'r', encoding='utf-8') as FileObj:
+        with open(f'backend/data/thicctable/627amCrawl/{file}', 'r', encoding='utf-8') as FileObj:
             tempList = json.loads(FileObj.read())
             for pageList in tempList:
                 pageObj = Page(pageList)
