@@ -12,10 +12,11 @@ import crawlers.htmlAnalyzer as htmlAnalyzer
 from dataStructures.simpleStructures import Metrics
 from dataStructures.objectSaver import save, load
 from models.binning.docVecs import load_model
+from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
 
 import time
 
-def scrape_urlList(urlList, folderPath, runTime=100000000, queueDepth=1000000, workerNum=20):
+def scrape_urlList(urlList, runTime=100000000, queueDepth=1000000, workerNum=20):
     """
     Rescursively crawls internet from starting urlList and ends after runTime
     seconds.
@@ -24,7 +25,8 @@ def scrape_urlList(urlList, folderPath, runTime=100000000, queueDepth=1000000, w
     # load models and datasets
     d2vModel = load_model('data/outData/binning/d2vModel.sav')
     freqDict = load('data/outData/knowledge/freqDict.sav')
-    knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
+    # knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
+    knowledgeProcessor = build_knowledgeProcessor({})
 
     # queue to hold urlList
     urlQueue = Queue(queueDepth)
@@ -49,20 +51,14 @@ def scrape_urlList(urlList, folderPath, runTime=100000000, queueDepth=1000000, w
     def worker():
         """ Scrapes popped URL from urlQueue and stores data in database"""
         while True:
-            # if time.time() >= stopTime:
-            #     print(f"\nDONE AT {time.time()}", end='\r')
-            #     with urlQueue.mutex:
-            #         urlQueue.queue.clear()
-            #     urlQueue.task_done()
-            # else:
-
             # pop top url from queue
             url = urlQueue.get()
 
             try:
-                pageObj = htmlAnalyzer.scrape_url(url, knowledgeProcessor, freqDict, d2vModel)
+                pageList = htmlAnalyzer.scrape_url(url, knowledgeProcessor, freqDict, d2vModel)
+
                 # pull list of links from pageDict and put in urlQueue
-                enqueue_urlList(pageList[4])
+                # enqueue_urlList(pageList[4])
                 # update scrape metrics
                 scrapeMetrics.add(error=False)
             except:
@@ -71,7 +67,7 @@ def scrape_urlList(urlList, folderPath, runTime=100000000, queueDepth=1000000, w
 
             # save progress every 15 items
             if (scrapeMetrics.count % 10 == 0):
-                testSimple.save(f"data/thicctable/627amCrawl/{str(scrapeMetrics.count)}")
+                testSimple.save(f"data/thicctable/nycCrawl/{str(scrapeMetrics.count)}")
                 testSimple.clear()
 
             # log progress

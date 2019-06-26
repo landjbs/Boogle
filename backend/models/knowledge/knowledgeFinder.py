@@ -73,6 +73,7 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
             tokenLocs = [(loc.span()[0], loc.span()[1]) for loc in re.finditer(token, divText, flags=re.IGNORECASE)]
             # get loc of first token usage
             firstUse = tokenLocs[0]
+            
             # spacing
             ########################
             # get page length relative to average word count (assumed 700)
