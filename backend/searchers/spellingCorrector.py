@@ -1,15 +1,15 @@
 import re
-from collections import Counter
-from dataStructures.objectSaver import load
 
 def words(text):
     return re.findall(r'\w+', text.lower())
 
-
-knowledgeSet = load('data/outData/knowledge/knowledgeSet.sav')
-WORDS = Counter(knowledgeSet)
-del knowledgeSet
-print('Spelling dict loaded')
+def build_corrector(database):
+    """
+    Builds spelling corrector based on non-empty tokens in database.
+    Words are favored in linear relationship with the length of their
+    posting lists
+    """
+    WORDS = database.all_lengths()
 
 def P(word, N=sum(WORDS.values())):
     "Probability of `word`."
