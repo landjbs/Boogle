@@ -146,7 +146,7 @@ class Thicctable():
 
     def all_lengths(self):
         """ Get length of posting list for each singe-word token in topDict """
-        return {key:(len(topDict[key])) for key in topDict if (len(key.split)==1)}
+        return {key:(len(self.topDict[key])) for key in self.topDict if (len(key.split())==1) and (len(self.topDict[key])>0)}
 
     def plot_lengths(self, outPath=""):
         """

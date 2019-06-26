@@ -1,20 +1,19 @@
 import searchers.databaseSearcher as databaseSearcher
 from models.processing.cleaner import clean_text
 from models.knowledge.knowledgeFinder import find_rawTokens
-from searchers.spellingCorrector import correction
 from dataStructures.objectSaver import load
 import re
-
+from searchers.spellingCorrector import correct
 from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
+
 
 # load knowledgeProcessor for finding tokens in search
 print('Loading Knowledge Processor')
 knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
 print("Processor loaded")
-# lexicalParser = re.compile("AND|OR")
-#
 
-def topSearch(rawSearch, database):
+
+def topSearch(rawSearch, database, WORDS):
     """
     Highest level search analyzer that takes in a raw search and decides
     which search function to employ.
@@ -23,7 +22,7 @@ def topSearch(rawSearch, database):
     """
     cleanedSearch = clean_text(rawSearch)
 
-    correctedSearch = " ".join([correction(token) if not (token[0]=='"' and token[-1]=='"') else token
+    correctedSearch = " ".join([correct(token, WORDS) if not (token[0]=='"' and token[-1]=='"') else token
                                 for token in cleanedSearch.split()])
 
     correctionDisplay = correctedSearch

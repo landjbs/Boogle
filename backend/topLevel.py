@@ -5,8 +5,7 @@ from os import listdir
 import json
 from dataStructures.pageObj import Page
 import time
-from crawlers.htmlAnalyzer import scrape_url
-
+from searchers.spellingCorrector import correct
 
 ### url Reading ###
 # urlList = list(map(lambda url:(url[:-4]), listdir('data/outData/dmozProcessed/All')[3000:40000]))
@@ -43,28 +42,16 @@ print('Sorting', end='\r')
 database.sort_all()
 print('Sorting Complete')
 
+WORDS = database.all_lengths()
+print(WORDS)
 
 def flask_search(rawSearch):
     try:
         start = time.time()
-        correctionDisplay, resultList = topSearch(rawSearch, database)
+        correctionDisplay, resultList = topSearch(rawSearch, database, WORDS)
         end = time.time()
         searchStats = (len(resultList), round((end - start), 4))
         return searchStats, correctionDisplay, resultList
-
-        # resultString = f"<u><strong>BOOGLE SEARCH</strong></u><br><i>{len(resultList)} results returned in {round(end-start, 3)} seconds!</i><br>"
-        #
-        # # inform the user if a correction was made
-        # if correctionDisplay != None:
-        #     resultString += f"Showing results for <u>{correctionDisplay}.</u><br>"
-        #
-        # resultString += "<br><ul>"
-        # # iterate through the results, adding each page to the <ul>
-        # for i, result in enumerate(resultList[:20]):
-        #     url, title, windowText = result
-        #     resultString += f"<li><u><strong>{title}</strong></u><br><i>{url}</i><br>{windowText}<br><br></li>"
-        # resultString += "</ul>"
-        # return(resultString)
 
     except Exception as e:
         print(f'ERROR: {e}')
