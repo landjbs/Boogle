@@ -6,7 +6,8 @@ built in models.knowledge.knowledgeBuilder.
 import re
 import math
 import models.knowledge.knowledgeBuilder as knowledgeBuilder
-
+import numpy as np
+import matplotlib.pyplot as plt
 
 # dict mapping html divs to score  multiplier
 divScores = {'title':6, 'h1':5, 'h2':4, 'h3':3, 'lowHeaders':2, 'description':3, 'keywords':3, 'imageAlt':2, 'all':1}
@@ -55,7 +56,7 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
     # use knowledgeProcessor to extract tokens from page text
     tokensFound = set(find_rawTokens(divText, knowledgeProcessor))
 
-    def score_token(token):
+    def score_token(token, i):
         """
         Helper to score token as function of frequency in current text relative
         to average frequency and multiplier associated with page div
@@ -73,7 +74,6 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
             tokenLocs = [(loc.span()[0], loc.span()[1]) for loc in re.finditer(token, divText, flags=re.IGNORECASE)]
             # get loc of first token usage
             firstUse = tokenLocs[0]
-            
             # spacing
             ########################
             # get page length relative to average word count (assumed 700)
@@ -105,8 +105,10 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
         return score
 
     # apply analyze_token to create dict mapping tokens to scores
-    scoreDict = {token:score_token(token) for token in tokensFound if score_token(token)>cutoff}
-    return scoreDict
+    scoreDict = {token:score_token(token, i) for i, token in enumerate(tokensFound)}
+    # filter scores below cuoff
+    filteredScores = {token: score for token, score in scoreDict.items() if score > cutoff}
+    return filteredScores
 
 
 def score_divDict(divDict, knowledgeProcessor, freqDict):

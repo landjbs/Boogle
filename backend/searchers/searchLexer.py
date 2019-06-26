@@ -23,17 +23,18 @@ def topSearch(rawSearch, database):
     """
     cleanedSearch = clean_text(rawSearch)
 
-    cleanedSearch = re.sub('statue', 'sculpture', cleanedSearch)
-
     correctedSearch = " ".join([correction(token) if not (token[0]=='"' and token[-1]=='"') else token
                                 for token in cleanedSearch.split()])
 
     correctionDisplay = correctedSearch
     # correctionDisplay = None if (cleanedSearch==correctedSearch) else correctedSearch
 
-    tokenList = find_rawTokens(correctedSearch, knowledgeProcessor)
-    print(tokenList)
+    # tokenList = find_rawTokens(correctedSearch, knowledgeProcessor)
+    tokenList = knowledgeProcessor.extract_keywords(correctedSearch)
+
+    # use single
     if (len(tokenList) == 1):
         return (correctionDisplay, databaseSearcher.single_search(tokenList[0], database))
+
     elif (len(tokenList)>1):
         return (correctionDisplay, databaseSearcher.and_search(tokenList, database))
