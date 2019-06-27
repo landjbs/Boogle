@@ -7,14 +7,16 @@ Outsoucres database definitions to thicctable.py
 
 from queue import Queue
 from threading import Thread
+import time
+from termcolor import colored
+
 from crawlers.urlAnalyzer import fix_url
 import crawlers.htmlAnalyzer as htmlAnalyzer
-from dataStructures.simpleStructures import Metrics
+from dataStructures.simpleStructures import Simple_List, Metrics
 from dataStructures.objectSaver import save, load
 from models.binning.docVecs import load_model
 from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
 
-import time
 
 def scrape_urlList(urlList, runTime=100000000, queueDepth=1000000, workerNum=20):
     """
@@ -23,10 +25,14 @@ def scrape_urlList(urlList, runTime=100000000, queueDepth=1000000, workerNum=20)
     """
 
     # load models and datasets
-    d2vModel = load_model('data/outData/binning/d2vModel.sav')
+    print(colored('Loading freqDict', color='red'), end='\r')
     freqDict = load('data/outData/knowledge/freqDict.sav')
+    print(colored('Complete: Loading freqDict', color='cyan'))
+
+    print(colored('Loading knowledgeProcessor', color='red'), end='\r')
     # knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
-    knowledgeProcessor = build_knowledgeProcessor({})
+    knowledgeProcessor = build_knowledgeProcessor({'art'})
+    print(colored('Complete: Loading knowledgeProcessor', color='cyan'))
 
     # queue to hold urlList
     urlQueue = Queue(queueDepth)
@@ -34,6 +40,7 @@ def scrape_urlList(urlList, runTime=100000000, queueDepth=1000000, workerNum=20)
     scrapedUrls = set()
     # struct to keep track of metrics
     scrapeMetrics = Metrics()
+    testSimple = Simple_List()
 
     # find time at which to stop analyzing
     stopTime = round(time.time() + runTime)
@@ -55,20 +62,22 @@ def scrape_urlList(urlList, runTime=100000000, queueDepth=1000000, workerNum=20)
             url = urlQueue.get()
 
             try:
-                pageList = htmlAnalyzer.scrape_url(url, knowledgeProcessor, freqDict, d2vModel)
-
+                pageList = htmlAnalyzer.scrape_url(url, knowledgeProcessor, freqDict)
+                print(pageList)
                 # pull list of links from pageDict and put in urlQueue
                 # enqueue_urlList(pageList[4])
                 # update scrape metrics
                 scrapeMetrics.add(error=False)
-            except:
+            except Exception as e:
+                print(e)
                 # update scrape metrics
                 scrapeMetrics.add(error=True)
 
             # save progress every 15 items
             if (scrapeMetrics.count % 10 == 0):
-                testSimple.save(f"data/thicctable/nycCrawl/{str(scrapeMetrics.count)}")
-                testSimple.clear()
+                # testSimple.save(f"data/thicctable/nycCrawl/{str(scrapeMetrics.count)}")
+                # testSimple.clear()
+                pass
 
             # log progress
             print(f"\tURLs ANALYZED: {scrapeMetrics.count} | Errors: {scrapeMetrics.errors} | Queue Size: {urlQueue.qsize()}", end="\r")
