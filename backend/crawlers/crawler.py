@@ -63,7 +63,6 @@ def scrape_urlList(urlList, runTime=100000000, queueDepth=1000000, workerNum=20)
 
             try:
                 pageList = htmlAnalyzer.scrape_url(url, knowledgeProcessor, freqDict)
-                print(pageList)
                 # pull list of links from pageDict and put in urlQueue
                 # enqueue_urlList(pageList[4])
                 # update scrape metrics

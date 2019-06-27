@@ -6,16 +6,20 @@ Bulkiest function is scrape_url which takes in a url and returns a
 page object of page info.
 """
 
+import pandas as pd
+import numpy as np
 import re # to match for patterns in pageStrings
 import time # to find the loadTime of a page
 import langid # to classify language of pageString
 from bs4 import BeautifulSoup # to parse html
 from bert_serving.client import BertClient # to assign document vectors
+from keras.models import load_model # to classify document vectors
 
 from crawlers.urlAnalyzer import fix_url, url_to_pageString, parsable
 from models.processing.cleaner import clean_text, clean_title, clean_url
 from models.knowledge.knowledgeFinder import score_divDict
-import models.binning.docVecs as docVecs
+import models.binning.docVecs as dv
+
 
 
 # matcher for all h-number tages in html text
@@ -74,6 +78,9 @@ try:
     d2vModel = BertClient()
 except:
     print('WARNING: BertClient has not been initialized. This will affect srape_url functionality.')
+
+# load classification models
+newsClassifier = load_model('data/outData/binning/newsClassifier.sav')
 
 def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
     """
@@ -162,13 +169,15 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
     windowText = description if not (description=="") else afterTitle
 
     ### VECTORIZE DOCUMENT ###
-    # pageVec = d2vModel.encode([sentence for sentence in re.split(r'!|.|?|...', afterTitle)])
+    try:
+        pageVec = d2vModel.encode([afterTitle])[0]
+        vecDF = pd.DataFrame(dv.docVec_to_dict(pageVec), index=[1]) #columns=[i for i in range(len(pageVec))]
+        newsScore = newsClassifier.predict(vecDF)
+        isNews = True if newsScore > 0.8 else False
+        print(f'{url}: {newsScore}')
+    except Exception as e:
+        print(f'ERROR: {e}')
     pageVec = {}
-    # try:
-    #     pageVec = d2vModel.encode([afterTitle])
-    # except:
-    #     print(afterTitle)
-    # print(pageVec)
 
     ### RETURN PAGE LIST ### imageNum
     return [url, cleanedTitle, knowledgeTokens, pageVec, linkList, loadTime, loadDate, windowText]

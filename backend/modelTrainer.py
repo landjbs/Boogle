@@ -34,10 +34,8 @@ def encode_folder(folderPath, folderNum, n):
             try:
                 text = fileObj.read()
                 vec = bc.encode([text])[0]
-                vecDict = {file:vec}
-                # vecDict = dv.docVec_to_dict(vec)
-                # vecDict = {0:0}
-                # vecDict.update({'folder':folderNum})
+                vecDict = dv.docVec_to_dict(vec)
+                vecDict.update({'folder':folderNum})
                 folderList.append(vecDict)
             except Exception as e:
                 print(e)
@@ -54,40 +52,12 @@ def encode_folderList(topFolderPath):
         if not folder in ['.DS_Store', 'Kids_and_school', 'All']:
             print(folder)
             folderPath = f'{topFolderPath}/{folder}'
-            if folder == 'Business':
-                vecList += encode_folder(folderPath, 1, 3) #24111
+            if folder == 'News':
+                vecList += encode_folder(folderPath, 1, 641)
             else:
-                vecList += encode_folder(folderPath, 0, 3) #1854
+                vecList += encode_folder(folderPath, 0, 14)
     return vecList
 
 vecList = encode_folderList(PATH)
-
-docVecs = {}
-
-for elt in vecList:
-    docVecs.update(elt)
-
-def score_doc(queryVec, docVec):
-    score = np.sum(queryVec * docVec) / np.linalg.norm(docVec)
-    return score
-
-while True:
-    query = input(colored('IN: ', 'red'))
-
-    queryVec = bc.encode([query])[0]
-
-    scoredDocs = [(doc, score_doc(queryVec, docVecs[doc])) for doc in docVecs]
-
-    scoredDocs.sort(key=(lambda elt : elt[-1]), reverse=True)
-
-    for i, doc in enumerate(scoredDocs):
-        print(colored(doc[1], 'blue'), end='> ')
-        print(colored(doc[0], 'cyan'), end='\n')
-        if i > 5:
-            break
-
-# vecDF = pd.DataFrame(vecList)
-#
-# vecDF.to_csv('data/outData/binning/trainingVecsBERT.csv')
-
-# vecDF = pd.read_csv('data/outData/binning/trainingVecsBERT.csv', sep=',')
+vecDF = pd.DataFrame(vecList)
+vecDF.to_csv('data/outData/binning/trainingVecsBERT.csv')
