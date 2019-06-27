@@ -169,15 +169,13 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
     windowText = description if not (description=="") else afterTitle
 
     ### VECTORIZE DOCUMENT ###
-    try:
-        pageVec = d2vModel.encode([afterTitle])[0]
-        vecDF = pd.DataFrame(dv.docVec_to_dict(pageVec), index=[1]) #columns=[i for i in range(len(pageVec))]
-        newsScore = newsClassifier.predict(vecDF)
-        isNews = True if newsScore > 0.8 else False
-        print(f'{url}: {newsScore}')
-    except Exception as e:
-        print(f'ERROR: {e}')
-    pageVec = {}
+    pageVec = d2vModel.encode([afterTitle])[0]
+    vecDF = pd.DataFrame(dv.docVec_to_dict(pageVec), index=[1])
+
+    ### RUN CLASSIFIERS ON VECTOR ENCODING ###
+    newsScore = newsClassifier.predict(vecDF)
+    isNews = True if newsScore > 0.8 else False
+
 
     ### RETURN PAGE LIST ### imageNum
     return [url, cleanedTitle, knowledgeTokens, pageVec, linkList, loadTime, loadDate, windowText]
