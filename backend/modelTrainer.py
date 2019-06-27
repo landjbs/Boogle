@@ -33,7 +33,7 @@ def encode_folder(folderPath, folderNum, n):
         with open(f'{folderPath}/{file}', 'r') as fileObj:
             try:
                 text = fileObj.read()
-                vec = bc.encode([text])[0]
+                vec = bc.encode([text)[0]
                 vecDict = dv.docVec_to_dict(vec)
                 vecDict = {0:0}
                 vecDict.update({'folder':folderNum})
