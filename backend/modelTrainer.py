@@ -16,122 +16,53 @@ from keras.layers import Dense, Activation
 from keras.utils import to_categorical
 import matplotlib.pyplot as plt
 
+from bert_serving.client import BertClient
+bc = BertClient()
+
 #  584156 URLs analyzed with 396544 errors!
 
 PATH = 'data/outData/dmozProcessed'
-#
-# for folder in os.listdir(PATH):
-#     print(folder)
-#     for i, file in enumerate(os.listdir(f"{PATH}/{folder}")):
-#         if i < 1000:
-#             with open(f"{PATH}/{folder}/{file}", 'r') as oldFile:
-#                 pageText = oldFile.read()
-#                 with open(f"{PATH}/All/{file}", 'w+') as newFile:
-#                     newFile.write(pageText)
-#                 print(f"Analyzing {i}", end="\r")
-#         else:
-#             break
-#
-#
-# dv.train_d2v(folderPath="data/outData/dmozProcessed/All",
-#             outPath="data/outData/binning/d2vModel.sav")
 
-#
-# folderNums = {folder:i for i, folder in enumerate(os.listdir(PATH))}
-# print(folderNums)
-#
-# model = dv.load_model('data/outData/binning/d2vModel.sav')
-#
-# dataList = []
-# for folder in os.listdir(PATH):
-#     if folder not in ['.DS_Store', 'All', 'News']:
-#         print(folder)
-#         for i, file in enumerate(os.listdir(f"{PATH}/{folder}")):
-#             if i < 1000n:
-#                 with open(f"{PATH}/{folder}/{file}", 'r') as oldFile:
-#                     text = clean_text(oldFile.read())
-#                     vec = dv.vectorize_document(text, model)
-#                     vecDict = dv.docVec_to_dict(vec)
-#                     vecDict.update({'folder':0})
-#                     dataList.append(vecDict)
-#                     print(f"\tVectorizing: {i}", end="\r")
-#             else:
-#                 break
-#
-# for i, file in enumerate(os.listdir("data/outData/dmozProcessed/News")):
-#     if i < 14000:
-#         with open(f"data/outData/dmozProcessed/News/{file}") as f:
-#             text = clean_text(f.read())
-#             vec = dv.vectorize_document(text, model)
-#             vecDict = dv.docVec_to_dict(vec)
-#             vecDict.update({'folder':1})
-#             dataList.append(vecDict)
-#         print(f"\tVectorizing: {i}", end="\r")
-#
-# df = pd.DataFrame(dataList)
-#
-# print(df)
-#
-# folderScores = to_categorical(df['folder'])
-# df = df.drop("folder", axis=1)
-#
-# print(df)
-# save(df, 'data/outData/binning/binaryTrainingVecs.sav')
+vecList = []
 
-# df = load('data/outData/binning/binaryTrainingVecs.sav')
-# described = df.describe()
-# std = described.loc['std']
-# plt.plot(std)
-# plt.show()
-
-#
-# model = Sequential([
-#     Dense(300, input_shape=(300,)),
-#     Activation('relu'),
-#     Dense(60),
-#     Activation('relu'),
-#     Dense(2),
-#     Activation('softmax'),
-# ])
-#
-# model.compile(optimizer='rmsprop',
-#               loss='categorical_crossentropy',
-#               metrics=['accuracy'])
-#
-# model.fit(df, folderScores, epochs=60)
-#
-# model.save('data/outData/binning/binaryModel.sav')
+def encode_folder(folderPath, folderNum, n):
+    folderList = []
+    for i, file in enumerate(os.listdir(folderPath)):
+        if i > n:
+            break
+        with open(f'{folderPath}/{file}', 'r') as fileObj:
+            try:
+                text = fileObj.read()
+                vec = bc.encode([text])[0]
+                vecDict = dv.docVec_to_dict(vec)
+                vecDict = {0:0}
+                vecDict.update({'folder':folderNum})
+                folderList.append(vecDict)
+            except Exception as e:
+                print(e)
+            print(f'\t{i}', end="\r")
+            print('\n')
+    return folderList
 
 
-# import matplotlib.pyplot as plt
-# classificationModel = load_model("data/outData/binning/binaryModel.sav")
+def encode_folderList(topFolderPath):
+    """ Uses BERT to encode files in folders under path """
+    vecList = []
+
+    for folder in os.listdir(topFolderPath):
+        if not folder in ['.DS_Store', 'Kids_and_school', 'All']:
+            print(folder)
+            folderPath = f'{topFolderPath}/{folder}'
+            if folder == 'Business':
+                vecList += encode_folder(folderPath, 1, 24111)
+            else:
+                vecList += encode_folder(folderPath, 0, 1854)
+    return vecList
+
+# vecDict = encode_folderList(PATH)
 #
-# vectorizationModel = dv.load_model("data/outData/binning/d2vModel.sav")
-# print('NEWS')
+# vecDF = pd.DataFrame(vecDict)
 #
-# newsList = [0,0]
-#
-# for i, file in enumerate(os.listdir(f"{PATH}/News")):
-#     # print(i)
-#     if i < 50:
-#         with open(f"{PATH}/News/{file}") as f:
-#             text = f.read()
-#             vec = pd.DataFrame([dv.docVec_to_dict(dv.vectorize_document(text, vectorizationModel))])
-#             predictions = classificationModel.predict(vec)
-#             if predictions[0][0] < predictions[0][1]:
-#                 print(file)
-#             newsList[0] += (predictions[0][0])
-#             newsList[1] += predictions[0][1]
-# print(newsList)
-# shoppingList = [0,0]
-# print("Shopping")
-# for i, file in enumerate(os.listdir(f"{PATH}/Shopping")):
-#     if 1050 >i > 1000:
-#         with open(f"{PATH}/Shopping/{file}") as f:
-#             text = f.read()
-#             vec = pd.DataFrame([dv.docVec_to_dict(dv.vectorize_document(text, vectorizationModel))])
-#             predictions = classificationModel.predict(vec)
-#             shoppingList[0] += (predictions[0][0])
-#             shoppingList[1] += predictions[0][1]
-# print(shoppingList)
-# plt.show()
+# vecDF.to_csv('data/outData/binning/trainingVecsBERT.csv')
+
+vecDF = pd.read_csv('data/outData/binning/trainingVecsBERT.csv', sep=',')
