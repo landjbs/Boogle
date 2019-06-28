@@ -3,7 +3,11 @@ from bert_serving.client import BertClient
 from termcolor import colored
 import numpy as np
 
-bc = BertClient()
+print(colored('Imports complete', 'cyan'))
+
+bc = BertClient(check_length=False)
+
+print(colored('Bert Config', 'cyan'))
 
 vecList = []
 
@@ -18,13 +22,19 @@ def score_doc(queryVec, docVec):
 
 while True:
     query = input(colored('IN: ', 'red'))
+    if not (query==""):
+        try:
+            queryVec = bc.encode([query])[0]
 
-    queryVec = bc.encode([query])[0]
+            scoredDocs = [(doc, score_doc(queryVec, docVecs[doc])) for doc in docVecs]
 
-    scoredDocs = [(doc, score_doc(queryVec, docVecs[doc])) for doc in docVecs]
+            scoredDocs.sort(key=(lambda elt : elt[-1]), reverse=True)
 
-    scoredDocs.sort(key=(lambda elt : elt[-1]), reverse=True)
+            for i, doc in enumerate(scoredDocs):
+                if not i > 5:
+                    print(colored(doc[1], 'blue'), end='> ')
+                    print(colored(doc[0], 'cyan'), end='\n')
 
-    for doc in scoredDocs:
-        print(colored(doc[1], 'blue'), end='> ')
-        print(colored(doc[0], 'cyan'), end='\n')
+            docVecs.update({query:queryVec})
+        except Exception as e:
+            print(f"ERROR: {e}")

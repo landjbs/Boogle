@@ -75,7 +75,7 @@ def detect_language(pageString):
     return lang
 
 try:
-    d2vModel = BertClient()
+    d2vModel = BertClient(check_length=False)
 except:
     print('WARNING: BertClient has not been initialized. This will affect srape_url functionality.')
 
