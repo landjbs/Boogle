@@ -17,13 +17,17 @@ from termcolor import colored
 import numpy as np
 
 from bert_serving.client import BertClient
-bc = BertClient()
+
+bc = BertClient(check_length=False)
 
 #  584156 URLs analyzed with 396544 errors!
 
 PATH = 'data/outData/dmozProcessed'
 
 vecList = []
+
+folderNums = {folder:i for i, folder in enumerate(os.listdir(PATH))}
+
 
 def encode_folder(folderPath, folderNum, n):
     folderList = []
@@ -53,11 +57,12 @@ def encode_folderList(topFolderPath):
             print(folder)
             folderPath = f'{topFolderPath}/{folder}'
             if folder == 'News':
-                vecList += encode_folder(folderPath, 1, 641)
+                vecList += encode_folder(folderPath, 1, 300)
             else:
-                vecList += encode_folder(folderPath, 0, 14)
+                vecList += encode_folder(folderPath, 0, 23)
     return vecList
+
 
 vecList = encode_folderList(PATH)
 vecDF = pd.DataFrame(vecList)
-vecDF.to_csv('data/outData/binning/trainingVecsBERT.csv')
+vecDF.to_csv('data/outData/binning/dmozVecsBERT.csv')

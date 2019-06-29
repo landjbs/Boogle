@@ -1,6 +1,6 @@
 from dataStructures.objectSaver import load
 from dataStructures.thicctable import Thicctable
-from crawlers.crawler import scrape_urlList
+# from crawlers.crawler import scrape_urlList
 from os import listdir
 import json
 from dataStructures.pageObj import Page
