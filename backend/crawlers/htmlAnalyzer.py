@@ -74,6 +74,8 @@ def detect_language(pageString):
     lang, score = langid.classify(pageString)
     return lang
 
+
+### LARGE SCALE CRAWLER ###
 try:
     d2vModel = BertClient(check_length=False)
 except:
@@ -81,6 +83,7 @@ except:
 
 # load classification models
 newsClassifier = load_model('data/outData/binning/newsClassifier.sav')
+
 
 def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
     """
@@ -116,16 +119,11 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
     ### VALIDATE LANGUAGE ###
     assert (detect_language(cleanedText)=='en'), f"{url} contents not in English"
 
-    ### FIND HEADERS ###
-    h1Raw =         curSoup.find_all(h1Matcher)
-    h2Raw =         curSoup.find_all(h2Matcher)
-    h3Raw =         curSoup.find_all(h3Matcher)
-    lowHeaderRaw =  curSoup.find_all(lowHeaderMatcher)
-    # join cleaned headers into space delimited string
-    h1Clean =           " ".join(str(header) for header in h1Raw)
-    h2Clean =           " ".join(str(header) for header in h2Raw)
-    h3Clean =           " ".join(str(header) for header in h3Raw)
-    lowHeaderClean =    " ".join(str(header) for header in lowHeaderRaw)
+    ### FIND HEADERS AND CAST AS CLEAN STRING ###
+    h1Raw =         " ".join(str(header) for header in curSoup.find_all(h1Matcher))
+    h2Raw =         " ".join(str(header) for header in curSoup.find_all(h2Matcher))
+    h3Raw =         " ".join(str(header) for header in curSoup.find_all(h3Matcher))
+    lowHeaderRaw =  " ".join(str(header) for header in curSoup.find_all(lowHeaderMatcher))
 
     ### FIND META DESCRIPTION ###
     try:
