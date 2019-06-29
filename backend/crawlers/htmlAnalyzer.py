@@ -145,6 +145,13 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
     except:
         imageAlts = ""
 
+    ### FIND VIDEO ALT TAGS: TO COMPLETE !!!! ###
+    try:
+        videos = curSoup.find('')
+        videoAlts = ""
+    except:
+        videoAlts = ""
+
     ### ANALYZE AND SCORE KNOWLEDGE TOKENS ###
     divDict = {'url':           clean_url(url),
                 'title':        cleanedTitle,
@@ -161,7 +168,7 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
     knowledgeTokens = score_divDict(divDict, knowledgeProcessor, freqDict)
 
     ### FIND LINKS ###
-    linkList = list(map(lambda url : fix_url(url), get_links(curSoup)))
+    linkList = list(map(lambda url:fix_url(url), get_links(curSoup)))
 
     ### SET WINDOW TEXT TO DISPLAY ###
     windowText = description if not (description=="") else afterTitle
