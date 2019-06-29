@@ -49,17 +49,3 @@ def url_to_pageString(url, timeout=5):
     pageString = page.read()
     page.close()
     return(pageString)
-
-
-def urlList_to_stringList(urlList):
-    errors = 0
-    stringList = []
-    for count, url in enumerate(urlList):
-        try:
-            urlString = url_to_string(url)
-            stringList.append(url_to_string(url))
-        except:
-            stringList.append("ERROR")
-            errors += 1
-        print(f"\t{count} urls analyzed with {errors} errors", end="\r")
-    return stringList

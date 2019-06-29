@@ -105,8 +105,8 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
     ### PROCESS TIMES ###
     # round time page took to load to 10ths
     loadTime = round(loadEnd - loadStart, ndigits=1)
-    # number of days since 1970 when page was loaded
-    loadDate = int(loadEnd / (86400))
+    # number of days since June 29 2019 when page was loaded
+    loadDate = int(loadEnd / (86400)) - 18076
 
     ### CREATE SOUP OBJECT ###
     curSoup = BeautifulSoup(rawString, 'html.parser')
