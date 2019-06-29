@@ -23,7 +23,6 @@ topString = r'(?<="Top/)[^/]+'
 topMatcher = re.compile(topString)
 
 
-
 # indexed list of top of path for mapping to number
 topList = ['Arts', 'Business', 'Computers', 'Games', 'Health', 'Home', 'News',
             'Recreation', 'Reference', 'Regional', 'Science', 'Shopping',

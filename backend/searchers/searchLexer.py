@@ -1,3 +1,8 @@
+"""
+Parses a raw search string and employs a search algorithm from
+searchers.databaseSearcher depending on lexical parsing of the query
+"""
+
 import searchers.databaseSearcher as databaseSearcher
 from models.processing.cleaner import clean_text
 from models.knowledge.knowledgeFinder import find_rawTokens
@@ -17,8 +22,6 @@ def topSearch(rawSearch, database, WORDS):
     """
     Highest level search analyzer that takes in a raw search and decides
     which search function to employ.
-    CURRENTLY: Uses databaseSearcher.single_search if search contains
-    one knowledge token, else uses databaseSearcher.and_search
     """
     cleanedSearch = clean_text(rawSearch)
 
