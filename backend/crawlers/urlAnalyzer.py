@@ -1,5 +1,7 @@
-# Responsible for cleaning URL strings and fetching page contents using
-# urllib.
+"""
+Responsible for fixing broken URL strings and fetching page
+contents using urllib.
+"""
 
 import urllib.request
 import re
