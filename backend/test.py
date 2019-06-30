@@ -2,6 +2,10 @@ import matplotlib.pyplot as plt
 from bert_serving.client import BertClient
 from termcolor import colored
 import numpy as np
+from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
+from models.knowledge.knowledgeFinder import find_rawTokens
+import re
+from scipy.spatial.distance import euclidean
 
 print(colored('Imports complete', 'cyan'))
 
@@ -9,32 +13,36 @@ bc = BertClient(check_length=False)
 
 print(colored('Bert Config', 'cyan'))
 
-vecList = []
+knowledgeSet = {'how', 'to', 'do', 'python', 'list', 'comprehension', 'in', 'iceland'}
 
-rawDocs = ['hi how are you on this beautiful day', 'i ran across the bridge over the river', 'my dog is getting fat but she is still cute']
-
-docVecs = {doc:(bc.encode([doc])[0]) for doc in rawDocs}
-
-def score_doc(queryVec, docVec):
-    score = np.sum(queryVec * docVec) / np.linalg.norm(docVec)
-    return score
+knowledgeProcessor = build_knowledgeProcessor(knowledgeSet)
 
 
-while True:
-    query = input(colored('IN: ', 'red'))
-    if not (query==""):
-        try:
-            queryVec = bc.encode([query])[0]
+document = 'how to do python list comprehension in iceland'
 
-            scoredDocs = [(doc, score_doc(queryVec, docVecs[doc])) for doc in docVecs]
+baseVec = bc.encode([document])[0]
 
-            scoredDocs.sort(key=(lambda elt : elt[-1]), reverse=True)
+# iteratively mask tokens
+foundTokens = find_rawTokens(document, knowledgeProcessor)
 
-            for i, doc in enumerate(scoredDocs):
-                if not i > 5:
-                    print(colored(doc[1], 'blue'), end='> ')
-                    print(colored(doc[0], 'cyan'), end='\n')
+scoreDict = {}
 
-            docVecs.update({query:queryVec})
-        except Exception as e:
-            print(f"ERROR: {e}")
+maskToken = '<MASK>'
+
+for token in foundTokens:
+    print(colored(f'\t{token}', 'red'), end=' | ')
+    tempDoc = re.sub(token, maskToken, document)
+    print(f'\t{tempDoc}')
+    tempVec = bc.encode([tempDoc])[0]
+    dist = euclidean(baseVec, tempVec)
+    print(colored(dist, 'green'))
+    scoreDict.update({token:dist})
+
+plt.bar(scoreDict.keys(), scoreDict.values())
+plt.ylabel('Euclidean Distance from Base Vector')
+plt.title(f'Tokens Iteratively Replaced With "{maskToken}"')
+plt.show()
+
+# def score_doc(queryVec, docVec):
+#     score = np.sum(queryVec * docVec) / np.linalg.norm(docVec)
+#     return score
