@@ -13,7 +13,6 @@ bc = BertClient(check_length=False)
 
 print(colored('Bert Config', 'cyan'))
 
-
 def vectorize_masked_tokens(document, maskToken='', knowledgeProcessor=None, scoringMethod='euclidean', disp=False):
     """
     Iteratively masks all knowledge tokens in document string and determines
@@ -53,7 +52,7 @@ def vectorize_masked_tokens(document, maskToken='', knowledgeProcessor=None, sco
         maskedDoc = re.sub(token, maskToken, document)
         maskedVec = bc.encode([maskedDoc])[0]
         score = calc_score(maskedVec, baseVec)
-        print(colored(dist, 'green'))
+        print(colored(score, 'green'))
         scoreDict.update({token:score})
 
     if disp:
@@ -63,3 +62,6 @@ def vectorize_masked_tokens(document, maskToken='', knowledgeProcessor=None, sco
         plt.show()
 
     return scoreDict
+
+
+vectorize_masked_tokens('iceland time')
