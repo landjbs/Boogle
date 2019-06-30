@@ -13,30 +13,6 @@ bc = BertClient(check_length=False)
 
 print(colored('Bert Config', 'cyan'))
 
-knowledgeSet = {'how', 'to', 'do', 'python', 'list', 'comprehension', 'in', 'iceland'}
-
-knowledgeProcessor = build_knowledgeProcessor(knowledgeSet)
-
-
-document = 'how to do python list comprehension in iceland'
-
-baseVec = bc.encode([document])[0]
-
-# iteratively mask tokens
-foundTokens = find_rawTokens(document, knowledgeProcessor)
-
-scoreDict = {}
-
-maskToken = '<MASK>'
-
-for token in foundTokens:
-
-    tempVec = bc.encode([tempDoc])[0]
-    dist = euclidean(baseVec, tempVec)
-
-    scoreDict.update({token:dist})
-
-
 
 def vectorize_masked_tokens(document, maskToken='', knowledgeProcessor=None, scoringMethod='euclidean', disp=False):
     """
