@@ -6,12 +6,45 @@ from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
 from models.knowledge.knowledgeFinder import find_rawTokens
 import re
 from scipy.spatial.distance import euclidean
-
+from sklearn.metrics.pairwise import cosine_similarity
 print(colored('Imports complete', 'cyan'))
 
-bc = BertClient(check_length=False)
 
+bc = BertClient(check_length=False)
 print(colored('Bert Config', 'cyan'))
+
+
+# def bert_parse(rawString):
+    #
+    # possibleOperators = re.compile(r'[+|-|==|?]')
+    #
+    # tokens = rawString.split()
+    #
+    # assert ((tokens % 3) != 0)), "inputs must be divisible by 3"
+    #
+    # for i in range(len(tokens) * 3):
+    #
+
+def bert_arthimetic(inStr):
+    """ inStr must have form 'TERM_1 [+|-] TERM_2 '"""
+    splitStrs = inStr.split()
+    numTokens = len(splitStrs)
+
+    if (numTokens==1):
+        return bc.encode(splitStrs)[0]
+
+    elif (numTokens==3):
+        operator = splitStrs[1]
+        vecs = bc.encode([splitStrs[0], splitStrs[2]])
+        # identify arthimetic method
+        if (operator=='+'):
+            return np.add(vecs[0], vecs[1])
+        elif (operator=='-'):
+            return np.subtract(vecs[0], vecs[1])
+        else:
+            raise ValueError('Invalid operator')
+
+
 
 def vectorize_masked_tokens(document, maskToken='', knowledgeProcessor=None, scoringMethod='euclidean', disp=False):
     """
@@ -64,4 +97,13 @@ def vectorize_masked_tokens(document, maskToken='', knowledgeProcessor=None, sco
     return scoreDict
 
 
-vectorize_masked_tokens('iceland time')
+
+while True:
+    doc1 = input("Document 1: ")
+    vec1 = np.asarray(bert_arthimetic(doc1))
+    doc2 = input("Document 2: ")
+    vec2 = np.asarray(bert_arthimetic(doc2))
+
+    score = euclidean(vec1, vec2)
+    print(score)
+    # vectorize_masked_tokens(document, maskToken="<MASK>", scoringMethod='dot', disp=True)
