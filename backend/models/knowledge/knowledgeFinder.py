@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # dict mapping html divs to score  multiplier
-divScores = {'title':6, 'h1':5, 'h2':4, 'h3':3, 'lowHeaders':2, 'description':3, 'keywords':3, 'imageAlt':2, 'all':1}
+divMultipiers = {'title':6, 'h1':5, 'h2':4, 'h3':3, 'lowHeaders':2, 'description':3, 'keywords':3, 'imageAlt':2, 'all':1}
 
 
 def find_rawTokens(inStr, knowledgeProcessor):
@@ -53,9 +53,11 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
     """
     # find number of words in divText
     divLen = len(divText.split())
+    # find multiplier related to div
+    divMultipier = divMultipiers[div]
+
     # use knowledgeProcessor to extract tokens from page text
     tokensFound = set(find_rawTokens(divText, knowledgeProcessor))
-
 
     def score_token(token i):
         """
@@ -63,6 +65,26 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
         """
         # find number of occurences of a token in divText
         tokenNum = knowledgeBuilder.count_token(token, divText)
+
+        # calculate usage frequency of token in current div
+        tokenFreq = tokenNum / divLen
+
+        # get term and document frequency of token in freqDict built on scraped data
+        try:
+            termFreq, docFreq = freqDict[token]
+        except:
+            termFreq, docFreq = 0, 0
+
+        # normalize tokenFreq using a tf-idf schema
+        ##### NOT IMP YET !!!!! #######
+        normedFreq = tokenFreq
+
+        # tokens with negative normedFreq will automatically have scores of 0
+        if normedFreq <= 0:
+            return 0
+
+        # apply div multiplier to boost tokens in important divs
+
 
     def score_token(token, i):
         """
