@@ -39,6 +39,7 @@ def find_countedTokens(inStr, knowledgeProcessor):
     """
     Finds dict mapping tokens used in inStr to number of times used.
     Does not normalize by length, div, or average frequency.
+    Subtokens should be given 3/4 the weighting of full tokens
     """
     tokensFound = find_rawTokens(inStr)
     return {token:knowledgeBuilder.count_token(token, inStr) for token in tokensFound}
@@ -63,10 +64,9 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
         """
         Helper to score individual token in current div
         """
+
         ### FIND TOKEN FREQUENCY ###
-        # find number of occurences of a token in divText
         tokenNum = knowledgeBuilder.count_token(token, divText)
-        # calculate usage frequency of token in current div
         tokenFreq = tokenNum / divLen
 
         ### NORMALIZE TOKEN FREQUENCY ###
@@ -85,14 +85,17 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
 
         ### APPLY DIV-SPECIFIC SCORING MODELS ###
         if (div=='all'):
+            ### TOKEN DISTRIBUTION SCORING ###
             # find start and end location of each token usage in the text
             tokenLocs = [(loc.span()[0], loc.span()[1]) for loc in re.finditer(token, divText, flags=re.IGNORECASE)]
             # get loc of first token usage
             firstUse = tokenLocs[0]
+
+            ### RELATIVE LENGTH SCORING ###
             # get page length relative to average word count (assumed 700)
-            relativeLength = divLen / 700
+            relativeLen = divLen / 700
             # use sigmoid function on relative length to benefit longer pages with equal token freq to shorter (multiplier asymptotes at 1 and ~5)
-            lengthMultiplier = (math.exp(0.25 * relativeLength) / (math.exp(0.25 * (relativeLength - 5.2)) + 1)) + 1
+            lengthMultiplier = (math.exp(0.25 * relativeLen) / (math.exp(0.25 * (relativeLen - 5.2)) + 1)) + 1
             tokenFrequency *= lengthMultiplier
 
         ### DIV MULTIPLICATION
@@ -106,7 +109,7 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
 
     # filter scores below cuoff
     filteredScores = {token: score for token, score in scoreDict.items() if score > cutoff}
-    
+
     return filteredScores
 
 
