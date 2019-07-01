@@ -59,7 +59,7 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
     # use knowledgeProcessor to extract tokens from page text
     tokensFound = set(find_rawTokens(divText, knowledgeProcessor))
 
-    def score_token(token i):
+    def score_token(token):
         """
         Helper to score individual token in current div
         """
@@ -101,53 +101,12 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
 
         return score
 
-    def score_token(token, i):
-        """
-        Helper to score token as function of frequency in current text relative
-        to average frequency and multiplier associated with page div
-        """
-        # find number of occurences of a token in divText
-        tokenNum = knowledgeBuilder.count_token(token, divText)
-        # find frequency of token usage in divText
-        tokenFrequency = (tokenNum / divLen)
-
-        ### DIV SPECIFIC SCORING ###
-        # if div is all, score the token based on how close it is to the start and benefit longer pages
-        if (div=='all'):
-            ########################
-            # find start and end location of each token usage in the text
-            tokenLocs = [(loc.span()[0], loc.span()[1]) for loc in re.finditer(token, divText, flags=re.IGNORECASE)]
-
-            # spacing
-            ########################
-
-
-        # find average frequency of token from freqDict; if no key in freqDict, avgFreq <- 0
-        try:
-            avgFreq = freqDict[token]
-        except:
-            avgFreq = 0
-
-        # normalize observed frequency by subtracting average frequency
-        normFreq = tokenFrequency - avgFreq
-        # if normalized frequency is less than or equal to zero, score is zero
-        if normFreq <= 0:
-            score = 0
-        else:
-            # find the multiplier for the page div from divScores, 0 if not specified
-            try:
-                divMultipier = divScores[div]
-            except:
-                divMultipier = 1
-            # token score is normalized frequency times div multiplier
-            score = (normFreq ** (1/3)) * divMultipier
-
-        return score
-
     # apply analyze_token to create dict mapping tokens to scores
-    scoreDict = {token:score_token(token, i) for i, token in enumerate(tokensFound)}
+    scoreDict = {token:score_token(token) for token in tokensFound}
+
     # filter scores below cuoff
     filteredScores = {token: score for token, score in scoreDict.items() if score > cutoff}
+    
     return filteredScores
 
 
