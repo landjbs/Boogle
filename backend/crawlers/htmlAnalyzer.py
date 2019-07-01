@@ -6,27 +6,32 @@ Bulkiest function is scrape_url which takes in a url and returns a
 page object of page info.
 """
 
-import pandas as pd
-import numpy as np
 import re # to match for patterns in pageStrings
 import time # to find the loadTime of a page
 import langid # to classify language of pageString
 from bs4 import BeautifulSoup # to parse html
 from bert_serving.client import BertClient # to assign document vectors
+import pandas as pd # to format document vectors for classification
 from keras.models import load_model # to classify document vectors
 
 from crawlers.urlAnalyzer import fix_url, url_to_pageString, parsable
 from models.processing.cleaner import clean_text, clean_title, clean_url
 from models.knowledge.knowledgeFinder import score_divDict
-import models.binning.docVecs as dv
 
-
-
-# matcher for all h-number tages in html text
+# matchers for header tags in html text
 h1Matcher = re.compile('^h1$')
 h2Matcher = re.compile('^h2$')
 h3Matcher = re.compile('^h3$')
 lowHeaderMatcher = re.compile('^h[4-6$]')
+
+# establish connection with bert sever if running
+try:
+    d2vModel = BertClient(check_length=False)
+except:
+    print('WARNING: BertClient has not been initialized. This will affect srape_url functionality.')
+
+# load classification models
+newsClassifier = load_model('data/outData/binning/newsClassifier.sav')
 
 
 def clean_pageText(rawText, title):
@@ -73,16 +78,6 @@ def detect_language(pageString):
     """ Detects language of a pageString """
     lang, score = langid.classify(pageString)
     return lang
-
-
-### LARGE SCALE CRAWLER ###
-try:
-    d2vModel = BertClient(check_length=False)
-except:
-    print('WARNING: BertClient has not been initialized. This will affect srape_url functionality.')
-
-# load classification models
-newsClassifier = load_model('data/outData/binning/newsClassifier.sav')
 
 
 def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
@@ -180,6 +175,8 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
     ### RUN CLASSIFIERS ON VECTOR ENCODING ###
     newsScore = newsClassifier.predict(vecDF)
     isNews = True if newsScore > 0.8 else False
+
+    ### CALC BASE SCORE OF PAGE ###
 
 
     ### RETURN PAGE LIST ### imageNum

@@ -56,15 +56,13 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
     divLen = len(divText.split())
     # find multiplier related to div
     divMultipier = divMultipiers[div]
-
-    # use knowledgeProcessor to extract tokens from page text
+    # use knowledgeProcessor to extract tokens from divText
     tokensFound = set(find_rawTokens(divText, knowledgeProcessor))
 
     def score_token(token):
         """
         Helper to score individual token in current div
         """
-
         ### FIND TOKEN FREQUENCY ###
         tokenNum = knowledgeBuilder.count_token(token, divText)
         tokenFreq = tokenNum / divLen
