@@ -83,6 +83,9 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
         if normedFreq <= 0:
             return 0
 
+        # apply sublinear scaling normedFreq to reduce impact of token-spamming
+        scaledFreq = 1 + np.log(normedFreq)
+
         ### APPLY DIV-SPECIFIC SCORING MODELS ###
         if (div=='all'):
             ### TOKEN DISTRIBUTION SCORING ###
@@ -96,7 +99,7 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
             relativeLen = divLen / 700
             # use sigmoid function on relative length to benefit longer pages with equal token freq to shorter (multiplier asymptotes at 1 and ~5)
             lengthMultiplier = (math.exp(0.25 * relativeLen) / (math.exp(0.25 * (relativeLen - 5.2)) + 1)) + 1
-            tokenFrequency *= lengthMultiplier
+            normedFreq *= lengthMultiplier
 
         ### DIV MULTIPLICATION
         # apply div multiplier to boost tokens in important divs
