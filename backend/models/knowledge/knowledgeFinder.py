@@ -63,12 +63,13 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
         """
         Helper to score individual token in current div
         """
+        ### FIND TOKEN FREQUENCY ###
         # find number of occurences of a token in divText
         tokenNum = knowledgeBuilder.count_token(token, divText)
-
         # calculate usage frequency of token in current div
         tokenFreq = tokenNum / divLen
 
+        ### NORMALIZE TOKEN FREQUENCY ###
         # get term and document frequency of token in freqDict built on scraped data
         try:
             termFreq, docFreq = freqDict[token]
@@ -76,15 +77,29 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
             termFreq, docFreq = 0, 0
 
         # normalize tokenFreq using a tf-idf schema
-        ##### NOT IMP YET !!!!! #######
         normedFreq = tokenFreq
 
         # tokens with negative normedFreq will automatically have scores of 0
         if normedFreq <= 0:
             return 0
 
-        # apply div multiplier to boost tokens in important divs
+        ### APPLY DIV-SPECIFIC SCORING MODELS ###
+        if (div=='all'):
+            # find start and end location of each token usage in the text
+            tokenLocs = [(loc.span()[0], loc.span()[1]) for loc in re.finditer(token, divText, flags=re.IGNORECASE)]
+            # get loc of first token usage
+            firstUse = tokenLocs[0]
+            # get page length relative to average word count (assumed 700)
+            relativeLength = divLen / 700
+            # use sigmoid function on relative length to benefit longer pages with equal token freq to shorter (multiplier asymptotes at 1 and ~5)
+            lengthMultiplier = (math.exp(0.25 * relativeLength) / (math.exp(0.25 * (relativeLength - 5.2)) + 1)) + 1
+            tokenFrequency *= lengthMultiplier
 
+        ### DIV MULTIPLICATION
+        # apply div multiplier to boost tokens in important divs
+        score = normedFreq * divMultipier
+
+        return score
 
     def score_token(token, i):
         """
@@ -102,15 +117,10 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
             ########################
             # find start and end location of each token usage in the text
             tokenLocs = [(loc.span()[0], loc.span()[1]) for loc in re.finditer(token, divText, flags=re.IGNORECASE)]
-            # get loc of first token usage
-            firstUse = tokenLocs[0]
+
             # spacing
             ########################
-            # get page length relative to average word count (assumed 700)
-            relativeLength = divLen / 700
-            # use sigmoid function on relative length to benefit longer pages with equal token freq to shorter (multiplier asymptotes at 1 and ~5)
-            lengthMultiplier = (math.exp(0.25 * relativeLength) / (math.exp(0.25 * (relativeLength - 5.2)) + 1)) + 1
-            tokenFrequency *= lengthMultiplier
+
 
         # find average frequency of token from freqDict; if no key in freqDict, avgFreq <- 0
         try:
