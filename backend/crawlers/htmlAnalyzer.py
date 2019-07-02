@@ -15,7 +15,7 @@ from crawlers.urlAnalyzer import fix_url, url_to_pageString, parsable
 from models.processing.cleaner import clean_text, clean_title, clean_url
 from models.knowledge.knowledgeFinder import score_divDict
 from models.binning.classification import classify_page
-from models.binning.docVecs import vectorize_all
+from models.binning.docVecs import vectorize_all, docVec_to_dict
 from models.ranking.baseRanker import calc_base_score
 
 # matchers for header tags in html text
@@ -106,10 +106,10 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
     assert (detect_language(cleanedText)=='en'), f"{url} contents not in English"
 
     ### FIND HEADERS AND CAST AS CLEAN STRING ###
-    h1Raw =         " ".join(str(header) for header in curSoup.find_all(h1Matcher))
-    h2Raw =         " ".join(str(header) for header in curSoup.find_all(h2Matcher))
-    h3Raw =         " ".join(str(header) for header in curSoup.find_all(h3Matcher))
-    lowHeaderRaw =  " ".join(str(header) for header in curSoup.find_all(lowHeaderMatcher))
+    h1 =         " ".join(str(header) for header in curSoup.find_all(h1Matcher))
+    h2 =         " ".join(str(header) for header in curSoup.find_all(h2Matcher))
+    h3 =         " ".join(str(header) for header in curSoup.find_all(h3Matcher))
+    lowHeader =  " ".join(str(header) for header in curSoup.find_all(lowHeaderMatcher))
 
     ### FIND META DESCRIPTION ###
     try:
@@ -141,10 +141,10 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
     ### ANALYZE AND SCORE KNOWLEDGE TOKENS ###
     divDict = {'url':           clean_url(url),
                 'title':        cleanedTitle,
-                'h1':           clean_text(h1Clean),
-                'h2':           clean_text(h2Clean),
-                'h3':           clean_text(h3Clean),
-                'lowHeaders':   clean_text(lowHeaderClean),
+                'h1':           clean_text(h1),
+                'h2':           clean_text(h2),
+                'h3':           clean_text(h3),
+                'lowHeaders':   clean_text(lowHeader),
                 'description':  clean_text(description),
                 'keywords':     clean_text(keywords),
                 'imageAlt':     clean_text(imageAlts),
