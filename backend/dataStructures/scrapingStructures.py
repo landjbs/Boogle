@@ -3,7 +3,24 @@ Defines threadsafe data structures for temporary storage of information during
 multithreraded webcrawling.
 """
 
+from queue import Queue
 import json
+
+class SaverQueue(Queue):
+    """ Thread safe list that saves to outPath when full """
+    def __init__(self, maxSize, outPath):
+        self.outPath = outPath
+        self.data = Queue(maxSize)
+
+    def add(self, elt):
+        if self.data.full():
+            print('FULL')
+        else:
+            self.data.put(elt)
+
+    # def clear(self):
+    #     self.data
+
 
 class Simple_List():
     """ Class reimplementing list for easy threading """
