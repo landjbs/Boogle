@@ -23,15 +23,6 @@ h2Matcher = re.compile('^h2$')
 h3Matcher = re.compile('^h3$')
 lowHeaderMatcher = re.compile('^h[4-6$]')
 
-# establish connection with bert sever if running
-try:
-    d2vModel = BertClient(check_length=False)
-except:
-    print('WARNING: BertClient has not been initialized. This will affect srape_url functionality.')
-
-# load classification models
-
-
 
 def clean_pageText(rawText, title):
     """

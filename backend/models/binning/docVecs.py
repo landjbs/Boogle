@@ -15,84 +15,26 @@ import multiprocessing # for faster model training
 import matplotlib.pyplot as plt
 from os import listdir
 
+bc = BertClient(check_length=False)
 
 
-def vector_tokenize(inStr):
+def vectorize_all(document):
     """
-    Converts string to clean, lowercase list of tokens.
-    Specifically intended for vectorization after knowledgeTokenization.
+    Vectorizes entire document in single 1024 dim vector using BertClient
     """
-    # lowercase inStr, filter out common stop words and numerics
-    cleanStr = strip_numeric(remove_stopwords(inStr.lower()))
-    # tokenize cleanStr by whitespace
-    tokens = nltk.tokenize.word_tokenize(cleanStr)
-    return tokens
-
-
-def train_d2v(folderPath, outPath='d2vModel.sav', max_epochs=100, vec_size=300, alpha=0.025):
-    """
-    Trains doc vec model contents of folderPath of raw docs and saves model to outPath
-    """
-    print(f"\n{'-'*40}\nTraining '{outPath}' model:")
-
-    def tag_doc(file, index):
-        """
-        Helper to tag documents with unique int (index of doc in folder)
-        """
-        with open(f"{folderPath}/{file}") as FileObj:
-            text = FileObj.read()
-            tokenized_text = vector_tokenize(text)
-        print(f"\tAnalyzing: {index}", end="\r")
-        return TaggedDocument(words=tokenized_text, tags=[str(index)])
-
-    # create list of tagged texts from files in folderPath
-    tagged_data = [tag_doc(file, i) for i, file in enumerate(listdir(folderPath))]
-
-    # list mapping list of document tokens to unique integer tag
-    print(f"\tData Tagged (length={len(tagged_data)})")
-
-    # initialize cores for fast model training
-    cores = multiprocessing.cpu_count()
-
-    # initialize model
-    model = Doc2Vec(vector_size=vec_size,
-                    alpha=alpha,
-                    min_alpha=0.00025,
-                    min_count=1,
-                    dm=1,
-                    workders=cores)
-
-    # build vector of all words contained in tagged data
-    model.build_vocab(tagged_data)
-    print(f"\tVocab Built\n\tModel Training for {max_epochs} epochs")
-
-    # train model for max_epochs
-    for epoch in range(max_epochs):
-        print(f'\t\tEpoch: {epoch}', end="\r")
-        model.train(tagged_data,
-                    # signify that tagged_data is what was used to build vocab
-                    total_examples=model.corpus_count,
-                    # signify that train is only called once for efficiency
-                    epochs=model.iter)
-        # decrease the learning rate
-        model.alpha -= 0.0002
-        # fix the learning rate, no decay
-        model.min_alpha = model.alpha
-
-    # save model to outPath
-    model.save(outPath)
-    print(f"Model saved to '{outPath}'.\n{'-'*40}")
-
-
-def load_model(path):
-    """ Loads gensim model from path to avoid re-importing Doc2Vec """
-    return Doc2Vec.load(path)
-
-
-def vectorize_document(doc, model):
-    """ Vectorizes document with d2v model stored at modelPath """
     # return document vector for tokenized input doc
-    return model.infer_vector(vector_tokenize(doc))
+    return bc.encode([document])[0]
+
+
+def vectorize_n_split(document, n):
+    """
+    Vectorizes document as matrix of vector embeddings of n fractions of the
+    document.
+    """
+    # find size of chunk necessary to fully encode doument in n parts
+    chunkSize = len(document) / n
+    ### TO COMPLETE ###
+    return None
 
 
 def docVec_to_dict(docVec):
@@ -109,32 +51,3 @@ def visualize_vecDict(vecDict):
     plt.xlabel('Vector Dimensions')
     plt.ylabel('Document Value')
     plt.show()
-
-
-# Train imdb model #
-# textList = []
-# for doc in os.listdir('data/inData/imdbData.in/train/neg/'):
-#     with open('data/inData/imdbData.in/train/neg/' + doc, 'r') as file:
-#         text = "".join([line for line in file])
-#         textList.append(text)
-#
-# for doc in os.listdir('data/inData/imdbData.in/train/pos'):
-#     with open('aclImdb/train/pos/' + doc, 'r') as file:
-#         text = "".join([line for line in file])
-#         textList.append(text)
-#
-#
-# train_d2v(textList)
-
-
-
-
-
-
-
-
-
-
-
-
-pass
