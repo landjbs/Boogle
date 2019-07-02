@@ -19,6 +19,7 @@ from flashtext import KeywordProcessor
 from dataStructures.objectSaver import save, load
 from models.processing.cleaner import clean_text, clean_wiki
 from collections import Counter
+from numpy import log
 
 
 ## Functions ##
@@ -84,35 +85,49 @@ def build_freqDict(folderPath, knowledgeProcessor, outPath=""):
     """
     Args: folderPath to folder containing files from which to read,
     knowledgeProcessor for token extraction.
-    Returns: dict mapping knowledge tokens to average frequency of occurence in
-    files. Only tokens found in files will have associated frequency.
+    Returns: dict mapping knowledge tokens to tuple of (termFreq, docFreq)
+    observed in documents.
+        termFreq = (number of times a token is used) / (number of words used)
+        docFreq = log ((number of documents) / (number of documents in which a token appears))
     """
-    # initialize counter to map knowledge token to raw number of occurences
+    # initialize counter to map knowledge tokens to raw number of occurences
     tokenCounts = Counter()
+    # initialize counter to map knowledge tokens to number of docs they appear in
+    tokenAppearances = Counter()
     # initialize variable to keep track of total number of words used
     totalLength = 0
+
     # find and iterate over list of files within folderPath
     for i, file in enumerate(os.listdir(folderPath)):
         print(f"\t{i}", end='\r')
-        if i > 1000:
+        if i > 10:
             break
         with open(f"{folderPath}/{file}") as FileObj:
             # read in the current file
             text = FileObj.read()
-            # find tokens in the current file
+            # find both greedy and subtokens in text
             tokensFound = list(knowledgeProcessor.extract_keywords(text))
             # find dict mapping tokens to use number in text
             curCounts = {token:count_token(token, text) for token in tokensFound}
-            # add tokens counts to wordCounts counter
+            # add tokens counts to tokenCounts counter
             tokenCounts.update(curCounts)
+            # add single appearance for token in tokenAppearances
+            tokenAppearances.update(token)
             # find number of words in the current file
             textLen = len(text.split())
             # add number of words in current file to totalLength
             totalLength += textLen
 
+    # lambdas for calculating termFreq and docFreq
+    calc_termFreq = lambda tokenCount : tokenCount / totalLength
+    calc_docFreq = lambda tokenAppearance : log(tokenAppearance / i)
+
     # use total num to normalize tokenCounts and find frequency for each token
-    freqDict = {token:(tokenCounts[token]/totalLength) for token in tokenCounts}
+    freqDict = {token: (calc_termFreq(tokenCounts[token]),
+                        calc_docFreq(tokenAppearances[token]))
+                for token in tokenCounts}
 
     if (outPath != ""):
         save(freqDict, outPath)
+
     return freqDict
