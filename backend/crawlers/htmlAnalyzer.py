@@ -15,6 +15,7 @@ from crawlers.urlAnalyzer import fix_url, url_to_pageString, parsable
 from models.processing.cleaner import clean_text, clean_title, clean_url
 from models.knowledge.knowledgeFinder import score_divDict
 from models.binning.classification import classify_page
+from models.binning.docVecs import vectorize_all
 from models.ranking.baseRanker import calc_base_score
 
 # matchers for header tags in html text
@@ -159,7 +160,7 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
     windowText = description if not (description=="") else afterTitle
 
     ### VECTORIZE AND CLASSIFY DOCUMENT ###
-    pageVec = d2vModel.encode([afterTitle])[0]
+    pageVec = vectorize_all(afterTitle)
     category = classify_page(pageVec)
 
     ### CALC BASE SCORE OF PAGE ###
