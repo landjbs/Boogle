@@ -15,7 +15,7 @@ from crawlers.urlAnalyzer import fix_url, url_to_pageString, parsable
 from models.processing.cleaner import clean_text, clean_title, clean_url
 from models.knowledge.knowledgeFinder import score_divDict
 from models.binning.classification import classify_page
-from models.binning.docVecs import vectorize_all, docVec_to_dict
+from models.binning.docVecs import vectorize_all
 from models.ranking.baseRanker import calc_base_score
 
 # matchers for header tags in html text
