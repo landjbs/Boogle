@@ -10,7 +10,6 @@ import re # to match for patterns in pageStrings
 import time # to find the loadTime of a page
 import langid # to classify language of pageString
 from bs4 import BeautifulSoup # to parse html
-from bert_serving.client import BertClient # to assign document vectors
 
 from crawlers.urlAnalyzer import fix_url, url_to_pageString, parsable
 from models.processing.cleaner import clean_text, clean_title, clean_url
