@@ -158,14 +158,16 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
 
     ### SET WINDOW TEXT TO DISPLAY ###
     windowText = description if not (description=="") else afterTitle
-    windowText = "No Information Availiable For This Page" if (windowText=="") else windowText
+    assert (windowText != ""), f"{url} has no windowText"
 
     ### VECTORIZE AND CLASSIFY DOCUMENT ###
-    pageVec = vectorize_all(afterTitle)
-    category = classify_page(pageVec)
+    # pageVec = vectorize_all(afterTitle)
+    # category = classify_page(pageVec)
+    pageVec = {}
+    category = 'news'
 
     ### CALC BASE SCORE OF PAGE ###
-    baseScore = calc_base_score(loadTime)
+    # baseScore = calc_base_score(loadTime)
 
     ### RETURN PAGE LIST ### imageNum
     return [url, cleanedTitle, knowledgeTokens, pageVec, linkList, loadTime, loadDate, windowText]

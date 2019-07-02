@@ -34,12 +34,14 @@ for i, url in enumerate(urlList):
         print(f'\tERROR: {e}')
     print(f'Scraping {i}')
 
+database.sort_all()
+
 
 while True:
     search = input('search: ')
     try:
         results = database.search_display(search, [search])
-        for result in results:
-            print(f"\t{result[0]}\n\t{result[1]}\n\t{result[2]}\n\n")
+        for i, result in enumerate(results):
+            print(f"\t{i}: {result[0]}\n\t{result[1]}\n\t\n\n")
     except:
         pass
