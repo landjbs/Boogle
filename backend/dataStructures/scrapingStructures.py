@@ -1,5 +1,7 @@
-# Defines class for wide column store of web data gathered in crawler.py
-####### TO BE UPDATED ########
+"""
+Defines threadsafe data structures for temporary storage of information during
+multithreraded webcrawling.
+"""
 
 import json
 
