@@ -17,6 +17,7 @@ from keras.models import load_model # to classify document vectors
 from crawlers.urlAnalyzer import fix_url, url_to_pageString, parsable
 from models.processing.cleaner import clean_text, clean_title, clean_url
 from models.knowledge.knowledgeFinder import score_divDict
+from models.ranking.baseRanker import calc_base_score
 
 # matchers for header tags in html text
 h1Matcher = re.compile('^h1$')
@@ -174,10 +175,10 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
 
     ### RUN CLASSIFIERS ON VECTOR ENCODING ###
     newsScore = newsClassifier.predict(vecDF)
-    isNews = True if newsScore > 0.8 else False
+    category = 'News' if newsScore > 0.8 else 'Other'
 
     ### CALC BASE SCORE OF PAGE ###
-
+    baseScore = calc_base_score(loadTime)
 
     ### RETURN PAGE LIST ### imageNum
     return [url, cleanedTitle, knowledgeTokens, pageVec, linkList, loadTime, loadDate, windowText]
