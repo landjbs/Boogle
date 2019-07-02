@@ -7,11 +7,11 @@ from models.knowledge.knowledgeFinder import find_rawTokens
 import re
 from scipy.spatial.distance import euclidean
 from sklearn.metrics.pairwise import cosine_similarity
+import pandas as pd
 print(colored('Imports complete', 'cyan'))
 
-from os import system
-
-# system('bert-serving-start -model_dir /Users/landonsmith/Desktop/uncased_L-24_H-1024_A-16 -num_worker=1')
+# import appscript
+# appscript.app('Terminal').do_script('bert-serving-start -model_dir /Users/landonsmith/Desktop/uncased_L-24_H-1024_A-16 -num_worker=1')
 
 
 bc = BertClient(check_length=False)
@@ -95,15 +95,27 @@ def word_vs_sentence(document):
 
     docVec = bc.encode([document])[0]
 
-    for token in tokens:
-        tokenVec = bc.encode([token])[0]
-        score = euclidean(docVec, tokenVec)
-        print(colored(token, 'red'), colored(score, 'cyan'))
+    vecList = [bc.encode([token])[0] for token in tokens]
+
+    maxList = []
+
+    for i, vec in enumerate(vecList):
+        cumDist = np.sum([euclidean(vec, other) for other in vecList])
+        print(tokens[i], cumDist)
+        maxList.append((cumDist, tokens[i]))
+
+    print(f"\n{max(maxList)}\n")
+
+    # for token in tokens:
+    #     tokenVec = bc.encode([token])[0]
+    #     score = np.sum(docVec * tokenVec) / np.linalg.norm(docVec)
+    #     print(colored(token, 'red'), colored(score, 'cyan'))
 
 
 
 
 while True:
     doc = input('Doc: ')
-    print(word_vs_sentence(doc))
-    # vectorize_masked_tokens(document, maskToken="<MASK>", scoringMethod='dot', disp=True)
+    # print(word_vs_sentence(doc))
+    vectorize_masked_tokens(doc, maskToken="><><><><>", knowledgeProcessor=build_knowledgeProcessor({'twenty', 'single'}), 
+                            scoringMethod='euclidean', disp=True)

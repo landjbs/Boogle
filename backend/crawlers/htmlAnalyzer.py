@@ -158,6 +158,7 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
 
     ### SET WINDOW TEXT TO DISPLAY ###
     windowText = description if not (description=="") else afterTitle
+    windowText = "No Information Availiable For This Page" if (windowText=="") else windowText
 
     ### VECTORIZE AND CLASSIFY DOCUMENT ###
     pageVec = vectorize_all(afterTitle)
