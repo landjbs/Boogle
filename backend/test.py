@@ -9,21 +9,14 @@ from scipy.spatial.distance import euclidean
 from sklearn.metrics.pairwise import cosine_similarity
 print(colored('Imports complete', 'cyan'))
 
+from os import system
+
+# system('bert-serving-start -model_dir /Users/landonsmith/Desktop/uncased_L-24_H-1024_A-16 -num_worker=1')
+
 
 bc = BertClient(check_length=False)
 print(colored('Bert Config', 'cyan'))
 
-
-# def bert_parse(rawString):
-    #
-    # possibleOperators = re.compile(r'[+|-|==|?]')
-    #
-    # tokens = rawString.split()
-    #
-    # assert ((tokens % 3) != 0)), "inputs must be divisible by 3"
-    #
-    # for i in range(len(tokens) * 3):
-    #
 
 def bert_arthimetic(inStr):
     """ inStr must have form 'TERM_1 [+|-] TERM_2 '"""
@@ -97,13 +90,20 @@ def vectorize_masked_tokens(document, maskToken='', knowledgeProcessor=None, sco
     return scoreDict
 
 
+def word_vs_sentence(document):
+    tokens = document.split()
+
+    docVec = bc.encode([document])[0]
+
+    for token in tokens:
+        tokenVec = bc.encode([token])[0]
+        score = euclidean(docVec, tokenVec)
+        print(colored(token, 'red'), colored(score, 'cyan'))
+
+
+
 
 while True:
-    doc1 = input("Document 1: ")
-    vec1 = np.asarray(bert_arthimetic(doc1))
-    doc2 = input("Document 2: ")
-    vec2 = np.asarray(bert_arthimetic(doc2))
-
-    score = euclidean(vec1, vec2)
-    print(score)
+    doc = input('Doc: ')
+    print(word_vs_sentence(doc))
     # vectorize_masked_tokens(document, maskToken="<MASK>", scoringMethod='dot', disp=True)

@@ -10,13 +10,13 @@ class SaverQueue(Queue):
     """ Thread safe list that saves to outPath when full """
     def __init__(self, maxSize, outPath):
         self.outPath = outPath
-        self.data = Queue(maxSize)
+        self.data = Queue()
 
     def add(self, elt):
-        if self.data.full():
+        if (self.data.qsize()) > 4:
             print('FULL')
         else:
-            self.data.put(elt)
+            self.data = self.data.put(elt)
 
     # def clear(self):
     #     self.data
