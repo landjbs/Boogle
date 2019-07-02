@@ -11,12 +11,11 @@ import time # to find the loadTime of a page
 import langid # to classify language of pageString
 from bs4 import BeautifulSoup # to parse html
 from bert_serving.client import BertClient # to assign document vectors
-import pandas as pd # to format document vectors for classification
-from keras.models import load_model # to classify document vectors
 
 from crawlers.urlAnalyzer import fix_url, url_to_pageString, parsable
 from models.processing.cleaner import clean_text, clean_title, clean_url
 from models.knowledge.knowledgeFinder import score_divDict
+from models.binning.classification import classify_page
 from models.ranking.baseRanker import calc_base_score
 
 # matchers for header tags in html text
@@ -32,7 +31,7 @@ except:
     print('WARNING: BertClient has not been initialized. This will affect srape_url functionality.')
 
 # load classification models
-newsClassifier = load_model('data/outData/binning/newsClassifier.sav')
+
 
 
 def clean_pageText(rawText, title):
@@ -174,8 +173,7 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
     vecDF = pd.DataFrame(dv.docVec_to_dict(pageVec), index=[1])
 
     ### RUN CLASSIFIERS ON VECTOR ENCODING ###
-    newsScore = newsClassifier.predict(vecDF)
-    category = 'News' if newsScore > 0.8 else 'Other'
+    category =
 
     ### CALC BASE SCORE OF PAGE ###
     baseScore = calc_base_score(loadTime)
