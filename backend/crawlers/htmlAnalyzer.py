@@ -168,12 +168,9 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
     ### SET WINDOW TEXT TO DISPLAY ###
     windowText = description if not (description=="") else afterTitle
 
-    ### VECTORIZE DOCUMENT ###
+    ### VECTORIZE AND CLASSIFY DOCUMENT ###
     pageVec = d2vModel.encode([afterTitle])[0]
-    vecDF = pd.DataFrame(dv.docVec_to_dict(pageVec), index=[1])
-
-    ### RUN CLASSIFIERS ON VECTOR ENCODING ###
-    category =
+    category = classify_page(pageVec)
 
     ### CALC BASE SCORE OF PAGE ###
     baseScore = calc_base_score(loadTime)
