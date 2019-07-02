@@ -8,12 +8,7 @@ Uses BERT model for document embedding
 """
 
 from bert_serving.client import BertClient # to assign document vectors
-
-import nltk
-import smart_open # for opening documents
-import multiprocessing # for faster model training
 import matplotlib.pyplot as plt
-from os import listdir
 
 bc = BertClient(check_length=False)
 

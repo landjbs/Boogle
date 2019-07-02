@@ -6,13 +6,11 @@ BERT vector
 import pandas as pd # to format document vectors for classification
 from keras.models import load_model # to classify document vectors
 
-from models.binning.docVecs import docVec_to_dict
-
 newsClassifier = load_model('data/outData/binning/newsClassifier.sav')
 
 def classify_page(pageVec):
     """
-    Returns category of page from pageVec.
+    Returns category of page from dataframe of docVec.
     Currently classifies 'News' or 'Other'
     """
     # enocde vec as pandas dataframe
