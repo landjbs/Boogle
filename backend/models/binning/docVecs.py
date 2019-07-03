@@ -9,12 +9,15 @@ Uses BERT model for document embedding
 
 from bert_serving.client import BertClient # to assign document vectors
 import matplotlib.pyplot as plt
+from math import floor
+import numpy as np
 
 # import appscript
 # appscript.app('Terminal').do_script('bert-serving-start -model_dir /Users/landonsmith/Desktop/uncased_L-24_H-1024_A-16 -num_worker=1')
 
-bc = BertClient(check_length=False)
+# bc = BertClient(check_length=False)
 
+bc= None
 
 def vectorize_all(document):
     """
@@ -29,9 +32,30 @@ def vectorize_n_split(document, n):
     Vectorizes document as matrix of vector embeddings of n fractions of the
     document.
     """
-    # find size of chunk necessary to fully encode doument in n parts
-    chunkSize = len(document) / n
-    ### TO COMPLETE ###
+    # split document into words and find length
+    words = document.split()
+    numWords = len(words)
+    # split words into n roughly-even-sized chunks
+    if numWords < n:
+        raise ValueError(f'Document must have more than {n} words')
+    elif ((numWords % n) == 0):
+        chunkSize = int(numWords / n)
+        chunkMatrix = [" ".join(words[i:i+chunkSize])
+                        for i in range(0, len(words), chunkSize)]
+    else:
+        # calculate size of first chunk and size of others
+        baseChunkSize = floor(len(words) / n)
+        firstChunkSize = baseChunkSize + (numWords % n)
+        print(firstChunkSize)
+        print(baseChunkSize)
+        # initialize chunkMatrix and add first chunk
+        chunkMatrix = []
+        chunkMatrix.append(" ".join(words[0:firstChunkSize]))
+        # add remaining chunks of baseChunkSize
+        for i in range(firstChunkSize, len(words), baseChunkSize):
+            chunkMatrix.append(" ".join(words[i:i+baseChunkSize]))
+    # docMatrix =
+    print(chunkMatrix)
     return None
 
 

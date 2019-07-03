@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-from bert_serving.client import BertClient
 from termcolor import colored
 import numpy as np
 from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
@@ -8,14 +7,17 @@ import re
 from scipy.spatial.distance import euclidean
 from sklearn.metrics.pairwise import cosine_similarity
 import pandas as pd
+
 print(colored('Imports complete', 'cyan'))
+
+import models.binning.docVecs as docVecs
 
 # import appscript
 # appscript.app('Terminal').do_script('bert-serving-start -model_dir /Users/landonsmith/Desktop/uncased_L-24_H-1024_A-16 -num_worker=1')
 
-
-bc = BertClient(check_length=False)
-print(colored('Bert Config', 'cyan'))
+while True:
+    doc = input(": ")
+    docVecs.vectorize_n_split(doc, 5)
 
 
 def bert_arthimetic(inStr):
@@ -105,17 +107,3 @@ def word_vs_sentence(document):
         maxList.append((cumDist, tokens[i]))
 
     print(f"\n{max(maxList)}\n")
-
-    # for token in tokens:
-    #     tokenVec = bc.encode([token])[0]
-    #     score = np.sum(docVec * tokenVec) / np.linalg.norm(docVec)
-    #     print(colored(token, 'red'), colored(score, 'cyan'))
-
-
-
-
-while True:
-    doc = input('Doc: ')
-    # print(word_vs_sentence(doc))
-    vectorize_masked_tokens(doc, maskToken="><><><><>", knowledgeProcessor=build_knowledgeProcessor({'twenty', 'single'}), 
-                            scoringMethod='euclidean', disp=True)
