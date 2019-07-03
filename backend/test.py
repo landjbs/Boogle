@@ -4,20 +4,23 @@ import numpy as np
 from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
 from models.knowledge.knowledgeFinder import find_rawTokens
 import re
+import os
 from scipy.spatial.distance import euclidean
 from sklearn.metrics.pairwise import cosine_similarity
+from crawlers.htmlAnalyzer import scrape_url
 import pandas as pd
 
 print(colored('Imports complete', 'cyan'))
 
 import models.binning.docVecs as docVecs
+from models.ranking.distributionRanker import rank_distribution
 
 # import appscript
 # appscript.app('Terminal').do_script('bert-serving-start -model_dir /Users/landonsmith/Desktop/uncased_L-24_H-1024_A-16 -num_worker=1')
 
 while True:
-    doc = input(": ")
-    print(docVecs.vectorize_n_split(doc, 5))
+    url = input('url: ')
+        print(rank_distribution(text, 5))
 
 
 def bert_arthimetic(inStr):
