@@ -11,16 +11,15 @@ def rank_distribution(document, n=5, distanceMetric='dot'):
     """
     Gives document ranking on similarity between n-split document vectors
     """
+    # vectorize entire document
     baseVec = vectorize_all(document)
-
+    # get matrix of document as vectors of n chunks
     vecMatrix = vectorize_n_split(document, n)
-
+    # score dot product between each chunk and base vec
     scores = [np.dot(curVec, baseVec) for curVec in vecMatrix]
-
+    # scores = [np.sum([np.dot(curVec, other) for other in vecMatrix]) for curVec in vecMatrix]
+    # normalize scores relative to mean
     meanScore = np.mean(scores)
-
-    normedScores = [score/meanScore for score in scores]
-
-    uniformity = round(euclidean(normedScores, [0 for _ in range(n)]), 2)
-
-    return uniformity
+    # calculate distance between each score and uniform dist around mean
+    uniformityScore = round(euclidean(scores, [meanScore for _ in range(n)]), 2)
+    return uniformityScore

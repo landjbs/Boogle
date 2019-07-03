@@ -3,7 +3,7 @@ from os.path import exists
 import re
 from threading import Thread
 from queue import Queue
-from dataStructures.simpleStructures import Metrics
+from dataStructures.scrapingStructures import Metrics
 from crawlers.htmlAnalyzer import get_pageText, detect_language
 
 
@@ -48,7 +48,7 @@ def scrape_dmoz_line(line):
     outPath = f"data/outData/dmozProcessed/{top}/{url}.sav"
     if not exists(outPath):
         # fetch pageText from url
-        pageText = get_pageText(url)
+        pageText, _ = get_pageText(url)
         # skip page if not in english
         assert (detect_language(pageText) == 'en'), f"{url} not in English"
         # open file in top folder and write pageText in

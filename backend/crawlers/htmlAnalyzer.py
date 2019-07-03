@@ -14,9 +14,9 @@ from bs4 import BeautifulSoup # to parse html
 from crawlers.urlAnalyzer import fix_url, url_to_pageString, parsable
 from models.processing.cleaner import clean_text, clean_title, clean_url
 from models.knowledge.knowledgeFinder import score_divDict
-from models.binning.classification import classify_page
-from models.binning.docVecs import vectorize_all
-from models.ranking.baseRanker import calc_base_score
+# from models.binning.classification import classify_page
+# from models.binning.docVecs import vectorize_all
+# from models.ranking.baseRanker import calc_base_score
 
 # matchers for header tags in html text
 h1Matcher = re.compile('^h1$')
@@ -49,7 +49,7 @@ def get_pageText(url):
     curSoup = BeautifulSoup(rawString, "html.parser")
     rawText = curSoup.get_text()
     title = curSoup.title.string
-    cleanedText = clean_pageText(rawText, title)
+    cleanedText, _ = clean_pageText(rawText, title)
     return cleanedText
 
 
