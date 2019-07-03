@@ -21,6 +21,7 @@ from numpy import log
 
 from dataStructures.objectSaver import save, load
 from models.processing.cleaner import clean_text, clean_wiki
+import models.knowledge.knowledgeFinder as knowledgeFinder
 
 ## Functions ##
 def build_knowledgeSet(knowledgeFile, additionalTokens=None, numberRange=None, outPath=""):
@@ -72,29 +73,6 @@ def build_knowledgeProcessor(knowledgeSet, outPath=""):
     return knowledgeProcessor
 
 
-
-def find_rawTokens(inStr, knowledgeProcessor):
-    """
-    Finds set of tokens used in inStr without scoring or count.
-    Used to tokenize search queries.
-    Looks for both full tokens from knowledgeSet and single-word (sub) tokens
-    """
-    # use greedy matching of flashtext algorithm to find keywords
-    greedyTokens = list(knowledgeProcessor.extract_keywords(inStr))
-    # initialize list of all tokens with greedy tokens
-    allTokens = greedyTokens.copy()
-    # iterate over greedy tokens
-    for token in greedyTokens:
-        splitToken = token.split()
-        if not (len(splitToken)==1):
-            # iterate over white-space delimited words in each token
-            for word in token.split():
-                # find all tokens within the word and add to all tokens
-                smallTokens = knowledgeProcessor.extract_keywords(word)
-                allTokens += smallTokens
-    return allTokens
-
-
 def build_freqDict(folderPath, knowledgeProcessor, outPath=""):
     """
     Args: folderPath to folder containing files from which to read,
@@ -120,9 +98,9 @@ def build_freqDict(folderPath, knowledgeProcessor, outPath=""):
             # read in the current file
             text = FileObj.read()
             # find both greedy and subtokens in text
-            tokensFound = list(find_rawTokens(text, knowledgeProcessor))
+            tokensFound = list(knowledgeFinder.find_rawTokens(text, knowledgeProcessor))
             # find dict mapping tokens to use number in text
-            # curCounts = {token:count_token(token, text) for token in tokensFound}
+            # curCounts = {token:knowledgeFinder.count_token(token, text) for token in tokensFound}
             # add tokens counts to tokenCounts counter
             tokenCounts.update(tokensFound)
             # add single appearance for each token found

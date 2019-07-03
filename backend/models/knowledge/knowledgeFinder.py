@@ -5,7 +5,6 @@ built in models.knowledge.knowledgeBuilder.
 
 import re
 import math
-import models.knowledge.knowledgeBuilder as knowledgeBuilder
 from numpy import log
 import matplotlib.pyplot as plt
 
@@ -51,7 +50,7 @@ def find_countedTokens(inStr, knowledgeProcessor):
     Subtokens should be given 3/4 the weighting of full tokens
     """
     tokensFound = find_rawTokens(inStr)
-    return {token:knowledgeBuilder.count_token(token, inStr) for token in tokensFound}
+    return {token:count_token(token, inStr) for token in tokensFound}
 
 
 def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
