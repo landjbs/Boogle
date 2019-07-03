@@ -6,19 +6,19 @@ is helpful because it has access to all the subfolders of the backend
 and no module packaging is necessary.
 """
 
-import models.binning.docVecs as dv
+# import models.binning.docVecs as dv
 import os
 import pandas as pd
 from dataStructures.objectSaver import save, load
 from models.processing.cleaner import clean_text
+import models.knowledge.knowledgeBuilder as knowledgeBuilder
 from keras.utils import to_categorical
 import matplotlib.pyplot as plt
 from termcolor import colored
 import numpy as np
 
-from bert_serving.client import BertClient
-
-bc = BertClient(check_length=False)
+# from bert_serving.client import BertClient
+# bc = BertClient(check_length=False)
 
 #  584156 URLs analyzed with 396544 errors!
 
@@ -63,6 +63,10 @@ def encode_folderList(topFolderPath):
     return vecList
 
 
-vecList = encode_folderList(PATH)
-vecDF = pd.DataFrame(vecList)
-vecDF.to_csv('data/outData/binning/dmozVecsBERT.csv')
+
+
+
+
+
+
+pass

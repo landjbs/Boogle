@@ -16,11 +16,11 @@ knowledgeFinder.
 
 import os, re
 from flashtext import KeywordProcessor
-from dataStructures.objectSaver import save, load
-from models.processing.cleaner import clean_text, clean_wiki
 from collections import Counter
 from numpy import log
 
+from dataStructures.objectSaver import save, load
+from models.processing.cleaner import clean_text, clean_wiki
 
 ## Functions ##
 def build_knowledgeSet(knowledgeFile, additionalTokens=None, numberRange=None, outPath=""):
@@ -81,6 +81,28 @@ def count_token(token, pageText):
     return len(re.findall(f"(?<![a-zA-Z]){token}(?![a-zA-Z])", pageText, flags=re.IGNORECASE))
 
 
+def find_rawTokens(inStr, knowledgeProcessor):
+    """
+    Finds set of tokens used in inStr without scoring or count.
+    Used to tokenize search queries.
+    Looks for both full tokens from knowledgeSet and single-word (sub) tokens
+    """
+    # use greedy matching of flashtext algorithm to find keywords
+    greedyTokens = list(knowledgeProcessor.extract_keywords(inStr))
+    # initialize list of all tokens with greedy tokens
+    allTokens = greedyTokens.copy()
+    # iterate over greedy tokens
+    for token in greedyTokens:
+        splitToken = token.split()
+        if not (len(splitToken)==1):
+            # iterate over white-space delimited words in each token
+            for word in token.split():
+                # find all tokens within the word and add to all tokens
+                smallTokens = knowledgeProcessor.extract_keywords(word)
+                allTokens += smallTokens
+    return allTokens
+
+
 def build_freqDict(folderPath, knowledgeProcessor, outPath=""):
     """
     Args: folderPath to folder containing files from which to read,
@@ -99,20 +121,20 @@ def build_freqDict(folderPath, knowledgeProcessor, outPath=""):
 
     # find and iterate over list of files within folderPath
     for i, file in enumerate(os.listdir(folderPath)):
-        print(f"\t{i}", end='\r')
+        print(f"\tBuilding freqDict: {i}", end='\r')
         if i > 10:
             break
         with open(f"{folderPath}/{file}") as FileObj:
             # read in the current file
             text = FileObj.read()
             # find both greedy and subtokens in text
-            tokensFound = list(knowledgeProcessor.extract_keywords(text))
+            tokensFound = list(find_rawTokens(text, knowledgeProcessor))
             # find dict mapping tokens to use number in text
-            curCounts = {token:count_token(token, text) for token in tokensFound}
+            # curCounts = {token:count_token(token, text) for token in tokensFound}
             # add tokens counts to tokenCounts counter
-            tokenCounts.update(curCounts)
-            # add single appearance for token in tokenAppearances
-            tokenAppearances.update(token)
+            tokenCounts.update(tokensFound)
+            # add single appearance for each token found
+            tokenAppearances.update(set(tokensFound))
             # find number of words in the current file
             textLen = len(text.split())
             # add number of words in current file to totalLength
@@ -120,7 +142,7 @@ def build_freqDict(folderPath, knowledgeProcessor, outPath=""):
 
     # lambdas for calculating termFreq and docFreq
     calc_termFreq = lambda tokenCount : tokenCount / totalLength
-    calc_docFreq = lambda tokenAppearance : log(tokenAppearance / i)
+    calc_docFreq = lambda tokenAppearance : log(float(i) / tokenAppearance)
 
     # use total num to normalize tokenCounts and find frequency for each token
     freqDict = {token: (calc_termFreq(tokenCounts[token]),

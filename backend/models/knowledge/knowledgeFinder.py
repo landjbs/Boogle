@@ -6,7 +6,7 @@ built in models.knowledge.knowledgeBuilder.
 import re
 import math
 import models.knowledge.knowledgeBuilder as knowledgeBuilder
-import numpy as np
+from numpy import log
 import matplotlib.pyplot as plt
 
 # dict mapping html divs to score  multiplier
@@ -75,7 +75,8 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
             termFreq, docFreq = 0, 0
 
         # normalize tokenFreq using a tf-idf schema
-        normedFreq = tokenFreq
+        relativeFreq = tokenFreq / termFreq
+        normedFreq = (1 + np.log(relativeFreq))
 
         # tokens with negative normedFreq will automatically have scores of 0
         if normedFreq <= 0:
