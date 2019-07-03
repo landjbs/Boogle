@@ -95,8 +95,11 @@ def scrape_dmoz_file(file, queueDepth=15, workerNum=25, outPath=""):
 
     # load lines from file into lineQueue
     with open(file, 'r') as FileObj:
-        for line in (FileObj):
-            lineQueue.put(line)
+        for i, line in enumerate(FileObj):
+            if line > 1005724:
+                lineQueue.put(line)
+            else:
+                print(f"Skipping: {i}")
 
     # ensure all lineQueue processes are complete before proceeding
     lineQueue.join()
