@@ -17,7 +17,7 @@ import models.binning.docVecs as docVecs
 
 while True:
     doc = input(": ")
-    docVecs.vectorize_n_split(doc, 5)
+    print(docVecs.vectorize_n_split(doc, 5))
 
 
 def bert_arthimetic(inStr):

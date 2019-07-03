@@ -15,9 +15,8 @@ import numpy as np
 # import appscript
 # appscript.app('Terminal').do_script('bert-serving-start -model_dir /Users/landonsmith/Desktop/uncased_L-24_H-1024_A-16 -num_worker=1')
 
-# bc = BertClient(check_length=False)
+bc = BertClient(check_length=False)
 
-bc= None
 
 def vectorize_all(document):
     """
@@ -46,17 +45,15 @@ def vectorize_n_split(document, n):
         # calculate size of first chunk and size of others
         baseChunkSize = floor(len(words) / n)
         firstChunkSize = baseChunkSize + (numWords % n)
-        print(firstChunkSize)
-        print(baseChunkSize)
         # initialize chunkMatrix and add first chunk
         chunkMatrix = []
         chunkMatrix.append(" ".join(words[0:firstChunkSize]))
         # add remaining chunks of baseChunkSize
         for i in range(firstChunkSize, len(words), baseChunkSize):
             chunkMatrix.append(" ".join(words[i:i+baseChunkSize]))
-    # docMatrix =
-    print(chunkMatrix)
-    return None
+    # create matrix of vectorized chunks
+    docMatrix = np.array(vectorize_all(chunk) for chunk in chunkMatrix)
+    return docMatrix
 
 
 def docVec_to_dict(docVec):
