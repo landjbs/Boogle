@@ -72,14 +72,6 @@ def build_knowledgeProcessor(knowledgeSet, outPath=""):
     return knowledgeProcessor
 
 
-def count_token(token, pageText):
-    """
-    Uses regexp to return number of times a token is used in pageText.
-    Matches for tokens that are not parts of larger, uninterrupted words.
-    Does not require a knowledgeProcessor.
-    """
-    return len(re.findall(f"(?<![a-zA-Z]){token}(?![a-zA-Z])", pageText, flags=re.IGNORECASE))
-
 
 def find_rawTokens(inStr, knowledgeProcessor):
     """

@@ -13,6 +13,15 @@ import matplotlib.pyplot as plt
 divMultipiers = {'url':5, 'title':6, 'h1':5, 'h2':4, 'h3':3, 'lowHeaders':2, 'description':3, 'keywords':3, 'imageAlt':2, 'all':1}
 
 
+def count_token(token, pageText):
+    """
+    Uses regexp to return number of times a token is used in pageText.
+    Matches for tokens that are not parts of larger, uninterrupted words.
+    Does not require a knowledgeProcessor.
+    """
+    return len(re.findall(f"(?<![a-zA-Z]){token}(?![a-zA-Z])", pageText, flags=re.IGNORECASE))
+
+
 def find_rawTokens(inStr, knowledgeProcessor):
     """
     Finds set of tokens used in inStr without scoring or count.
