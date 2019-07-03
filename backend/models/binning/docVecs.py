@@ -29,7 +29,8 @@ def vectorize_all(document):
 def vectorize_n_split(document, n):
     """
     Vectorizes document as matrix of vector embeddings of n fractions of the
-    document.
+    document. Chunks are delimited by whitespace by not by sentence endings
+    and vary in size by up to n-1. Returned docMatrix will always be (n, 1024)
     """
     # split document into words and find length
     words = document.split()
@@ -52,7 +53,7 @@ def vectorize_n_split(document, n):
         for i in range(firstChunkSize, len(words), baseChunkSize):
             chunkMatrix.append(" ".join(words[i:i+baseChunkSize]))
     # create matrix of vectorized chunks
-    docMatrix = np.array(vectorize_all(chunk) for chunk in chunkMatrix)
+    docMatrix = np.array([vectorize_all(chunk) for chunk in chunkMatrix])
     return docMatrix
 
 
