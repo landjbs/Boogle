@@ -6,7 +6,7 @@ is helpful because it has access to all the subfolders of the backend
 and no module packaging is necessary.
 """
 
-from os import scandir
+from os import listdir
 import pandas as pd
 from termcolor import colored
 import numpy as np
@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 from dataStructures.objectSaver import save, load
 from models.processing.cleaner import clean_text
-# import models.binning.docVecs as docVecs
+import models.binning.docVecs as docVecs
 import models.knowledge.knowledgeBuilder as knowledgeBuilder
 
 
@@ -24,23 +24,53 @@ PATH = 'data/outData/dmozProcessed'
 
 # folderNums = {folder:i for i, folder in enumerate(os.listdir(PATH))}
 
-def vectorize_folder(folderPath, folderNum, n=None, outPath=None):
+def vectorize_folder(folderPath, folderNum, n=None):
     """
     Uses docVecs to vectorize n documents from folderPath.
-    Returns: dataframe of shape (1024 + 1, n) vectorized documents. The first
+    Returns: list of dicts of shape (1024 + 1, n) vectorized documents. The first
     1024 dimensions are BERT encodings, the last is the number associated with
     the folder.
-    Saves dataframe to outPath if given.
     """
-    # folderContents
+    # list of files in folderPath
+    fileList = listdir(folderPath)
+    if not n:
+        n = len(fileList)
     vecList = []
-    # iterate over contents of the folder
-    for i, file in enumerate(scandir(folderPath)):
-
+    folderDict = {'folder':folderNum}
+    # iterate over contents of the folder, coverting files to dicts of BERT scalars
+    for i, file in enumerate(fileList):
+        if i > n:
+            break
+        with open(f'{folderPath}/{file}', 'r') as fileObj:
+            text = fileObj.read()
+            vector = docVecs.vectorize_all(text)
+            fileDict = docVec_to_dict(vector)
+            fileDict.update(folderDict)
+            vecList.append(fileDict)
         print(f'\t{i}', end="\r")
+    return vecList
 
-vectorize_files()
+def vectorize_top_folder(topPath, excludeFolders=['.DS_Store', 'All'], outPath=None):
+    """
+    Vectorizes all folders in topPath, except for those in excludeFolders.
+    Returns: dataframe of shape (1024 + 1, n) vectorized documents.
+    Saves to outPath if specified.
+    """
+    # get dict mapping non-excluded folders in topPath to unique int
+    folderNums = {folder:i for i, folder in enumerate(listdir(topPath))
+                    if not folder in excludeFolders}
+    # iterate over folders, builing list of vectorized files
+    vecList = []
+    for folder, folderNum in folderNums.items():
+        vecList += vectorize_folder(f'{topPath}/{folder}', folderNum, 1)
+        print('\n')
+    # convert vecList to dataframe and save to outPath if given
+    vecDF = pd.DataFrame(vecList)
+    if outPath:
+        vecDF.to_csv(outPath)
+    return vecDF
 
+vectorize_top_folder("data/outData/dmozProcessed")
 
 # def encode_folder(folderPath, folderNum, n):
 #     folderList = []
