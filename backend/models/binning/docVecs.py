@@ -15,7 +15,7 @@ from bert_serving.client import BertClient # to assign document vectors
 import matplotlib.pyplot as plt
 
 print(colored('Configuring BERT Client', 'red'), end='\r')
-appscript.app('Terminal').do_script('bert-serving-start -model_dir /Users/landonsmith/Desktop/uncased_L-24_H-1024_A-16 -num_worker=1')
+# appscript.app('Terminal').do_script('bert-serving-start -model_dir /Users/landonsmith/Desktop/uncased_L-24_H-1024_A-16 -num_worker=1')
 print(colored('Complete: Configuring BERT CLIENT', 'cyan'))
 
 print(colored('Connecting to BERT Client', 'red'), end='\r')
@@ -61,7 +61,7 @@ def vectorize_n_split(document, n):
     return docMatrix
 
 
-def docVec_to_dict(docVec):
+def vec_to_dict(docVec):
     """ Converts docVec to dict for easy df insertion """
     return {dimension:value for dimension, value in enumerate(docVec)}
 

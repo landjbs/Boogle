@@ -39,12 +39,12 @@ def vectorize_folder(folderPath, folderNum, n=None):
     folderDict = {'folder':folderNum}
     # iterate over contents of the folder, coverting files to dicts of BERT scalars
     for i, file in enumerate(fileList):
-        if i > n:
+        if i >= n:
             break
         with open(f'{folderPath}/{file}', 'r') as fileObj:
             text = fileObj.read()
             vector = docVecs.vectorize_all(text)
-            fileDict = docVec_to_dict(vector)
+            fileDict = docVecs.vec_to_dict(vector)
             fileDict.update(folderDict)
             vecList.append(fileDict)
         print(f'\t{i}', end="\r")
@@ -70,7 +70,7 @@ def vectorize_top_folder(topPath, excludeFolders=['.DS_Store', 'All'], outPath=N
         vecDF.to_csv(outPath)
     return vecDF
 
-vectorize_top_folder("data/outData/dmozProcessed")
+print(vectorize_top_folder("data/outData/dmozProcessed"))
 
 # def encode_folder(folderPath, folderNum, n):
 #     folderList = []
