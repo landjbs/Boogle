@@ -1,4 +1,4 @@
-from os import mkdir
+from os import mkdir, listdir
 from os.path import exists
 import re
 from threading import Thread
@@ -109,7 +109,22 @@ def scrape_dmoz_file(file, queueDepth=15, workerNum=25, outPath=""):
         save(outStore.data, outPath)
 
 
-scrape_dmoz_file(file="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/inData/dmoz_domain_category.tab.tsv")
+# scrape_dmoz_file(file="/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend/data/inData/dmoz_domain_category.tab.tsv")
+
+def make_dmoz_all(path):
+    for folder in listdir(path):
+        print(folder)
+        if not folder in ['All', '.DS_Store']:
+            for i, file in enumerate(listdir(f"{path}/{folder}")):
+                with open(f'{path}/{folder}/{file}', 'r') as oldFile:
+                    text = oldFile.read()
+                    with open(f'{path}/All/{file}', 'w+') as newFile:
+                        newFile.write(text)
+                print(f"\tMoving: {i}", end='\r')
+    allLen = len(listdir(f'{path}/All'))
+    print(f'{allLen} files moved to {path}/All')
+
+make_dmoz_all('data/outData/dmozProcessed')
 
 print("Done")
 
