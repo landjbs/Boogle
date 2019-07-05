@@ -12,18 +12,19 @@ import pandas as pd
 import models.binning.docVecs as docVecs
 from models.ranking.distributionRanker import rank_distribution
 from dataStructures.objectSaver import load
+from scipy.spatial.distance import cosine
 
 print(colored('Imports complete', 'cyan'))
 
 # knowledgeSet = load('data/outData/knowledge/knowledgeSet.sav')
 
-knowledgeSet = {'roman warm period', 'contemporary warm period', 'celtic warm period', 'bool juice', 'dragon training', 'roman weapons'}
+knowledgeSet = {'roman warm period', 'contemporary warm period', 'celtic warm period', 'orange juice', 'dragon training', 'roman weapons'}
 
 while True:
     search = input('Search: ')
     searchVec = docVecs.vectorize_doc(search)
-    scoreList = [(np.dot(searchVec, docVecs.vectorize_all(token)), token) for token in knowledgeSet]
-    scoreList.sort()
+    scoreList = [(1 - (cosine(searchVec, docVecs.vectorize_doc(token))), token) for token in knowledgeSet]
+    scoreList.sort(reverse=True)
     for item in scoreList[:10]:
         print(f'\t{item}')
 

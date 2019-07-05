@@ -17,7 +17,9 @@ from misc.decorators import log_completion
 
 # appscript.app('Terminal').do_script('bert-serving-start -model_dir /Users/landonsmith/Desktop/uncased_L-24_H-1024_A-16 -num_worker=1')
 
+
 bc = BertClient(check_length=False)
+
 
 def vectorize_doc(document):
     """
@@ -54,7 +56,7 @@ def vectorize_n_split(document, n):
         for i in range(firstChunkSize, len(words), baseChunkSize):
             chunkMatrix.append(" ".join(words[i:i+baseChunkSize]))
     # create matrix of vectorized chunks
-    docMatrix = np.array([vectorize_all(chunk) for chunk in chunkMatrix])
+    docMatrix = np.array([vectorize_doc(chunk) for chunk in chunkMatrix])
     return docMatrix
 
 
