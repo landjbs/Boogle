@@ -3,7 +3,7 @@ Ranks documents on the similarity between their parts. More diverse documents
 will have higher scores for the same token frequency than less diverse documents.
 """
 
-from models.binning.docVecs import vectorize_all, vectorize_n_split
+from models.binning.docVecs import vectorize_doc, vectorize_n_split
 from scipy.spatial.distance import euclidean
 import numpy as np
 

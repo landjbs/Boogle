@@ -19,7 +19,7 @@ from misc.decorators import log_completion
 
 bc = BertClient(check_length=False)
 
-def vectorize_all(document):
+def vectorize_doc(document):
     """
     Vectorizes entire document in single 1024 dim vector using BertClient
     """
@@ -57,6 +57,11 @@ def vectorize_n_split(document, n):
     docMatrix = np.array([vectorize_all(chunk) for chunk in chunkMatrix])
     return docMatrix
 
+
+def vectorize_doc_list(docList):
+    """ Returns list of vector representation of each doc in docList """
+    vecList = bc.encode(docList)
+    return vecList
 
 def vec_to_dict(docVec):
     """ Converts docVec to dict for easy df insertion """
