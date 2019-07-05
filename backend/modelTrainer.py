@@ -15,8 +15,8 @@ import matplotlib.pyplot as plt
 
 from dataStructures.objectSaver import save, load
 from models.processing.cleaner import clean_text
-import models.binning.docVecs as docVecs
 import models.knowledge.knowledgeBuilder as knowledgeBuilder
+# import models.binning.docVecs as docVecs
 
 
 PATH = 'data/outData/dmozProcessed'
@@ -43,11 +43,15 @@ def vectorize_folder(folderPath, folderNum, n=None):
             break
         try:
             with open(f'{folderPath}/{file}', 'r') as fileObj:
+                fileDict = {'file':file}
                 text = fileObj.read()
-                vector = docVecs.vectorize_all(text)
-                fileDict = docVecs.vec_to_dict(vector)
-                fileDict.update(folderDict)
-                vecList.append(fileDict)
+                if text=="":
+                    pass
+                else:
+                    vector = docVecs.vectorize_all(text)
+                    fileDict = docVecs.vec_to_dict(vector)
+                    fileDict.update(folderDict)
+                    vecList.append(fileDict)
         except Exception as e:
             print(f"ERROR: {e}")
         print(f'\t{i}', end="\r")
@@ -74,7 +78,7 @@ def vectorize_top_folder(topPath, excludeFolders=['.DS_Store', 'All'], outPath=N
         print(f"Dataframe saved to '{outPath}'.")
     return vecDF
 
-print(vectorize_top_folder("data/outData/dmozProcessed", outPath='data/outData/binning/clusterVecs.sav'))
+print(vectorize_top_folder("data/outData/dmozProcessed", outPath='data/outData/binning/vecNames.sav'))
 
 
 # def encode_folder(folderPath, folderNum, n):
