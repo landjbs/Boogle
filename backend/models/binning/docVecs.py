@@ -15,14 +15,9 @@ from bert_serving.client import BertClient # to assign document vectors
 import matplotlib.pyplot as plt
 from misc.decorators import log_completion
 
-
 # appscript.app('Terminal').do_script('bert-serving-start -model_dir /Users/landonsmith/Desktop/uncased_L-24_H-1024_A-16 -num_worker=1')
 
-@log_completion(taskString='Connecting to BERT Client')
-def import_bert(*args, **kwargs):
-    return BertClient(*args, **kwargs)
-
-bc = import_bert(check_length=False)
+bc = BertClient(check_length=False)
 
 def vectorize_all(document):
     """

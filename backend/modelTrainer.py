@@ -41,12 +41,15 @@ def vectorize_folder(folderPath, folderNum, n=None):
     for i, file in enumerate(fileList):
         if i >= n:
             break
-        with open(f'{folderPath}/{file}', 'r') as fileObj:
-            text = fileObj.read()
-            vector = docVecs.vectorize_all(text)
-            fileDict = docVecs.vec_to_dict(vector)
-            fileDict.update(folderDict)
-            vecList.append(fileDict)
+        try:
+            with open(f'{folderPath}/{file}', 'r') as fileObj:
+                text = fileObj.read()
+                vector = docVecs.vectorize_all(text)
+                fileDict = docVecs.vec_to_dict(vector)
+                fileDict.update(folderDict)
+                vecList.append(fileDict)
+        except Exception as e:
+            print(f"ERROR: {e}")
         print(f'\t{i}', end="\r")
     return vecList
 
@@ -57,20 +60,22 @@ def vectorize_top_folder(topPath, excludeFolders=['.DS_Store', 'All'], outPath=N
     Saves to outPath if specified.
     """
     # get dict mapping non-excluded folders in topPath to unique int
-    folderNums = {folder:i for i, folder in enumerate(listdir(topPath))
-                    if not folder in excludeFolders}
+    folderNums = {folder:i for i, folder in enumerate(listdir(topPath)) if not folder in excludeFolders}
     # iterate over folders, builing list of vectorized files
     vecList = []
     for folder, folderNum in folderNums.items():
-        vecList += vectorize_folder(f'{topPath}/{folder}', folderNum, 1)
+        print(folder)
+        vecList += vectorize_folder(f'{topPath}/{folder}', folderNum, 1000)
         print('\n')
     # convert vecList to dataframe and save to outPath if given
     vecDF = pd.DataFrame(vecList)
     if outPath:
         vecDF.to_csv(outPath)
+        print(f"Dataframe saved to '{outPath}'.")
     return vecDF
 
-print(vectorize_top_folder("data/outData/dmozProcessed"))
+print(vectorize_top_folder("data/outData/dmozProcessed", outPath='data/outData/binning/clusterVecs.sav'))
+
 
 # def encode_folder(folderPath, folderNum, n):
 #     folderList = []
