@@ -190,7 +190,7 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
 
     ### RETURN PAGE DICT ###
     return {'url':              url,
-            'cleanedTitle':     cleanedTitle,
+            'title':     cleanedTitle,
             'knowledgeTokens':  knowledgeTokens,
             'pageVec':          pageVec,
             'linkList':         linkList,
