@@ -37,17 +37,23 @@ def fix_url(url, rootURL):
     return urlString
 
 
-def url_to_pageString(url, timeout=5):
+def url_to_pageString(url, timeout=10):
     """
     Cleans and converts string of URL link to string of page contents.
     DOESN'T FIX URLS
     """
-    # add proper headers to url
     try:
         # get response object of url, failing after timeout seconds
-        page = urllib.request.urlopen(cleanedURL, timeout=timeout)
+        page = urllib.request.urlopen(url, timeout=timeout)
     except:
-        raise ParseError(f"Unable to access '{cleanedURL}'")
+        raise ParseError(f"Unable to access '{url}'")
     pageString = page.read()
     page.close()
     return(pageString)
+
+
+def get_robots(url):
+    """
+    Fetchs robots.txt file from top level url
+    """
+    return url_to_pageString(f"{url}/robots.txt")

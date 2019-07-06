@@ -25,6 +25,18 @@ h3Matcher = re.compile('^h3$')
 lowHeaderMatcher = re.compile('^h[4-6$]')
 
 
+def is_visible(element):
+    """ Checks if html element is visible on a webpage """
+      if element.parent.name in ['style', 'script', '[document]', 'head', 'title']:
+        return False
+    elif re.match('<!--.*-->', str(element.encode('utf-8'))):
+        return False
+    return True
+
+result = filter(visible, data)
+
+print list(result)
+
 def clean_pageText(rawText, title):
     """
     Removes junk from output of soup.get_text()

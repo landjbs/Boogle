@@ -16,16 +16,14 @@ from scipy.spatial.distance import cosine
 
 print(colored('Imports complete', 'cyan'))
 
-from crawlers.htmlAnalyzer import scrape_url
+from crawlers.urlAnalyzer import get_robots
 
 knowledgeProcessor = build_knowledgeProcessor({})
 freqDict = {}
 
 while True:
-    url = input("URL: ")
-    urlList = scrape_url(url, knowledgeProcessor, {})
-    print(urlList[5])
-
+    url = input('url: ')
+    print(get_robots(url))
 
 # while True:
 
