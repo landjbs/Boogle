@@ -10,21 +10,21 @@ from sklearn.metrics.pairwise import cosine_similarity
 from crawlers.htmlAnalyzer import get_pageText
 import pandas as pd
 # import models.binning.docVecs as docVecs
-from models.ranking.distributionRanker import rank_distribution
+# from models.ranking.distributionRanker import rank_distribution
 from dataStructures.objectSaver import load
 from scipy.spatial.distance import cosine
 
 print(colored('Imports complete', 'cyan'))
 
-from models.processing.cleaner import clean_file_name
+from crawlers.htmlAnalyzer import scrape_url
+
 knowledgeProcessor = build_knowledgeProcessor({})
 freqDict = {}
 
 while True:
-    text = input('text: ')
-    print(clean_file_name(text))
+    url = input('text: ')
+    scrape_url(url, knowledgeProcessor, {})
 
-# while True:
 
 # import appscript
 # appscript.app('Terminal').do_script('bert-serving-start -model_dir /Users/landonsmith/Desktop/uncased_L-24_H-1024_A-16 -num_worker=1')

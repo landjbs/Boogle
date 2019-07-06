@@ -138,12 +138,17 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
         images = curSoup.find_all('img')
         imageScore = len(images)
         imageAlts = ""
-        # build string of imageAlts and take away half a point from image score
-        # for every image without (height and width) or style
+        # build string of imageAlts
         for image in images:
             imageAlts += f" {image['alt']} "
-            if not (image['width'] and image['height']) or not (image['style']):
-                imageScore += -0.5
+            # doc imageScore by 0.5 if no image styling is given
+            try:
+                _, _ = image['height'], image['width']
+            except:
+                try:
+                    _ = image['style']
+                except:
+                    imageScore -= 0.5
     except:
         imageScore, imageAlts = 0, ""
 
@@ -153,7 +158,7 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
         videoScore = len(videos)
         videoSRCs = " ".join(video['src'] for video in videos)
     except:
-        videoScore, videoAlts = 0, ""
+        videoScore, videoSRCs = 0, ""
 
     ### ANALYZE AND SCORE KNOWLEDGE TOKENS ###
     divDict = {'url':           cleaner.clean_url(url),
@@ -167,6 +172,8 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
                 'imageAlts':    cleaner.clean_text(imageAlts),
                 'videoSRCs':    cleaner.clean_file_name(videoSRCs),
                 'all':          cleanedText}
+
+    print(divDict)
 
     # find dict mapping knowledge tokens in divDict to their score
     knowledgeTokens = score_divDict(divDict, knowledgeProcessor, freqDict)
