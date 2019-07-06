@@ -68,7 +68,7 @@ def score_token(token, div, divLen, divMultipier, tokensFound):
     Scores individual token in div
     """
     ### FIND TOKEN FREQUENCY ###
-    tokenNum = knowledgeBuilder.count_token(token, divText)
+    tokenNum = count_token(token, divText)
     tokenFreq = tokenNum / divLen
 
     ### NORMALIZE TOKEN FREQUENCY ###
@@ -112,28 +112,28 @@ def score_token(token, div, divLen, divMultipier, tokensFound):
 
 
 def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
-"""
-Args: Text of division being analyzed, name of division, processor to find
-tokens, dict of average word frequencies, score cutoff to include token in
-dict.
-Returns: Dict of tokens in divText mapping to score assigned by score_token
-"""
-# find number of words in divText
-divLen = len(divText.split())
-# find multiplier related to div
-divMultipier = divMultipiers[div]
-# use knowledgeProcessor to extract tokens from divText
-tokensFound = set(find_rawTokens(divText, knowledgeProcessor))
+    """
+    Args: Text of division being analyzed, name of division, processor to find
+    tokens, dict of average word frequencies, score cutoff to include token in
+    dict.
+    Returns: Dict of tokens in divText mapping to score assigned by score_token
+    """
+    # find number of words in divText
+    divLen = len(divText.split())
+    # find multiplier related to div
+    divMultipier = divMultipiers[div]
+    # use knowledgeProcessor to extract tokens from divText
+    tokensFound = set(find_rawTokens(divText, knowledgeProcessor))
 
-# apply analyze_token to create dict mapping tokens to scores
-scoreDict = {token:score_token(token, div, divLen, divMultipier, tokensFound)
-                for token in tokensFound}
+    # apply analyze_token to create dict mapping tokens to scores
+    scoreDict = {token:score_token(token, div, divLen, divMultipier, tokensFound)
+                    for token in tokensFound}
 
-# filter scores below cuoff
-filteredScores = {token: score for token, score in scoreDict.items()
-                    if score > cutoff}
+    # filter scores below cuoff
+    filteredScores = {token: score for token, score in scoreDict.items()
+                        if score > cutoff}
 
-return filteredScores
+    return filteredScores
 
 
 def score_divDict(divDict, knowledgeProcessor, freqDict):
