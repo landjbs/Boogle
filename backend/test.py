@@ -10,7 +10,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from crawlers.htmlAnalyzer import get_pageText
 import pandas as pd
 # import models.binning.docVecs as docVecs
-# from models.ranking.distributionRanker import rank_distribution
+from models.ranking.distributionRanker import rank_distribution
 from dataStructures.objectSaver import load
 from scipy.spatial.distance import cosine
 
@@ -22,8 +22,8 @@ knowledgeProcessor = build_knowledgeProcessor({})
 freqDict = {}
 
 while True:
-    url = input('url: ')
-    (scrape_url(url, knowledgeProcessor, freqDict))
+    text = input('text: ')
+    print(rank_distribution(text))
 
 # while True:
 
