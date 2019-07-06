@@ -19,9 +19,7 @@ urlMatcher = re.compile(urlString)
 
 def parsable(url):
     """ Returns true if url follows urlMatcher pattern """
-    # canParse = False if not urlMatcher.match(url) else False
-    canParse = True if urlMatcher.fullmatch(url) else False
-    return canParse
+    return True if urlMatcher.fullmatch(url) else False
 
 
 def fix_url(url):
