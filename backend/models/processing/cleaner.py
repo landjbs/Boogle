@@ -27,6 +27,8 @@ wikiMatcher = re.compile(r"(disambiguation)")
 slashMatcher = re.compile(r"[.\r|.\n|.\t]")
 # matches for special parts of url
 urlMatcher = re.compile(r"https|http|www|com|org|edu")
+# matches for the end of files
+fileMatcher = re.compile(r".\S+")
 
 
 # converts anything that looks like a year range (eg. 1910-11) into two years (eg. 1910 1911)
@@ -87,6 +89,13 @@ def clean_url(rawURL):
     cleanedURL = re.sub(urlMatcher, "", rawURL)
     strippedURL = re.sub(stripMatcher, "", cleanedURL)
     return strippedURL
+
+
+def clean_file_name(rawFileName):
+    """ Cleans name of a file """
+    detypedFileName = re.sub(fileMatcher, "", rawFileName)
+    print(detypedFileName)
+
 
 # dictionary to find english form of punctuation in search conversion
 puncDict = {'.':'period', ',':'comma', '!':'exclamation mark',

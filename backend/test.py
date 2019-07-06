@@ -16,14 +16,13 @@ from scipy.spatial.distance import cosine
 
 print(colored('Imports complete', 'cyan'))
 
-from crawlers.htmlAnalyzer import scrape_url
-
+from models.processing.cleaner import clean_file_name
 knowledgeProcessor = build_knowledgeProcessor({})
 freqDict = {}
 
 while True:
     text = input('text: ')
-    print(rank_distribution(text))
+    clean_file_name(text)
 
 # while True:
 

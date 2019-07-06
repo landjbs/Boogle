@@ -12,7 +12,7 @@ import langid # to classify language of pageString
 from bs4 import BeautifulSoup # to parse html
 
 from crawlers.urlAnalyzer import fix_url, url_to_pageString, parsable
-from models.processing.cleaner import clean_text, clean_title, clean_url
+from models.processing.cleaner import clean_text, clean_title, clean_url, clean_src
 from models.knowledge.knowledgeFinder import score_divDict
 # from models.binning.classification import classify_page
 # from models.binning.docVecs import vectorize_all
@@ -136,17 +136,24 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
     ### FIND IMAGES ALT TAGS ###
     try:
         images = curSoup.find_all('img')
-        imageAlts = " ".join(img['alt'] for img in images)
-        imageNum = len(images)
-    except:
+        imageScore = len(images)
         imageAlts = ""
-
-    ### FIND VIDEO ALT TAGS: TO COMPLETE !!!! ###
-    try:
-        videos = curSoup.find('')
-        videoAlts = ""
+        # build string of imageAlts and take away half a point from image score
+        # for every image without (height and width) or style
+        for image in images:
+            imageAlts += f" {image['alt']} "
+            if not (image['width'] and image['height']) or not (image['style']):
+                imageScore += -0.5
     except:
-        videoAlts = ""
+        imageScore, imageAlts = 0, ""
+
+    ### FIND VIDEO ALT TAGS ###
+    try:
+        videos = curSoup.find('video')
+        videoScore = len(videos)
+        videoSRCs = " ".join(video['src'] for video in videos)
+    except:
+        videoScore, videoAlts = 0, ""
 
     ### ANALYZE AND SCORE KNOWLEDGE TOKENS ###
     divDict = {'url':           clean_url(url),
@@ -157,7 +164,8 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
                 'lowHeaders':   clean_text(lowHeader),
                 'description':  clean_text(description),
                 'keywords':     clean_text(keywords),
-                'imageAlt':     clean_text(imageAlts),
+                'imageAlts':    clean_text(imageAlts),
+                'videoSRCs':    clean_text(videoSRCs)
                 'all':          cleanedText}
 
     # find dict mapping knowledge tokens in divDict to their score
