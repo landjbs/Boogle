@@ -42,24 +42,24 @@ fileMatcher = re.compile(r"\.\S+")
 #
 
 
-## Funcitons ##
+## Functions ##
 def clean_text(rawString):
     """
     Cleans rawString by replacing spaceMatcher and tagMatcher with a single
     space, removing non-alpha chars, and lowercasing alpha chars
     """
-
     # replace stripMatcher with ""
-    cleanedString = re.sub(stripMatcher, "", detaggedString)
+    cleanedString = re.sub(stripMatcher, "", rawString)
     # replace spaceMatcher with " " and strip surround whitespace
     spacedString = re.sub(spaceMatcher, " ", cleanedString).strip()
     # lowercase the alpha chars that remain
     loweredString = spacedString.lower()
     return loweredString
 
+
 def clean_web_text(rawWebText):
-    """ Cleans webtext by removing tags and then feeding into clean_text """
-    # replace spaceMatcher and tagMatcher with " "
+    """ Cleans web text by removing tags and then feeding into clean_text """
+    # replace html tags with " "
     detaggedString = re.sub(tagMatcher, " ", rawWebText)
     return clean_text(detaggedString)
 
@@ -74,6 +74,7 @@ def clean_wiki(rawWiki):
     # use clean_text to do the rest
     cleanedWiki = clean_text(dewikiedWiki)
     return cleanedWiki
+
 
 def clean_title(rawTitle):
     """
@@ -98,9 +99,8 @@ def clean_url(rawURL):
 
 def clean_file_name(rawFileName):
     """ Cleans name of a file """
-    print(rawFileName)
     detypedFileName = re.sub(fileMatcher, "", rawFileName)
-    print(detypedFileName)
+    return clean_text(detypedFileName)
 
 
 # dictionary to find english form of punctuation in search conversion

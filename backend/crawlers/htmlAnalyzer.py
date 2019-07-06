@@ -12,7 +12,7 @@ import langid # to classify language of pageString
 from bs4 import BeautifulSoup # to parse html
 
 from crawlers.urlAnalyzer import fix_url, url_to_pageString, parsable
-from models.processing.cleaner import clean_text, clean_title, clean_url, clean_file_name
+import models.processing.cleaner as cleaner
 from models.knowledge.knowledgeFinder import score_divDict
 # from models.binning.classification import classify_page
 # from models.binning.docVecs import vectorize_all
@@ -43,8 +43,8 @@ def clean_pageText(rawText, title):
     titleEnd = rawText.find(title) + len(title)
     # filter out everything before the title
     afterTitle = rawText[titleEnd:]
-    # call clean_text from models.textProcessor.cleaner
-    cleanedText = clean_text(afterTitle)
+    # call clean_web_text from models.textProcessor.cleaner
+    cleanedText = cleaner.clean_web_text(afterTitle)
     return (cleanedText, afterTitle)
 
 
@@ -110,7 +110,7 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
     title = curSoup.title.string
     visible_text = ' '.join(filter(is_visible, curSoup.findAll(text=True)))
     cleanedText, afterTitle = clean_pageText(visible_text, title)
-    cleanedTitle = clean_title(title)
+    cleanedTitle = cleaner.clean_title(title)
 
     ### VALIDATE LANGUAGE ###
     assert (detect_language(cleanedText)=='en'), f"{url} contents not in English"
@@ -156,16 +156,16 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
         videoScore, videoAlts = 0, ""
 
     ### ANALYZE AND SCORE KNOWLEDGE TOKENS ###
-    divDict = {'url':           clean_url(url),
+    divDict = {'url':           cleaner.clean_url(url),
                 'title':        cleanedTitle,
-                'h1':           clean_text(h1),
-                'h2':           clean_text(h2),
-                'h3':           clean_text(h3),
-                'lowHeaders':   clean_text(lowHeader),
-                'description':  clean_text(description),
-                'keywords':     clean_text(keywords),
-                'imageAlts':    clean_text(imageAlts),
-                'videoSRCs':    clean_text(videoSRCs),
+                'h1':           cleaner.clean_text(h1),
+                'h2':           cleaner.clean_text(h2),
+                'h3':           cleaner.clean_text(h3),
+                'lowHeaders':   cleaner.clean_text(lowHeader),
+                'description':  cleaner.clean_text(description),
+                'keywords':     cleaner.clean_text(keywords),
+                'imageAlts':    cleaner.clean_text(imageAlts),
+                'videoSRCs':    cleaner.clean_file_name(videoSRCs),
                 'all':          cleanedText}
 
     # find dict mapping knowledge tokens in divDict to their score

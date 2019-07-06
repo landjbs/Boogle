@@ -22,7 +22,7 @@ freqDict = {}
 
 while True:
     text = input('text: ')
-    clean_file_name(text)
+    print(clean_file_name(text))
 
 # while True:
 
