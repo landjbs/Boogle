@@ -27,15 +27,12 @@ lowHeaderMatcher = re.compile('^h[4-6$]')
 
 def is_visible(element):
     """ Checks if html element is visible on a webpage """
-      if element.parent.name in ['style', 'script', '[document]', 'head', 'title']:
+    if element.parent.name in ['head', 'title', '[document]', 'style', 'script']:
         return False
     elif re.match('<!--.*-->', str(element.encode('utf-8'))):
         return False
     return True
 
-result = filter(visible, data)
-
-print list(result)
 
 def clean_pageText(rawText, title):
     """
@@ -111,7 +108,8 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
 
     ### GET TITLE AND CLEANED TEXT ###
     title = curSoup.title.string
-    cleanedText, afterTitle = clean_pageText(curSoup.get_text(), title)
+    visible_text = ' '.join(filter(is_visible, curSoup.findAll(text=True)))
+    cleanedText, afterTitle = clean_pageText(visible_text, title)
     cleanedTitle = clean_title(title)
 
     ### VALIDATE LANGUAGE ###

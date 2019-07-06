@@ -32,6 +32,7 @@ def fix_url(url, rootURL):
             urlString = "https://" + urlString
         elif urlString.startswith('/'):
             urlString = rootURL + urlString
+            print(urlString, rootURL)
         else:
             urlString = "http://www." + urlString
     return urlString
