@@ -9,7 +9,17 @@ from numpy import log
 import matplotlib.pyplot as plt
 
 # dict mapping html divs to score  multiplier
-divMultipiers = {'url':5, 'title':6, 'h1':5, 'h2':4, 'h3':3, 'lowHeaders':2, 'description':3, 'keywords':3, 'imageAlt':2, 'all':1}
+divMultipiers = {'url':         5,
+                'title':        6,
+                'h1':           5,
+                'h2':           4,
+                'h3':           3,
+                'lowHeaders':   2,
+                'description':  3,
+                'keywords':     3,
+                'imageAlts':    3,
+                'videoSRCs':    2,
+                'all':          1}
 
 
 def count_token(token, pageText):
@@ -55,7 +65,7 @@ def find_countedTokens(inStr, knowledgeProcessor):
 
 def score_token(token, div, divLen, divMultipier, tokensFound):
     """
-    Helper to score individual token in current div
+    Scores individual token in div
     """
     ### FIND TOKEN FREQUENCY ###
     tokenNum = knowledgeBuilder.count_token(token, divText)
