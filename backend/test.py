@@ -18,12 +18,12 @@ print(colored('Imports complete', 'cyan'))
 
 from crawlers.htmlAnalyzer import scrape_url
 
-knowledgeProcessor = build_knowledgeProcessor({'harvard', 'college', 'video'})
-freqDict = {}
+knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
+freqDict = load('data/outData/knowledge/freqDict.sav')
 
 while True:
     url = input('text: ')
-    pList = (scrape_url(url, knowledgeProcessor, {}))
+    pList = (scrape_url(url, knowledgeProcessor, freqDict))
     print(pList[2])
 
 

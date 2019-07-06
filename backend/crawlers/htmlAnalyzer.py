@@ -7,7 +7,7 @@ page object of page info.
 """
 
 import re # to match for patterns in pageStrings
-import time # to find the loadTime of a page
+from time import time # to find the loadTime of a page
 import langid # to classify language of pageString
 from bs4 import BeautifulSoup # to parse html
 
@@ -93,9 +93,9 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
     """
 
     # fetch page string and save time to load
-    loadStart = time.time()
+    loadStart = time()
     rawString = url_to_pageString(url, timeout=timeout)
-    loadEnd = time.time()
+    loadEnd = time()
 
     ### PROCESS TIMES ###
     # round time page took to load to 10ths
@@ -172,8 +172,6 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
                 'imageAlts':    cleaner.clean_text(imageAlts),
                 'videoSRCs':    cleaner.clean_file_name(videoSRCs),
                 'all':          cleanedText}
-
-    print(divDict)
 
     # find dict mapping knowledge tokens in divDict to their score
     knowledgeTokens = score_divDict(divDict, knowledgeProcessor, freqDict)

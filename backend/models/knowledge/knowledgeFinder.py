@@ -55,7 +55,6 @@ def find_rawTokens(inStr, knowledgeProcessor):
                 # find all tokens within the word and add to all tokens
                 smallTokens = knowledgeProcessor.extract_keywords(word)
                 allTokens += smallTokens
-    print(allTokens)
     return allTokens
 
 
@@ -169,12 +168,3 @@ def score_divDict(divDict, knowledgeProcessor, freqDict):
             else:
                 scoreDict.update({token:divScores[token]})
     return scoreDict
-
-
-
-
-
-
-
-
-pass
