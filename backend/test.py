@@ -9,24 +9,23 @@ from scipy.spatial.distance import euclidean
 from sklearn.metrics.pairwise import cosine_similarity
 from crawlers.htmlAnalyzer import get_pageText
 import pandas as pd
-import models.binning.docVecs as docVecs
-from models.ranking.distributionRanker import rank_distribution
+# import models.binning.docVecs as docVecs
+# from models.ranking.distributionRanker import rank_distribution
 from dataStructures.objectSaver import load
 from scipy.spatial.distance import cosine
 
 print(colored('Imports complete', 'cyan'))
 
-# knowledgeSet = load('data/outData/knowledge/knowledgeSet.sav')
+from crawlers.htmlAnalyzer import scrape_url
 
-knowledgeSet = {'roman warm period', 'contemporary warm period', 'celtic warm period', 'orange juice', 'dragon training', 'roman weapons'}
+knowledgeProcessor = build_knowledgeProcessor({})
+freqDict = {}
 
 while True:
-    search = input('Search: ')
-    searchVec = docVecs.vectorize_doc(search)
-    scoreList = [(1 - (cosine(searchVec, docVecs.vectorize_doc(token))), token) for token in knowledgeSet]
-    scoreList.sort(reverse=True)
-    for item in scoreList[:10]:
-        print(f'\t{item}')
+    url = input("URL: ")
+    urlList = scrape_url(url, knowledgeProcessor, {})
+    print(urlList[5])
+
 
 # while True:
 

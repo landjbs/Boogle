@@ -38,9 +38,11 @@ def fix_url(url, rootURL):
 
 
 def url_to_pageString(url, timeout=5):
-    """ Cleans and converts string of URL link to string of page contents """
+    """
+    Cleans and converts string of URL link to string of page contents.
+    DOESN'T FIX URLS
+    """
     # add proper headers to url
-    cleanedURL = fix_url(url)
     try:
         # get response object of url, failing after timeout seconds
         page = urllib.request.urlopen(cleanedURL, timeout=timeout)
