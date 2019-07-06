@@ -22,16 +22,16 @@ def parsable(url):
     return True if urlMatcher.fullmatch(url) else False
 
 
-def fix_url(url):
+def fix_url(url, rootURL):
     """ Add proper headings URLs for crawler analysis """
-    # cast url to string
     urlString = str(url)
     if not parsable(urlString):
-        # check starts
         if urlString.startswith('http'):
             pass
         elif urlString.startswith("www"):
             urlString = "https://" + urlString
+        elif urlString.startswith('/'):
+            urlString = rootURL + urlString
         else:
             urlString = "http://www." + urlString
     return urlString
