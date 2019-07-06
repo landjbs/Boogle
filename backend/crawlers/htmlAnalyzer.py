@@ -14,8 +14,8 @@ from bs4 import BeautifulSoup # to parse html
 from crawlers.urlAnalyzer import fix_url, url_to_pageString, parsable
 import models.processing.cleaner as cleaner
 from models.knowledge.knowledgeFinder import score_divDict
-# from models.binning.classification import classify_page
 from models.binning.docVecs import vectorize_doc
+# from models.binning.classification import classify_page
 # from models.ranking.baseRanker import calc_base_score
 
 # matchers for header tags in html text
@@ -180,7 +180,7 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
     linkList = list(map(lambda link:fix_url(link, url), get_links(curSoup)))
 
     ### SET WINDOW TEXT TO DISPLAY ###
-    windowText = description if not (description=="") else afterTitle
+    windowText = description if not (description=="") else cleaner.clean_title(afterTitle)
     assert (windowText != ""), f"{url} has no windowText"
 
     ### VECTORIZE AND CLASSIFY DOCUMENT ###
@@ -190,7 +190,7 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
 
     ### RETURN PAGE DICT ###
     return {'url':              url,
-            'title':     cleanedTitle,
+            'title':            cleanedTitle,
             'knowledgeTokens':  knowledgeTokens,
             'pageVec':          pageVec,
             'linkList':         linkList,

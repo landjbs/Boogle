@@ -24,7 +24,7 @@ spaceMatcher = re.compile(r'[\t\n\s_.?!:;/<>*&^%$#@()"~`+-]+')
 # matches for special wiki words like '(disambiguation)'
 wikiMatcher = re.compile(r"(disambiguation)")
 # matches \t \r and \n in titles
-slashMatcher = re.compile(r"[.\r|.\n|.\t]")
+slashMatcher = re.compile(r".\r|.\n|.\t")
 # matches for special parts of url
 urlMatcher = re.compile(r"https|http|www|com|org|edu")
 # matches for the end of files
@@ -103,6 +103,7 @@ def clean_file_name(rawFileName):
     return clean_text(detypedFileName)
 
 
+### SEARCH CLEANERS ###
 # dictionary to find english form of punctuation in search conversion
 puncDict = {'.':'period', ',':'comma', '!':'exclamation mark',
             '?':'question mark', '...':'ellipses', '"':'quotation mark',

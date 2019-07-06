@@ -11,10 +11,9 @@ from time import time
 from termcolor import colored
 
 from crawlers.urlAnalyzer import fix_url
-import crawlers.htmlAnalyzer as htmlAnalyzer
+from crawlers.htmlAnalyzer import scrape_url
 from dataStructures.scrapingStructures import Simple_List, Metrics
 from dataStructures.objectSaver import save, load
-from models.binning.docVecs import load_model
 from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
 
 
@@ -43,7 +42,7 @@ def scrape_urlList(urlList, runTime=100000000, queueDepth=1000000, workerNum=20)
     testSimple = Simple_List()
 
     # find time at which to stop analyzing
-    stopTime = round(time.time() + runTime)
+    stopTime = round(time() + runTime)
 
     def enqueue_urlList(urlList):
         """
@@ -62,13 +61,14 @@ def scrape_urlList(urlList, runTime=100000000, queueDepth=1000000, workerNum=20)
             url = urlQueue.get()
 
             try:
-                pageDict = htmlAnalyzer.scrape_url(url, knowledgeProcessor, freqDict)
+                pageDict = scrape_url(url, knowledgeProcessor, freqDict)
                 # pull list of links from pageDict and put in urlQueue
                 # enqueue_urlList(pageDict['linkList'])
+                print(pageDict)
                 testSimple.add(pageDict)
                 # update scrape metrics
                 scrapeMetrics.add(error=False)
-                
+
             except Exception as e:
                 scrapeMetrics.add(error=True)
 
@@ -90,7 +90,7 @@ def scrape_urlList(urlList, runTime=100000000, queueDepth=1000000, workerNum=20)
         t.start()
 
     # load cleaned initial urls into url_queue
-    urlList = list(map(lambda url:fix_url(url), urlList))
+    urlList = list(map(lambda url:fix_url(url, url), urlList))
     enqueue_urlList(urlList)
 
     # ensure all urlQueue processes are complete before proceeding
