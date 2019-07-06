@@ -18,7 +18,8 @@ print(colored('Imports complete', 'cyan'))
 
 from crawlers.htmlAnalyzer import scrape_url
 
-knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
+# knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
+knowledgeProcessor = build_knowledgeProcessor({'harvard'})
 freqDict = load('data/outData/knowledge/freqDict.sav')
 
 while True:

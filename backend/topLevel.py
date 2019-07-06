@@ -26,9 +26,9 @@ loadedSet = set()
 for i, file in enumerate(listdir('backend/data/thicctable/627amCrawl')):
     if not file=='.DS_Store':
         with open(f'backend/data/thicctable/627amCrawl/{file}', 'r', encoding='utf-8') as FileObj:
-            tempList = json.loads(FileObj.read())
-            for pageList in tempList:
-                pageObj = Page(pageList)
+            tempDict = json.loads(FileObj.read())
+            for pageDict in tempDict:
+                pageObj = Page(pageDict)
                 if not pageObj.url in loadedSet:
                     loadedSet.add(pageObj.url)
                     database.bucket_page(pageObj)

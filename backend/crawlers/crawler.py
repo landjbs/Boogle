@@ -7,12 +7,12 @@ Outsoucres database definitions to thicctable.py
 
 from queue import Queue
 from threading import Thread
-import time
+from time import time
 from termcolor import colored
 
 from crawlers.urlAnalyzer import fix_url
 import crawlers.htmlAnalyzer as htmlAnalyzer
-from dataStructures.simpleStructures import Simple_List, Metrics
+from dataStructures.scrapingStructures import Simple_List, Metrics
 from dataStructures.objectSaver import save, load
 from models.binning.docVecs import load_model
 from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
@@ -62,20 +62,20 @@ def scrape_urlList(urlList, runTime=100000000, queueDepth=1000000, workerNum=20)
             url = urlQueue.get()
 
             try:
-                pageList = htmlAnalyzer.scrape_url(url, knowledgeProcessor, freqDict)
+                pageDict = htmlAnalyzer.scrape_url(url, knowledgeProcessor, freqDict)
                 # pull list of links from pageDict and put in urlQueue
-                # enqueue_urlList(pageList[4])
+                # enqueue_urlList(pageDict['linkList'])
+                testSimple.add(pageDict)
                 # update scrape metrics
                 scrapeMetrics.add(error=False)
+                
             except Exception as e:
-                print(e)
-                # update scrape metrics
                 scrapeMetrics.add(error=True)
 
-            # save progress every 15 items
-            if (scrapeMetrics.count % 10 == 0):
-                # testSimple.save(f"data/thicctable/nycCrawl/{str(scrapeMetrics.count)}")
-                # testSimple.clear()
+            # save progress every 10 items
+            if (len(testSimple.data) == 10):
+                testSimple.save(f"data/thicctable/nycCrawl/{str(scrapeMetrics.count)}")
+                testSimple.clear()
                 pass
 
             # log progress
