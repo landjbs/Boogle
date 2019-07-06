@@ -28,7 +28,7 @@ slashMatcher = re.compile(r"[.\r|.\n|.\t]")
 # matches for special parts of url
 urlMatcher = re.compile(r"https|http|www|com|org|edu")
 # matches for the end of files
-fileMatcher = re.compile(r".\S+")
+fileMatcher = re.compile(r"\.\S+")
 
 
 # converts anything that looks like a year range (eg. 1910-11) into two years (eg. 1910 1911)
@@ -48,8 +48,7 @@ def clean_text(rawString):
     Cleans rawString by replacing spaceMatcher and tagMatcher with a single
     space, removing non-alpha chars, and lowercasing alpha chars
     """
-    # replace spaceMatcher and tagMatcher with " "
-    detaggedString = re.sub(tagMatcher, " ", rawString)
+
     # replace stripMatcher with ""
     cleanedString = re.sub(stripMatcher, "", detaggedString)
     # replace spaceMatcher with " " and strip surround whitespace
@@ -57,6 +56,12 @@ def clean_text(rawString):
     # lowercase the alpha chars that remain
     loweredString = spacedString.lower()
     return loweredString
+
+def clean_web_text(rawWebText):
+    """ Cleans webtext by removing tags and then feeding into clean_text """
+    # replace spaceMatcher and tagMatcher with " "
+    detaggedString = re.sub(tagMatcher, " ", rawWebText)
+    return clean_text(detaggedString)
 
 
 def clean_wiki(rawWiki):
@@ -93,6 +98,7 @@ def clean_url(rawURL):
 
 def clean_file_name(rawFileName):
     """ Cleans name of a file """
+    print(rawFileName)
     detypedFileName = re.sub(fileMatcher, "", rawFileName)
     print(detypedFileName)
 

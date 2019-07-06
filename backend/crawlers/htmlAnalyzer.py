@@ -12,7 +12,7 @@ import langid # to classify language of pageString
 from bs4 import BeautifulSoup # to parse html
 
 from crawlers.urlAnalyzer import fix_url, url_to_pageString, parsable
-from models.processing.cleaner import clean_text, clean_title, clean_url, clean_src
+from models.processing.cleaner import clean_text, clean_title, clean_url, clean_file_name
 from models.knowledge.knowledgeFinder import score_divDict
 # from models.binning.classification import classify_page
 # from models.binning.docVecs import vectorize_all
@@ -165,7 +165,7 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
                 'description':  clean_text(description),
                 'keywords':     clean_text(keywords),
                 'imageAlts':    clean_text(imageAlts),
-                'videoSRCs':    clean_text(videoSRCs)
+                'videoSRCs':    clean_text(videoSRCs),
                 'all':          cleanedText}
 
     # find dict mapping knowledge tokens in divDict to their score
