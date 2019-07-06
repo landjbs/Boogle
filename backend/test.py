@@ -24,8 +24,4 @@ freqDict = load('data/outData/knowledge/freqDict.sav')
 while True:
     url = input('text: ')
     pList = (scrape_url(url, knowledgeProcessor, freqDict))
-    print(pList[2])
-
-
-# import appscript
-# appscript.app('Terminal').do_script('bert-serving-start -model_dir /Users/landonsmith/Desktop/uncased_L-24_H-1024_A-16 -num_worker=1')
+    print(pList)

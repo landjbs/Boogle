@@ -15,7 +15,7 @@ from crawlers.urlAnalyzer import fix_url, url_to_pageString, parsable
 import models.processing.cleaner as cleaner
 from models.knowledge.knowledgeFinder import score_divDict
 # from models.binning.classification import classify_page
-# from models.binning.docVecs import vectorize_all
+from models.binning.docVecs import vectorize_doc
 # from models.ranking.baseRanker import calc_base_score
 
 # matchers for header tags in html text
@@ -133,7 +133,7 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
     except:
         keywords = ""
 
-    ### FIND IMAGES ALT TAGS ###
+    ### FIND IMAGE INFO ###
     try:
         images = curSoup.find_all('img')
         imageScore = len(images)
@@ -152,7 +152,7 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
     except:
         imageScore, imageAlts = 0, ""
 
-    ### FIND VIDEO ALT TAGS ###
+    ### FIND VIDEO INFO ###
     try:
         videos = curSoup.find('video')
         videoScore = len(videos)
@@ -184,13 +184,18 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
     assert (windowText != ""), f"{url} has no windowText"
 
     ### VECTORIZE AND CLASSIFY DOCUMENT ###
-    # pageVec = vectorize_all(afterTitle)
-    # category = classify_page(pageVec)
-    pageVec = {}
-    category = 'news'
-
+    pageVec = vectorize_doc(cleanedText)
     ### CALC BASE SCORE OF PAGE ###
     # baseScore = calc_base_score(loadTime)
 
-    ### RETURN PAGE LIST ### imageNum
-    return [url, cleanedTitle, knowledgeTokens, pageVec, linkList, loadTime, loadDate, windowText]
+    ### RETURN PAGE DICT ###
+    return {'url':              url,
+            'cleanedTitle':     cleanedTitle,
+            'knowledgeTokens':  knowledgeTokens,
+            'pageVec':          pageVec,
+            'linkList':         linkList,
+            'loadTime':         loadTime,
+            'loadDate':         loadDate,
+            'imageScore':       imageScore,
+            'videoScore':       videoScore,
+            'windowText':       windowText}

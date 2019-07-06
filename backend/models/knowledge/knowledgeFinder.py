@@ -72,6 +72,7 @@ def score_token(token, div, divText, divLen, divMultipier, tokensFound):
     """
     Scores individual token in div
     """
+    
     ### FIND TOKEN FREQUENCY ###
     tokenNum = url_count_token(token, divText) if (div=='url') else count_token(token, divText)
     tokenFreq = tokenNum / divLen
@@ -84,7 +85,7 @@ def score_token(token, div, divText, divLen, divMultipier, tokensFound):
         termFreq, inverseDocFreq = 0, 0
 
     # normalize tokenFreq using a tf-idf schema
-    normedFreq = tokenFreq - termFreq
+    normedFreq = tokenFreq - (1.2 * termFreq)
 
     # tokens with negative normedFreq will automatically have scores of 0
     if normedFreq <= 0:
