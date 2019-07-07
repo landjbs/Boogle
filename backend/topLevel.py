@@ -1,10 +1,11 @@
+from os import listdir
+from time import time
+
+# from crawlers.crawler import scrape_urlList
+# import json
 from dataStructures.objectSaver import load
 from dataStructures.thicctable import Thicctable
-# from crawlers.crawler import scrape_urlList
-from os import listdir
-import json
 from dataStructures.pageObj import Page
-import time
 from searchers.spellingCorrector import correct
 
 ### url Reading ###
@@ -13,7 +14,6 @@ from searchers.spellingCorrector import correct
 
 # ### Table initialization ###
 print('Loading Knowledge Database')
-# knowledgeSet = {'homes for sale'}
 knowledgeSet = load("data/outData/knowledge/knowledgeSet.sav")
 print('Knowledge Database Loaded')
 database = Thicctable(knowledgeSet)
@@ -54,9 +54,9 @@ while True:
 
 # def flask_search(rawSearch):
 #     try:
-#         start = time.time()
+#         start = time()
 #         correctionDisplay, resultList = topSearch(rawSearch, database, WORDS)
-#         end = time.time()
+#         end = time()
 #         searchStats = (len(resultList), round((end - start), 4))
 #         return searchStats, correctionDisplay, resultList
 #
