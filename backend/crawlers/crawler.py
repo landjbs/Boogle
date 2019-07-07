@@ -64,7 +64,6 @@ def scrape_urlList(urlList, runTime=100000000, queueDepth=1000000, workerNum=1):
                 pageDict = scrape_url(url, knowledgeProcessor, freqDict)
                 # pull list of links from pageDict and put in urlQueue
                 # enqueue_urlList(pageDict['linkList'])
-                print(pageDict)
                 testSimple.add(pageDict)
                 # update scrape metrics
                 scrapeMetrics.add(error=False)
