@@ -99,7 +99,7 @@ class Thicctable():
                 # insert tuple of score and pageObj into appropriate bin
                 self.insert_pageTuple(key=token, pageTuple=pageTuple)
             except Exception as e:
-                print(e)
+                print(f"BUCKET ERROR: {e}")
         return True
 
     ### SEARCH FUNCTIONS ###

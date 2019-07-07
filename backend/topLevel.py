@@ -13,25 +13,29 @@ from searchers.spellingCorrector import correct
 
 # ### Table initialization ###
 print('Loading Knowledge Database')
-knowledgeSet = load("backend/data/outData/knowledge/knowledgeSet.sav")
+# knowledgeSet = {'homes for sale'}
+knowledgeSet = load("data/outData/knowledge/knowledgeSet.sav")
 print('Knowledge Database Loaded')
 database = Thicctable(knowledgeSet)
 del knowledgeSet
 
-from searchers.searchLexer import topSearch
+# from searchers.searchLexer import topSearch
 
 loadedSet = set()
 
 # Read lists from files into thicctable
-for i, file in enumerate(listdir('backend/data/thicctable/627amCrawl')):
-    if not file=='.DS_Store':
-        with open(f'backend/data/thicctable/627amCrawl/{file}', 'r', encoding='utf-8') as FileObj:
-            tempDict = json.loads(FileObj.read())
-            for pageDict in tempDict:
-                pageObj = Page(pageDict)
-                if not pageObj.url in loadedSet:
-                    loadedSet.add(pageObj.url)
-                    database.bucket_page(pageObj)
+for i, file in enumerate(listdir('data/thicctable')):
+    if not file in ['DS_Store', 'harvardCrawl']:
+        try:
+            with open(f'data/thicctable/{file}', 'r', encoding='utf-8') as FileObj:
+                pagesList = load(f'data/thicctable/{file}')
+                for pageDict in pagesList:
+                    pageObj = Page(pageDict)
+                    if not pageObj.url in loadedSet:
+                        loadedSet.add(pageObj.url)
+                        database.bucket_page(pageObj)
+        except:
+            print(f"ERROR: {file}")
         print(f'Loading Page Files: {i*10}', end='\r')
     else:
         pass
@@ -42,15 +46,19 @@ print('Sorting', end='\r')
 database.sort_all()
 print('Sorting Complete')
 
-WORDS = database.all_lengths()
+while True:
+    search = input('search: ')
+    print(database.search_display(search, [search]))
 
-def flask_search(rawSearch):
-    try:
-        start = time.time()
-        correctionDisplay, resultList = topSearch(rawSearch, database, WORDS)
-        end = time.time()
-        searchStats = (len(resultList), round((end - start), 4))
-        return searchStats, correctionDisplay, resultList
+# WORDS = database.all_lengths()
 
-    except Exception as e:
-        print(f'ERROR: {e}')
+# def flask_search(rawSearch):
+#     try:
+#         start = time.time()
+#         correctionDisplay, resultList = topSearch(rawSearch, database, WORDS)
+#         end = time.time()
+#         searchStats = (len(resultList), round((end - start), 4))
+#         return searchStats, correctionDisplay, resultList
+#
+#     except Exception as e:
+#         print(f'ERROR: {e}')

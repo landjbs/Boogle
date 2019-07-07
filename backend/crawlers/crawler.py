@@ -17,7 +17,7 @@ from dataStructures.objectSaver import save, load
 from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
 
 
-def scrape_urlList(urlList, runTime=100000000, queueDepth=1000000, workerNum=20):
+def scrape_urlList(urlList, runTime=100000000, queueDepth=1000000, workerNum=1):
     """
     Rescursively crawls internet from starting urlList and ends after runTime
     seconds.
@@ -29,8 +29,8 @@ def scrape_urlList(urlList, runTime=100000000, queueDepth=1000000, workerNum=20)
     print(colored('Complete: Loading freqDict', color='cyan'))
 
     print(colored('Loading knowledgeProcessor', color='red'), end='\r')
-    # knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
-    knowledgeProcessor = build_knowledgeProcessor({'art'})
+    knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
+    # knowledgeProcessor = build_knowledgeProcessor({'art'})
     print(colored('Complete: Loading knowledgeProcessor', color='cyan'))
 
     # queue to hold urlList
@@ -74,7 +74,8 @@ def scrape_urlList(urlList, runTime=100000000, queueDepth=1000000, workerNum=20)
 
             # save progress every 10 items
             if (len(testSimple.data) == 10):
-                testSimple.save(f"data/thicctable/nycCrawl/{str(scrapeMetrics.count)}")
+                # testSimple.save(f"data/thicctable/{str(scrapeMetrics.count)}")
+                save(testSimple.data, f'data/thicctable/{str(scrapeMetrics.count + 200)}')
                 testSimple.clear()
                 pass
 
