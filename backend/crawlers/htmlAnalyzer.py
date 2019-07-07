@@ -27,8 +27,10 @@ lowHeaderMatcher = re.compile('^h[4-6$]')
 
 def is_visible(element):
     """ Checks if html element is visible on a webpage """
+    # returns false for elements in non-visible sections of html
     if element.parent.name in ['head', 'title', '[document]', 'style', 'script']:
         return False
+    # returns false for comments
     elif re.match('<!--.*-->', str(element.encode('utf-8'))):
         return False
     return True
@@ -70,8 +72,7 @@ def get_links(soup):
     # get list of all <a> tags in soup
     a_list = soup.find_all('a', href=True)
     # get list of validated urls from <a> tag list
-    linkList = [link['href'] for link in a_list if parsable(link['href'])]
-    return linkList
+    return [link['href'] for link in a_list if parsable(link['href'])]
 
 
 def detect_language(pageString):

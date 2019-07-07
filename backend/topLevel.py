@@ -8,9 +8,6 @@ from dataStructures.thicctable import Thicctable
 from dataStructures.pageObj import Page
 from searchers.spellingCorrector import correct
 
-### url Reading ###
-# urlList = list(map(lambda url:(url[:-4]), listdir('data/outData/dmozProcessed/All')[1000:40000]))
-# scrape_urlList(urlList)
 
 # ### Table initialization ###
 print('Loading Knowledge Database')
