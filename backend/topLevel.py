@@ -8,6 +8,11 @@ from dataStructures.thicctable import Thicctable
 from dataStructures.pageObj import Page
 from searchers.spellingCorrector import correct
 
+freqDict = load('data/outData/knowledge/freqDict.sav')
+
+print(len(freqDict))
+
+abfdasdd
 
 # ### Table initialization ###
 print('Loading Knowledge Database')

@@ -38,7 +38,7 @@ def vectorize_n_split(document, n):
     # split document into words and find length
     words = document.split()
     numWords = len(words)
-    # split words into n roughly-even-sized chunks
+    # split words into n roughly-even-sized chunks--method function of (n, numWords)
     if numWords < n:
         raise ValueError(f'Document must have more than {n} words')
     elif ((numWords % n) == 0):
@@ -64,6 +64,10 @@ def vectorize_doc_list(docList):
     """ Returns list of vector representation of each doc in docList """
     vecList = bc.encode(docList)
     return vecList
+
+def score_doc_list(docList):
+    """ Returns list of tuples of form (docVector, docContents) """
+    return [(vectorize_doc(doc), doc) for doc in docList]
 
 def vec_to_dict(docVec):
     """ Converts docVec to dict for easy df insertion """
