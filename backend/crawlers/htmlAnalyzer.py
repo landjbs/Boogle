@@ -14,7 +14,7 @@ from bs4 import BeautifulSoup # to parse html
 from crawlers.urlAnalyzer import fix_url, url_to_pageString, parsable
 import models.processing.cleaner as cleaner
 from models.knowledge.knowledgeFinder import score_divDict
-from models.binning.docVecs import vectorize_doc
+import models.binning.docVecs as docVecs
 # from models.binning.classification import classify_page
 # from models.ranking.baseRanker import calc_base_score
 
@@ -186,6 +186,8 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
 
     ### VECTORIZE AND CLASSIFY DOCUMENT ###
     pageVec = vectorize_doc(cleanedText)
+    vecMatrix = vectorize_n_split
+    diversityScore =
     ### CALC BASE SCORE OF PAGE ###
     # baseScore = calc_base_score(loadTime)
 
