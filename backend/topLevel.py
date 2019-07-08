@@ -12,7 +12,6 @@ freqDict = load('data/outData/knowledge/freqDict.sav')
 
 print(len(freqDict))
 
-abfdasdd
 
 # ### Table initialization ###
 print('Loading Knowledge Database')
