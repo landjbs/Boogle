@@ -44,7 +44,7 @@ def vectorize_n_split(document, n):
     elif ((numWords % n) == 0):
         chunkSize = int(numWords / n)
         chunkMatrix = [" ".join(words[i:i+chunkSize])
-                        for i in range(0, len(words), chunkSize)]
+                        for i in range(0, numWords, chunkSize)]
     else:
         # calculate size of first chunk and size of others
         baseChunkSize = floor(len(words) / n)
@@ -53,11 +53,25 @@ def vectorize_n_split(document, n):
         chunkMatrix = []
         chunkMatrix.append(" ".join(words[0:firstChunkSize]))
         # add remaining chunks of baseChunkSize
-        for i in range(firstChunkSize, len(words), baseChunkSize):
+        for i in range(firstChunkSize, numWords, baseChunkSize):
             chunkMatrix.append(" ".join(words[i:i+baseChunkSize]))
     # create matrix of vectorized chunks
     docMatrix = np.array([vectorize_doc(chunk) for chunk in chunkMatrix])
     return docMatrix
+
+
+# import re
+# def vectorize_sentence_split(document, n):
+#     sentences = [sentence.strip() for sentence in re.split(r'[/.|!|?|"|;]', document)]
+#     numSentences = len(sentences)
+#     if numSentences > n:
+#         raise ValueError(f'Sentence number must be greater than {n}.')
+#     elif ((numSentences % n) == 0):
+#         chunkSize = int(numSentences / n)
+#         chunkMatrix = [" ".join(sentences[i:i+chunkSize])
+#                         for i in range(0, numSentences, chunkSize)]
+#     else:
+
 
 
 def vectorize_doc_list(docList):
