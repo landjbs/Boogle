@@ -9,8 +9,8 @@ from scipy.spatial.distance import euclidean
 from sklearn.metrics.pairwise import cosine_similarity
 from crawlers.htmlAnalyzer import get_pageText
 import pandas as pd
-import models.binning.docVecs as docVecs
-# from models.ranking.distributionRanker import rank_distribution
+# import models.binning.docVecs as docVecs
+from models.ranking.distributionRanker import rank_distribution
 from dataStructures.objectSaver import load
 from scipy.spatial.distance import cosine, euclidean
 
@@ -22,21 +22,22 @@ from crawlers.htmlAnalyzer import scrape_url
 
 # tokenList = [token for token in freqDict]
 
-tokenList = ['coffee near me?', 'what is coffee?', 'how to get fortnite?', 'why is coffee bitter?',
-            'why are bricks red?', 'what is angular momentum?', 'how far to the closest starbucks?']
-
-print(tokenList[:4])
-
-vecList = docVecs.score_doc_list(tokenList)
-
-print(vecList)
-
 while True:
-    new = input("search: ")
-    newVec = docVecs.vectorize_doc(new)
-    scoreLambda = lambda tokenTuple : (euclidean(tokenTuple[0], newVec), tokenTuple[1])
-    scoredDocs = list(map(scoreLambda, vecList))
-    scoredDocs.sort()
-    print('\tRelated Searches:')
-    for tokenTuple in scoredDocs:
-        print(f"\t{tokenTuple[1]}: {tokenTuple[0]}")
+    doc = input('doc: ')
+    print(rank_distribution(doc))
+
+# print(tokenList[:4])
+
+# vecList = docVecs.score_doc_list(tokenList)
+
+# print(vecList)
+
+# while True:
+#     new = input("search: ")
+#     newVec = docVecs.vectorize_doc(new)
+#     scoreLambda = lambda tokenTuple : (euclidean(tokenTuple[0], newVec), tokenTuple[1])
+#     scoredDocs = list(map(scoreLambda, vecList))
+#     scoredDocs.sort()
+#     print('\tRelated Searches:')
+#     for tokenTuple in scoredDocs:
+#         print(f"\t{tokenTuple[1]}: {tokenTuple[0]}")
