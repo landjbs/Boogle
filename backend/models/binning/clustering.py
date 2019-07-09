@@ -11,17 +11,43 @@ results than simple keyword lookup-tables.
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import crawlers.htmlAnalyzer as ha
-import docVecs as dv
-from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
+from sklearn.decomposition import PCA
+from scipy.spatial.distance import euclidean
+from scipy.spatial.distance import cosine, euclidean
+from sklearn.metrics.pairwise import cosine_similarity
+
+import models.binning.docVecs as docVecs
+
+
+def cluster_given_centroids(centroids, data, maxDist=100, distanceMetric='euclidean'):
+    """
+    Args:
+        -centroids:         list of strings to act as centroids around which clusters will be computed
+        -data:              list of strings to cluster around centroids
+        -maxDist:           maximum distance at which a data vector can count for a cluster (defaults to 100)
+        -distanceMetric:    distanceMetric to use when calculating distance between data vector and centroid
+    """
+    if distanceMetric=='euclidean':
+        def calc_dist(vec1, vec2):
 
 
 
 
+freqDict = {'christmas', 'halloween', 'thanksgiving', 'automobile', 'car', 'truck', 'helicopter', 'pie', 'jelly', 'bacon', 'usa', 'canada', 'iran'}
 
+centroids = ['easter', 'airplane', 'sausage', 'syria']
+centroidDict = {token:(docVecs.vectorize_doc(token)) for token in centroids}
+clusters = {centroid:[] for centroid in centroids}
 
+for token in freqDict:
+    tokenVec = docVecs.vectorize_doc(token)
+    distDict = {centroid:(euclidean(tokenVec, centroidDict[centroid])) for centroid in centroidDict}
+    cluster = min(distDict, key=(lambda elt:distDict[elt]))
+    print(f'{token}: {cluster}')
+    clusters[cluster].append(token)
 
-
-
-pass
+for cluster in clusters:
+    print(f'{cluster}')
+    for elt in clusters[cluster]:
+        print(f'\t-{elt}')
