@@ -20,18 +20,20 @@ from sklearn.metrics.pairwise import cosine_similarity
 import models.binning.docVecs as docVecs
 
 
-def cluster_given_centroids(centroids, data, maxDist=100, distanceMetric='euclidean'):
+def cluster_given_centroids(centroids, data, maxDist=100, distanceMetric='euclidean', display=False):
     """
     Args:
         -centroids:         list of strings to act as centroids around which clusters will be computed
         -data:              list of strings to cluster around centroids
         -maxDist:           maximum distance at which a data vector can count for a cluster (defaults to 100)
         -distanceMetric:    distanceMetric to use when calculating distance between data vector and centroid
+        -display:           whether to display the clusters after clustering
     """
-    assert (isinstance(centroids, list) and (len(centroids)>0)), "centroids must have type 'list' and length > 0."
-    assert (isinstance(data, list) and (len(data)>0)), "data must have type 'list' and length > 0."
+    # assert arg structure
+    assert (len(centroids)>0), "centroids must be iterable of length > 0."
+    assert (len(data)>0), "data must be iterable of length > 0."
     assert isinstance(maxDist, int), "maxDist must have type 'int'."
-
+    # determine distance function from arg distanceMetric
     if distanceMetric=='euclidean':
         def calc_dist(vec1, vec2): return euclidean(vec1, vec2)
     elif distanceMetric=='dot':
@@ -40,29 +42,23 @@ def cluster_given_centroids(centroids, data, maxDist=100, distanceMetric='euclid
         def calc_dist(vec1, vec2): return cosine(vec1, vec2)
     else:
         raise ValueError(f"Invalid distance metric '{distanceMetric}'.")
-
+    # build dict of
     centroidScores = {centroid:(docVecs.vectorize_doc(centroid))
                         for centroid in centroids}
     clusters = {centroid:[] for centroid in centroids}
 
-    for token in
+    for observation in data:
+        if not observation=="":
+            observationVec = docVecs.vectorize_doc(observation)
+            distanceDict = {centroid:(calc_dist(observationVec, centroidScores[centroid]))
+                            for centroid in centroids}
+            cluster = min(distanceDict, key=(lambda elt : distanceDict[elt]))
+            clusters[cluster].append(observation)
 
+    if display:
+        for cluster in clusters:
+            print(cluster)
+            for element in clusters[cluster]:
+                print(f'\t-{element}')
 
-
-freqDict = {'christmas', 'halloween', 'thanksgiving', 'automobile', 'car', 'truck', 'helicopter', 'pie', 'jelly', 'bacon', 'usa', 'canada', 'iran'}
-
-centroids = ['easter', 'airplane', 'sausage', 'syria']
-centroidDict = {token:(docVecs.vectorize_doc(token)) for token in centroids}
-clusters = {centroid:[] for centroid in centroids}
-
-for token in freqDict:
-    tokenVec = docVecs.vectorize_doc(token)
-    distDict = {centroid:(euclidean(tokenVec, centroidDict[centroid])) for centroid in centroidDict}
-    cluster = min(distDict, key=(lambda elt:distDict[elt]))
-    print(f'{token}: {cluster}')
-    clusters[cluster].append(token)
-
-for cluster in clusters:
-    print(f'{cluster}')
-    for elt in clusters[cluster]:
-        print(f'\t-{elt}')
+    return clusters
