@@ -7,7 +7,7 @@ from models.binning.docVecs import vectorize_doc, vectorize_n_split
 from scipy.spatial.distance import cosine, euclidean
 from numpy import mean
 
-def rank_distribution(baseVec, vecMatrix):
+def rank_distribution(baseVec, vecMatrix, n=5):
     """
     Args: baseVector of entire document, vecMatrix of vectorize_n_split(document)
     Gives document ranking on similarity between n-split document vectors.

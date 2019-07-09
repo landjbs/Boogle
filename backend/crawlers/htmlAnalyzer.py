@@ -190,8 +190,8 @@ def scrape_url(url, knowledgeProcessor, freqDict, timeout=10):
     vecMatrix = docVecs.vectorize_n_split(cleanedText, n=5)
 
     # get diversity score of page
-    diversityScore = rank_distribution(pageVec, vecMatrix)
-    
+    diversityScore = rank_distribution(pageVec, vecMatrix, 5)
+
     ### CALC BASE SCORE OF PAGE ###
     # baseScore = calc_base_score(loadTime)
 

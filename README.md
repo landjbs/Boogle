@@ -10,4 +10,9 @@ The backend is written in a mix of Python, C++, and Go and performs four basic t
 ####
 
 ### Frontend
-The frontend is written in a mix of HTML, CSS, and JavaScript. 
+The frontend is written in a mix of HTML, CSS, and JavaScript.
+
+
+
+requirements
+gsutil

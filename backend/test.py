@@ -9,22 +9,29 @@ from scipy.spatial.distance import euclidean
 from sklearn.metrics.pairwise import cosine_similarity
 from crawlers.htmlAnalyzer import get_pageText
 import pandas as pd
-import models.binning.docVecs as docVecs
 from models.ranking.distributionRanker import rank_distribution
 from dataStructures.objectSaver import load
 from scipy.spatial.distance import cosine, euclidean
 
+import models.binning.docVecs as docVecs
+
 print(colored('Imports complete', 'cyan'))
 
-from crawlers.htmlAnalyzer import scrape_url
+# from models.binning.bertAnalytics import bert_parser
+
+knowledgeProcessor = build_knowledgeProcessor({'harvard'})
+
+import matplotlib.pyplot as plt
+
+while True:
+    doc = input('doc: ')
+    vec = docVecs.vectorize_doc(doc)
+    plt.plot(vec)
+    plt.show()
 
 # freqDict = load('data/outData/knowledge/freqDict.sav')
 
 # tokenList = [token for token in freqDict]
-
-while True:
-    doc = input('doc: ')
-    docVecs.vectorize_sentance_split(doc, 4)
 
 # print(tokenList[:4])
 
