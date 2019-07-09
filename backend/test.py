@@ -1,19 +1,19 @@
-import matplotlib.pyplot as plt
-from termcolor import colored
-import numpy as np
-from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
-from models.knowledge.knowledgeFinder import find_rawTokens
 import re
 import os
-from scipy.spatial.distance import euclidean
-from sklearn.metrics.pairwise import cosine_similarity
-from crawlers.htmlAnalyzer import get_pageText
+import numpy as np
 import pandas as pd
-from models.ranking.distributionRanker import rank_distribution
-from dataStructures.objectSaver import load
+from termcolor import colored
+import matplotlib.pyplot as plt
+from scipy.spatial.distance import euclidean
 from scipy.spatial.distance import cosine, euclidean
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.decomposition import PCA
 
-import models.binning.docVecs as docVecs
+from dataStructures.objectSaver import load
+from models.knowledge.knowledgeFinder import find_rawTokens
+from models.ranking.distributionRanker import rank_distribution
+from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
+# import models.binning.docVecs as docVecs
 
 print(colored('Imports complete', 'cyan'))
 
@@ -21,23 +21,30 @@ print(colored('Imports complete', 'cyan'))
 
 knowledgeProcessor = build_knowledgeProcessor({'harvard'})
 
-import matplotlib.pyplot as plt
-
-while True:
-    doc = input('doc: ')
-    vec = docVecs.vectorize_doc(doc)
-    plt.plot(vec)
-    plt.show()
 
 # freqDict = load('data/outData/knowledge/freqDict.sav')
 
-# tokenList = [token for token in freqDict]
+freqDict = {'christmas', 'halloween', 'thanksgiving', 'car', 'truck', 'helicopter'}
 
-# print(tokenList[:4])
-
+# tokenList = freqDict.keys()
 # vecList = docVecs.score_doc_list(tokenList)
 
-# print(vecList)
+vecList = []
+for token in freqDict.keys():
+    # tokenVec = docVecs.vectorize_doc(token)
+    tokenVec = {'0':0, '1':1}
+    vecDict = docVecs.vec_to_dict(tokenVec)
+    vecDict.update({'token':token})
+    vecList.append(vecList)
+
+print(vecList[:5])
+
+
+
+vecDF = pd.DataFrame(vecList)
+
+print(vecDF.head())
+
 
 # while True:
 #     new = input("search: ")
