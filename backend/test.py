@@ -19,9 +19,9 @@ from models.binning.clustering import cluster_given_centroids
 
 freqDict = load('data/outData/knowledge/freqDict.sav')
 
-freqList = [token for i, token in enumerate(freqDict) if not i > 300]
+freqList = [token for i, token in enumerate(freqDict) if not i > 10]
 
-x = cluster_given_centroids(['easter', 'helicopter', 'italy', 'steak'], freqDict, display=True)
+x = cluster_given_centroids(['easter', 'helicopter', 'italy', 'steak', 'running'], freqList, displayContents=True)
 
 while True:
     cluster = input('search: ')

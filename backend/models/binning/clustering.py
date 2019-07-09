@@ -20,14 +20,15 @@ from sklearn.metrics.pairwise import cosine_similarity
 import models.binning.docVecs as docVecs
 
 
-def cluster_given_centroids(centroids, data, maxDist=100, distanceMetric='euclidean', display=False):
+def cluster_given_centroids(centroids, data, maxDist=100, distanceMetric='euclidean', displayContents=False, plotRelation=False):
     """
     Args:
         -centroids:         list of strings to act as centroids around which clusters will be computed
         -data:              list of strings to cluster around centroids
         -maxDist:           maximum distance at which a data vector can count for a cluster (defaults to 100)
         -distanceMetric:    distanceMetric to use when calculating distance between data vector and centroid
-        -display:           whether to display the clusters after clustering
+        -displayContents:   whether to display the cluster contents after clustering
+        -plotRelation:      whether to plot force-directed graph of cluster relationships
     """
     # assert arg structure
     assert (len(centroids)>0), "centroids must be iterable of length > 0."
@@ -47,18 +48,22 @@ def cluster_given_centroids(centroids, data, maxDist=100, distanceMetric='euclid
                         for centroid in centroids}
     clusters = {centroid:[] for centroid in centroids}
 
-    for observation in data:
+    for i, observation in enumerate(data):
         if not observation=="":
             observationVec = docVecs.vectorize_doc(observation)
             distanceDict = {centroid:(calc_dist(observationVec, centroidScores[centroid]))
                             for centroid in centroids}
             cluster = min(distanceDict, key=(lambda elt : distanceDict[elt]))
             clusters[cluster].append(observation)
+        print(f'Clustering: {i}', end='\r')
 
-    if display:
+    if displayContents:
         for cluster in clusters:
             print(cluster)
             for element in clusters[cluster]:
                 print(f'\t-{element}')
+
+    # if plotRelation:
+
 
     return clusters
