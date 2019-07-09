@@ -28,8 +28,18 @@ def cluster_given_centroids(centroids, data, maxDist=100, distanceMetric='euclid
         -maxDist:           maximum distance at which a data vector can count for a cluster (defaults to 100)
         -distanceMetric:    distanceMetric to use when calculating distance between data vector and centroid
     """
+    assert isinstance(centroids, list), "centroids must have type 'list'."
+    assert isinstance(data, list), "data must have type 'list'."
+    assert isinstance(maxDist, int), "maxDist must have type 'int'."
+
     if distanceMetric=='euclidean':
-        def calc_dist(vec1, vec2):
+        def calc_dist(vec1, vec2): return euclidean(vec1, vec2)
+    elif distanceMetric=='dot':
+        def calc_dist(vec1, vec2): return np.dot(vec1, vec2)
+    elif distanceMetric=='cos':
+        def calc_dist(vec1, vec2): return cosine(vec1, vec2)
+    else:
+        raise ValueError(f"Invalid distance metric '{distanceMetric}'.")
 
 
 
