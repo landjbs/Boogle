@@ -28,8 +28,8 @@ def cluster_given_centroids(centroids, data, maxDist=100, distanceMetric='euclid
         -maxDist:           maximum distance at which a data vector can count for a cluster (defaults to 100)
         -distanceMetric:    distanceMetric to use when calculating distance between data vector and centroid
     """
-    assert isinstance(centroids, list), "centroids must have type 'list'."
-    assert isinstance(data, list), "data must have type 'list'."
+    assert (isinstance(centroids, list) and (len(centroids)>0)), "centroids must have type 'list' and length > 0."
+    assert (isinstance(data, list) and (len(data)>0)), "data must have type 'list' and length > 0."
     assert isinstance(maxDist, int), "maxDist must have type 'int'."
 
     if distanceMetric=='euclidean':
@@ -41,6 +41,11 @@ def cluster_given_centroids(centroids, data, maxDist=100, distanceMetric='euclid
     else:
         raise ValueError(f"Invalid distance metric '{distanceMetric}'.")
 
+    centroidScores = {centroid:(docVecs.vectorize_doc(centroid))
+                        for centroid in centroids}
+    clusters = {centroid:[] for centroid in centroids}
+
+    for token in
 
 
 
