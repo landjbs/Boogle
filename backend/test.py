@@ -13,38 +13,29 @@ from dataStructures.objectSaver import load
 from models.knowledge.knowledgeFinder import find_rawTokens
 from models.ranking.distributionRanker import rank_distribution
 from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
-# import models.binning.docVecs as docVecs
-
-print(colored('Imports complete', 'cyan'))
-
-# from models.binning.bertAnalytics import bert_parser
+import models.binning.docVecs as docVecs
 
 knowledgeProcessor = build_knowledgeProcessor({'harvard'})
 
-
 # freqDict = load('data/outData/knowledge/freqDict.sav')
 
-freqDict = {'christmas', 'halloween', 'thanksgiving', 'car', 'truck', 'helicopter'}
+freqDict = {'christmas', 'halloween', 'thanksgiving', 'automobile', 'car', 'truck', 'helicopter', 'pie', 'jelly', 'bacon', 'usa', 'canada', 'iran'}
 
-# tokenList = freqDict.keys()
-# vecList = docVecs.score_doc_list(tokenList)
+centroids = ['easter', 'airplane', 'sausage', 'syria']
+centroidDict = {token:(docVecs.vectorize_doc(token)) for token in centroids}
+clusters = {centroid:[] for centroid in centroids}
 
-vecList = []
-for token in freqDict.keys():
-    # tokenVec = docVecs.vectorize_doc(token)
-    tokenVec = {'0':0, '1':1}
-    vecDict = docVecs.vec_to_dict(tokenVec)
-    vecDict.update({'token':token})
-    vecList.append(vecList)
+for token in freqDict:
+    tokenVec = docVecs.vectorize_doc(token)
+    distDict = {centroid:(euclidean(tokenVec, centroidDict[centroid])) for centroid in centroidDict}
+    cluster = min(distDict, key=(lambda elt:distDict[elt]))
+    print(f'{token}: {cluster}')
+    clusters[cluster].append(token)
 
-print(vecList[:5])
-
-
-
-vecDF = pd.DataFrame(vecList)
-
-print(vecDF.head())
-
+for cluster in clusters:
+    print(f'{cluster}')
+    for elt in clusters[cluster]:
+        print(f'\t-{elt}')
 
 # while True:
 #     new = input("search: ")
