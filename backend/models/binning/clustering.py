@@ -20,6 +20,30 @@ from sklearn.metrics.pairwise import cosine_similarity
 import models.binning.docVecs as docVecs
 
 
+class ClusterElement():
+    """ Class to define an object in a cluster """
+    def __init__(self, name, vector):
+        self.name = name
+        self.vector = vector
+
+class Cluster():
+    """ Class to define a cluster of ClusterElements """
+    def __init__(self, name, center):
+        self.name = name
+        self.center = center
+        self.elements = []
+
+    def distance(self, documentVector, distance_function):
+        """
+        Finds distance between Cluster and
+        ClusterElement using distance_function
+        """
+        return distance_function(self.center, documentVector)
+
+    def add_element(self, element, distance):
+        """ Adds element with distance from cluster center to cluster """
+        self.elements.append()
+
 def cluster_given_centroids(centroids, data, maxDist=100, distanceMetric='euclidean', displayContents=False, plotRelation=False):
     """
     Args:
