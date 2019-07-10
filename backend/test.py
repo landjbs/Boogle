@@ -10,22 +10,18 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.decomposition import PCA
 
 from dataStructures.objectSaver import load
-from models.knowledge.knowledgeFinder import find_rawTokens
-from models.ranking.distributionRanker import rank_distribution
-from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
+# from models.knowledge.knowledgeFinder import find_rawTokens
+# from models.ranking.distributionRanker import rank_distribution
+# from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
 # import models.binning.docVecs as docVecs
 
-from models.binning.clustering import cluster_given_centroids
+import models.binning.bertAnalytics as bertAnalytics
+print('imported')
 
-freqDict = load('data/outData/knowledge/freqDict.sav')
-
-freqList = [token for i, token in enumerate(freqDict) if not i > 10]
-
-x = cluster_given_centroids(['easter', 'helicopter', 'italy', 'steak', 'running'], freqList, displayContents=True)
 
 while True:
-    cluster = input('search: ')
-    print(x[cluster][:15])
+    doc = input('BERT Expression: ')
+    print(bertAnalytics.bert_multiParser(doc))
 
 # while True:
 #     new = input("search: ")

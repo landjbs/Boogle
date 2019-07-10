@@ -5,6 +5,8 @@ from termcolor import colored
 from scipy.spatial.distance import euclidean
 
 import models.binning.docVecs as docVecs
+from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
+from models.knowledge.knowledgeFinder import find_rawTokens
 
 binopList = ['+', '-', '?', '==']
 unopList = ['(', ')']
@@ -25,13 +27,57 @@ def bert_parser(inStr):
             cleanToken = re.sub(unopMatcher, '', token)
             if cleanToken in vectorizedTokens:
                 tokens[i] = vectorizedTokens[cleanToken]
-        print(tokens)
-        while not len(tokens)==1:
-            vec1 = tokens.pop(0)
-            operator = tokens.pop(0)
-            vec2 = tokens.pop(0)
-            print(vec1, operator, vec2)
+        for i in range(0, len(tokens), 3):
+            token1 = tokens[i]
+            token2 = tokens[i+2]
+            operator = tokens[i+1]
+            print(token1, token2, operator)
+            print(bert_binop(token1, token2, operator))
 
+def find_subs(inStr):
+    numOpen = 0
+    subsList = []
+    readText = ""
+    for c in inStr:
+        if c == '(':
+            numOpen += 1
+        elif c == ')':
+            numOpen -= 1
+            if numOpen == 0:
+                subsList.append(readText)
+                readText = ""
+        if numOpen == 0:
+            pass
+        else:
+            readText += c
+    return subsList
+
+
+def bert_multiParser(inStr):
+    # words = re.findall(r'(?<=\()[^)]+(?=\))', inStr)
+    # expressions = re.findall(r'(?<=\().+(?=\))', inStr)
+    # for expression in expressions:
+    #     # words = expression.split()
+    expression = re.findall(r'(?<=\().+(?=\))', inStr)
+    subExpressions = find_subs(expression[0])
+    if len(subExpressions)==1:
+        return docVecs.vectorize_doc(subExpressions[0])
+    elif len(subExpressions)==2:
+        left = bert_multiParser(subExpressions[0])
+        right = bert_multiParser(subExpressions[1])
+        leftEnd = (expression[0].find(subExpressions[0])) + len(subExpressions[0])
+        rightStart = expression[0].find(subExpressions[1])
+        operator = re.findall(r'[?|==|\-|\+]', expression[0][leftEnd:rightStart])
+        return bert_binop(left, right, operator[0])
+
+    # if len(subExpressions)==1:
+    #     print(subExpressions)
+    #     return docVecs.vectorize_doc(subExpressions[0])
+    # elif len(subExpressions)==3:
+    #     operator = subExpressions[1]
+    #     parsedFirst = bert_multiParser(subExpressions[0])
+    #     parsedLast = bert_multiParser(subExpressions[2])
+    #     return bert_binop(parsedFirst, parsedLast, operator)
 
 
 # def bert_unop(vec1, operator):
@@ -100,7 +146,7 @@ def vectorize_masked_tokens(document, maskToken='', knowledgeProcessor=None, sco
             return np.sum(maskedVec * baseVec) / np.linalg.norm(baseVec)
 
     # calculate vector of raw document
-    baseVec = docVecs.vectorize_doc([document])
+    baseVec = docVecs.vectorize_doc(document)
 
     # find tokens in document with both greedy and non-greedy matching
     foundTokens = find_rawTokens(document, knowledgeProcessor)

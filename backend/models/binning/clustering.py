@@ -80,10 +80,10 @@ def cluster_given_centroids(centroids, data, maxDist=100, distanceMetric='euclid
             cluster = min(distanceDict, key=(lambda elt : distanceDict[elt]))
             clusters[cluster].append(observation)
         print(f'Clustering: {i}', end='\r')
-
+    print('\n')
     if displayContents:
         for cluster in clusters:
-            print(cluster)
+            print(f'Centroid: {cluster}')
             for element in clusters[cluster]:
                 print(f'\t-{element}')
 
