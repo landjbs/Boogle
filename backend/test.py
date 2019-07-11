@@ -12,13 +12,15 @@ from models.knowledge.knowledgeFinder import score_divDict
 from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
 
 
-print(colored('Loading Knowledge Processor', 'red'), end='\r')
-knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
-print(colored('Complete: Loading Knowledge Processor', 'cyan'))
+# print(colored('Loading Knowledge Processor', 'red'), end='\r')
+# knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
+# print(colored('Complete: Loading Knowledge Processor', 'cyan'))
 
 print(colored('Loading Freq Dict', 'red'), end='\r')
 freqDict = load('data/outData/knowledge/freqDict.sav')
 print(colored('Complete: Loading Freq Dict', 'cyan'))
+
+knowledgeProcessor = build_knowledgeProcessor(freqDict)
 
 filePath = 'data/inData/wikipedia_utf8_filtered_20pageviews.csv'
 
@@ -33,44 +35,45 @@ scrapeList = Simple_List()
 
 with open(filePath, 'r') as wikiCsv:
     for i, line in enumerate(wikiCsv):
-        # number of days since June 29 2019 when page was loaded
-        loadDate = int(time() / (86400)) - 18076
-        # get everything after the first comma
-        commaLoc = line.find(',')
-        rawText = line[(commaLoc+2):]
-        # pull out the title
-        titleEnd = rawText.find('  ')
-        title = rawText[:titleEnd]
-        # get the article text and strip whitespace
-        articleText = rawText[(titleEnd+2):]
-        articleText = articleText.strip()
-        # build link of the webpage
-        url = make_wiki_url(title)
-        # build divDict and analyze for knowledgeTokens
-        divDict = {'url':       url,
-                    'title':    title,
-                    'all':      articleText}
-        knowledgeTokens = score_divDict(divDict, knowledgeProcessor, freqDict)
-        # determine text to show for the window
-        windowText = articleText
-        # build page object of article attributes
-        pageDict = {'url':              url,
-                    'title':            title,
-                    'knowledgeTokens':  knowledgeTokens,
-                    'pageVec':          {},
-                    'linkList':         [],
-                    'loadTime':         0.5,
-                    'loadDate':         loadDate,
-                    'imageScore':       0,
-                    'videoScore':       0,
-                    'windowText':       windowText}
+        if i < 10000:
+            # number of days since June 29 2019 when page was loaded
+            loadDate = int(time() / (86400)) - 18076
+            # get everything after the first comma
+            commaLoc = line.find(',')
+            rawText = line[(commaLoc+2):]
+            # pull out the title
+            titleEnd = rawText.find('  ')
+            title = rawText[:titleEnd]
+            # get the article text and strip whitespace
+            articleText = rawText[(titleEnd+2):]
+            articleText = articleText.strip()
+            # build link of the webpage
+            url = make_wiki_url(title)
+            # build divDict and analyze for knowledgeTokens
+            divDict = {'url':       url,
+                        'title':    title,
+                        'all':      articleText}
+            knowledgeTokens = score_divDict(divDict, knowledgeProcessor, freqDict)
+            # determine text to show for the window
+            windowText = articleText
+            # build page object of article attributes
+            pageDict = {'url':              url,
+                        'title':            title,
+                        'knowledgeTokens':  knowledgeTokens,
+                        'pageVec':          {},
+                        'linkList':         [],
+                        'loadTime':         0.5,
+                        'loadDate':         loadDate,
+                        'imageScore':       0,
+                        'videoScore':       0,
+                        'windowText':       windowText}
 
-        scrapeList.add(pageDict)
+            scrapeList.add(pageDict)
 
-        if (len(scrapeList.data) >= 10):
-            save(scrapeList.data, f'data/thicctable/wikiCrawl/{i}.sav')
-            scrapeList.clear()
-        print(colored(f'Crawling Wikipedia: {i}', 'red'), end='\r')
+            if (len(scrapeList.data) >= 10):
+                save(scrapeList.data, f'data/thicctable/wikiCrawl/{i}.sav')
+                scrapeList.clear()
+            print(colored(f'Crawling Wikipedia: {i}', 'red'), end='\r')
 
 print(colored('Complete: Crawling Wikipedia', 'cyan'))
 del knowledgeProcessor

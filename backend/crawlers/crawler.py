@@ -29,8 +29,7 @@ def scrape_urlList(urlList, runTime=100000000, queueDepth=1000000, workerNum=2):
     print(colored('Complete: Loading freqDict', color='cyan'))
 
     print(colored('Loading knowledgeProcessor', color='red'), end='\r')
-    # knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
-    knowledgeProcessor = build_knowledgeProcessor({'art'})
+    knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
     print(colored('Complete: Loading knowledgeProcessor', color='cyan'))
 
     # queue to hold urlList
