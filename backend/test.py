@@ -17,7 +17,7 @@ from crawlers.wikiCrawler import crawl_wiki_data
 # knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
 # print(colored('Complete: Loading Knowledge Processor', 'cyan'))
 
-crawl_wiki_data('data/inData/wikipedia_utf8_filtered_20pageviews.csv', 'data/thicctable/wikiCrawl', 10, 5)
+crawl_wiki_data('data/inData/wikipedia_utf8_filtered_20pageviews.csv', 'data/thicctable/wikiCrawl', 100, 10)
 
 
 print(colored('Loading Freq Dict', 'red'), end='\r')

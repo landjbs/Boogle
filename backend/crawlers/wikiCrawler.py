@@ -1,7 +1,5 @@
 from time import time
 from termcolor import colored
-from os import listdir
-import json
 from queue import Queue
 from threading import Thread
 
@@ -9,9 +7,8 @@ from dataStructures.objectSaver import load, save
 from dataStructures.pageObj import Page
 from dataStructures.scrapingStructures import Simple_List, Metrics
 from dataStructures.thicctable import Thicctable
-from searchers.searchLexer import topSearch
 from models.knowledge.knowledgeFinder import score_divDict
-from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
+# from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
 
 
 def make_wiki_url(title):
@@ -68,7 +65,7 @@ def crawl_wiki_data(inPath, outPath, queueDepth, workerNum):
     print(colored('Complete: Loading Freq Dict', 'cyan'))
     # load knowledgeProcessor
     print(colored('Loading Knowledge Processor', 'red'), end='\r')
-    knowledgeProcessor = build_knowledgeProcessor(freqDict)
+    knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
     print(colored('Complete: Loading Knowledge Processor', 'cyan'))
 
     # Queue to store lines from wiki file
@@ -87,7 +84,6 @@ def crawl_wiki_data(inPath, outPath, queueDepth, workerNum):
             line = lineQueue.get()
             try:
                 pageDict = scrape_wiki_page(line, knowledgeProcessor, freqDict)
-                print(pageDict)
                 scrapeList.add(pageDict)
                 scrapeMetrics.add(error=False)
             except Exception as e:
@@ -95,7 +91,7 @@ def crawl_wiki_data(inPath, outPath, queueDepth, workerNum):
                 scrapeMetrics.add(error=True)
 
             if (len(scrapeList.data)==10):
-                save(scrapeList.data, f'data/thicctable/wikiCrawl/{scrapeMetrics.count}')
+                save(scrapeList.data, f'data/thicctable/wikiCrawl/{scrapeMetrics.count}.sav')
                 scrapeList.clear()
 
             queueSize = lineQueue.qsize()
