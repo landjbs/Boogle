@@ -44,6 +44,13 @@ class Thicctable():
             del self.topDict[key]
         return True
 
+    def kill_empties(self):
+        """ Faster version of kill_smalls(1) to kill empty keys """
+        emptyKeys = [key for key in self.topDict if ((self.topDict[key])==[])]
+        for key in emptyKeys:
+            del self.topDict[key]
+        return True
+
     ### FUNCTIONS FOR MODIFYING KEY-MAPPED LISTS ###
     def clear_key(self, key):
         """

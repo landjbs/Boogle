@@ -14,7 +14,8 @@ from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
 
 # load knowledgeProcessor for finding tokens in search
 print('Loading Knowledge Processor')
-knowledgeProcessor = load('backend/data/outData/knowledge/knowledgeProcessor.sav')
+knowledgeProcessor = build_knowledgeProcessor({'the', 'discovered', 'harvard'})
+# knowledgeProcessor = load('backend/data/outData/knowledge/knowledgeProcessor.sav')
 print("Processor loaded")
 
 
