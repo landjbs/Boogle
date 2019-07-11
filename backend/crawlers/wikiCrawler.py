@@ -7,7 +7,7 @@ from threading import Thread
 
 from dataStructures.objectSaver import load, save
 from dataStructures.pageObj import Page
-from dataStructures.scrapingStructures import Simple_List
+from dataStructures.scrapingStructures import Simple_List, Metrics
 from dataStructures.thicctable import Thicctable
 from searchers.searchLexer import topSearch
 from models.knowledge.knowledgeFinder import score_divDict
@@ -21,7 +21,7 @@ def make_wiki_url(title):
     return url
 
 
-def scrape_wiki_page(line):
+def scrape_wiki_page(line, knowledgeProcessor, freqDict):
     """ Scrapes line (page) from wikipedia csv and returns pageDict """
     # number of days since June 29 2019 when page was loaded
     loadDate = int(time() / (86400)) - 18076
@@ -56,7 +56,8 @@ def scrape_wiki_page(line):
                 'windowText':       windowText}
     return(pageDict)
 
-def crawl_wiki_data(inPath, outPath):
+
+def crawl_wiki_data(inPath, outPath, queueDepth, workerNum):
     """
     Crawls cleaned wikipedia data at file path
     and saves page data to files under outPath
@@ -70,4 +71,44 @@ def crawl_wiki_data(inPath, outPath):
     knowledgeProcessor = build_knowledgeProcessor(freqDict)
     print(colored('Complete: Loading Knowledge Processor', 'cyan'))
 
+    # Queue to store lines from wiki file
+    lineQueue = Queue(maxsize=queueDepth)
+    # Simple_List to store pageDicts
+    scrapeList = Simple_List()
+    # Metrics to store scraping info
+    scrapeMetrics = Metrics()
+
     def worker():
+        """
+        Scrapes popped wiki line from lineQueue and
+        stores data in scrapeList
+        """
+        while True:
+            line = lineQueue.get()
+            try:
+                pageDict = scrape_wiki_page(line, knowledgeProcessor, freqDict)
+                print(pageDict)
+                scrapeList.add(pageDict)
+                scrapeMetrics.add(error=False)
+            except Exception as e:
+                print(f"ERROR: {e}")
+                scrapeMetrics.add(error=True)
+
+            if (len(scrapeList.data)==10):
+                save(scrapeList.data, f'data/thicctable/wikiCrawl/{scrapeMetrics.count}')
+                scrapeList.clear()
+
+            queueSize = lineQueue.qsize()
+            print(f'Pages Analyzed: {scrapeMetrics.count} | Errors: {scrapeMetrics.errors} | Queue Length: {queueSize}', end='\r')
+            lineQueue.task_done()
+
+    # spawn workerNum workers
+    for _ in range(workerNum):
+        t = Thread(target=worker)
+        t.daemon = True
+        t.start()
+
+    # load wiki lines into lineQueue
+    with open(inPath, 'r') as wikiFile:
+        for line in wikiFile:
+            lineQueue.put(line)

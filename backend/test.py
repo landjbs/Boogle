@@ -1,28 +1,30 @@
-from time import time
-from termcolor import colored
-from os import listdir
-import json
+# from time import time
+# from termcolor import colored
+# from os import listdir
+# import json
+#
+# from dataStructures.objectSaver import load, save
+# from dataStructures.pageObj import Page
+# from dataStructures.scrapingStructures import Simple_List
+# from dataStructures.thicctable import Thicctable
+# from searchers.searchLexer import topSearch
+# from models.knowledge.knowledgeFinder import score_divDict
+# from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
 
-from dataStructures.objectSaver import load, save
-from dataStructures.pageObj import Page
-from dataStructures.scrapingStructures import Simple_List
-from dataStructures.thicctable import Thicctable
-from searchers.searchLexer import topSearch
-from models.knowledge.knowledgeFinder import score_divDict
-from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
-
+from crawlers.wikiCrawler import crawl_wiki_data
 
 # print(colored('Loading Knowledge Processor', 'red'), end='\r')
 # knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
 # print(colored('Complete: Loading Knowledge Processor', 'cyan'))
+
+crawl_wiki_data('data/inData/wikipedia_utf8_filtered_20pageviews.csv', 'data/thicctable/wikiCrawl', 10, 5)
+
 
 print(colored('Loading Freq Dict', 'red'), end='\r')
 freqDict = load('data/outData/knowledge/freqDict.sav')
 print(colored('Complete: Loading Freq Dict', 'cyan'))
 
 knowledgeProcessor = build_knowledgeProcessor(freqDict)
-
-filePath = 'data/inData/wikipedia_utf8_filtered_20pageviews.csv'
 
 
 def make_wiki_url(title):
