@@ -36,40 +36,41 @@ def make_wiki_url(title):
 
 with open(filePath, 'r') as wikiCsv:
     for i, line in enumerate(wikiCsv):
-        if i < 100:
-            # number of days since June 29 2019 when page was loaded
-            loadDate = int(time() / (86400)) - 18076
-            # get everything after the first comma
-            rawText = line[21:]
-            # pull out the title
-            titleEnd = rawText.find('  ')
-            title = rawText[:titleEnd]
-            # get the article text and strip whitespace
-            articleText = rawText[(titleEnd+2):]
-            articleText = articleText.strip()
-            # build link of the webpage
-            url = make_wiki_url(title)
-            # build divDict and analyze for knowledgeTokens
-            divDict = {'url':       url,
-                        'title':    title,
-                        'all':      articleText}
-            knowledgeTokens = score_divDict(divDict, knowledgeProcessor, freqDict)
-            # determine text to show for the window
-            windowText = articleText
-            # build page object of article attributes
-            pageObj = Page({'url':              url,
-                            'title':            title,
-                            'knowledgeTokens':  knowledgeTokens,
-                            'pageVec':          {},
-                            'linkList':         [],
-                            'loadTime':         0.5,
-                            'loadDate':         loadDate,
-                            'imageScore':       0,
-                            'videoScore':       0,
-                            'windowText':       windowText})
-            # bucket page object
-            database.bucket_page(pageObj)
-            print(colored(f'Crawling Wikipedia: {i}', 'red'), end='\r')
+        # number of days since June 29 2019 when page was loaded
+        loadDate = int(time() / (86400)) - 18076
+        # get everything after the first comma
+        commaLoc = line.find(',')
+        rawText = line[(commaLoc+2):]
+        # pull out the title
+        titleEnd = rawText.find('  ')
+        title = rawText[:titleEnd]
+        # get the article text and strip whitespace
+        articleText = rawText[(titleEnd+2):]
+        articleText = articleText.strip()
+        # build link of the webpage
+        url = make_wiki_url(title)
+        # build divDict and analyze for knowledgeTokens
+        divDict = {'url':       url,
+                    'title':    title,
+                    'all':      articleText}
+        knowledgeTokens = score_divDict(divDict, knowledgeProcessor, freqDict)
+        # determine text to show for the window
+        windowText = articleText
+        # build page object of article attributes
+        pageObj = Page({'url':              url,
+                        'title':            title,
+                        'knowledgeTokens':  knowledgeTokens,
+                        'pageVec':          {},
+                        'linkList':         [],
+                        'loadTime':         0.5,
+                        'loadDate':         loadDate,
+                        'imageScore':       0,
+                        'videoScore':       0,
+                        'windowText':       windowText})
+        # bucket page object
+        database.bucket_page(pageObj)
+        print(colored(f'Crawling Wikipedia: {i}', 'red'), end='\r')
+
 print(colored('Complete: Crawling Wikipedia', 'cyan'))
 
 print(colored('Cleaning Database', 'red'), end='\r')
@@ -93,15 +94,15 @@ while True:
     # pass search, databse, and word info to topSearch
     try:
         start = time()
-        correctionDisplay, resultsList = topSearch(search, database, WORDS)
+        correctionDisplay, resultsList = topSearch(search, database, knowledgeProcessor, WORDS)
         end = time()
         # display formated results
         displayString = "<u>Boogle Wikipedia DeNerf</u><br>"
         displayString += f"{round(len(resultsList), 2)} results found in {end - start} seconds.<br>"
-        if correctionDisplay:
+        if not (correctionDisplay==search):
             displayString += f"Showing results for <u>{correctionDisplay}</u>. Search instead for <a>{search}</a>.<br>"
         for result in resultsList:
-            displayString += f'<br><strong>{result[1]}</strong><br><i>{result[0]}</i><br>{result[2]}'
+            displayString += f'<br><strong>{result[1]}</strong><br><i>{result[0]}</i><br>{result[2]}<br>'
         print(displayString)
     except Exception as e:
         print(colored(f'ERROR: {e}', 'red'))
