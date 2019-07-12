@@ -1,49 +1,12 @@
 from time import time
-from termcolor import colored
+
 from os import listdir
 
-from dataStructures.objectSaver import load, save
-from dataStructures.pageObj import Page
-from dataStructures.thicctable import Thicctable
-from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
+from crawlers.crawlLoader import load_crawled_pages
 from searchers.searchLexer import topSearch
 
 
-
-print(colored('Loading Knowledge Set', 'red'), end='\r')
-knowledgeSet = load('data/outData/knowledge/knowledgeSet.sav')
-print(colored('Complete: Loading Knowledge Set', 'cyan'))
-
-database = Thicctable(knowledgeSet)
-del knowledgeSet
-
-for i, file in enumerate(listdir('data/thicctable/wikiCrawl')):
-    try:
-        pagesList = load(f'data/thicctable/wikiCrawl/{file}')
-        for pageDict in pagesList:
-            pageObj = Page(pageDict)
-            database.bucket_page(pageObj)
-        print(colored(f'Building Database: {i}', 'red'), end='\r')
-        del pagesList
-    except Exception as e:
-        print(f"{e} at '{file}'")
-print(colored('Complete: Building Database', 'cyan'))
-
-print(colored('Cleaning Database', 'red'), end='\r')
-database.kill_empties()
-print(colored('Complete: Cleaning Database', 'cyan'))
-
-# sort the database
-print(colored('Sorting Database', 'red'), end='\r')
-database.sort_all()
-print(colored('Complete: Sorting Database', 'cyan'))
-
-# get dict mapping token to length of posting list
-print(colored('Finding Posting Lengths', 'red'), end='\r')
-WORDS = database.all_lengths()
-print(colored('Complete: Finding Posting Lengths', 'cyan'))
-
-searchProcessor = build_knowledgeProcessor(WORDS)
+database, uniqueWords, searchProcessor = load_crawled_pages('data/thicctable/wikiCrawl')
 
 print(f"\n{'-'*80}\nWelcome to Boogle Wikipedia DeNerf!")
 while True:
@@ -52,7 +15,7 @@ while True:
     # pass search, databse, and word info to topSearch
     try:
         start = time()
-        correctionDisplay, resultsList = topSearch(search, database, searchProcessor, WORDS)
+        correctionDisplay, resultsList = topSearch(search, database, searchProcessor, uniqueWords)
         end = time()
         # display formated results
         displayString = "<u>Boogle Wikipedia DeNerf</u><br>"
