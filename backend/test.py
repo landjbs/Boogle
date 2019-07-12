@@ -2,16 +2,12 @@ from time import time
 from termcolor import colored
 from os import listdir
 
-from crawlers.wikiCrawler import crawl_wiki_data
 from dataStructures.objectSaver import load, save
 from dataStructures.pageObj import Page
 from dataStructures.thicctable import Thicctable
 from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
 from searchers.searchLexer import topSearch
-from models.knowledge.knowledgeFinder import find_rawTokens, score_divDict
 
-
-crawl_wiki_data('data/inData/wikipedia_utf8_filtered_20pageviews.csv', 'data/thicctable/wikiCrawl', 100, 10)
 
 
 print(colored('Loading Knowledge Set', 'red'), end='\r')
@@ -44,8 +40,7 @@ print(colored('Complete: Sorting Database', 'cyan'))
 
 # get dict mapping token to length of posting list
 print(colored('Finding Posting Lengths', 'red'), end='\r')
-# WORDS = database.all_lengths()
-WORDS = {token:1 for token in ['harvard', 'college', 'university', 'radio', 'station', 'harvard college', 'harvard university', 'harvard radio', 'radio station']}
+WORDS = database.all_lengths()
 print(colored('Complete: Finding Posting Lengths', 'cyan'))
 
 searchProcessor = build_knowledgeProcessor(WORDS)

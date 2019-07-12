@@ -5,7 +5,7 @@ from threading import Thread
 
 from dataStructures.objectSaver import load, save
 from dataStructures.scrapingStructures import Simple_List, Metrics
-from models.knowledge.knowledgeFinder import score_divDict, find_rawTokens
+from models.knowledge.knowledgeFinder import score_divDict
 from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
 
 
@@ -35,12 +35,9 @@ def scrape_wiki_page(line, knowledgeProcessor, freqDict):
     divDict = {'url':       url,
                 'h3':       title,
                 'all':      articleText}
-    scoredNum = len(score_divDict(divDict, knowledgeProcessor, freqDict))
-    rawNum = len(find_rawTokens(articleText, knowledgeProcessor))
-    print(f"Scored: {scoredNum} | Raw: {rawNum} | Reduction: {(rawNum-scoredNum)}", end='\n\n')
-    knowledgeTokens = {}
+    knowledgeTokens = score_divDict(divDict, knowledgeProcessor, freqDict)
     # determine text to show for the window
-    windowText = articleText
+    windowText = articleText[:400]
     # build and return pageDict of article attributes
     pageDict = {'url':              url,
                 'title':            title,
@@ -66,7 +63,8 @@ def crawl_wiki_data(inPath, outPath, queueDepth, workerNum):
     print(colored('Complete: Loading Freq Dict', 'cyan'))
     # load knowledgeProcessor
     print(colored('Loading Knowledge Processor', 'red'), end='\r')
-    knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
+    knowledgeProcessor = build_knowledgeProcessor({'the', 'test', 'a'})
+    # knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
     print(colored('Complete: Loading Knowledge Processor', 'cyan'))
 
     # Queue to store lines from wiki file
@@ -91,8 +89,8 @@ def crawl_wiki_data(inPath, outPath, queueDepth, workerNum):
                 print(f"ERROR: {e}")
                 scrapeMetrics.add(error=True)
 
-            if (len(scrapeList.data)==10):
-                save(scrapeList.data, f'data/thicctable/wikiCrawl/{scrapeMetrics.count}.sav')
+            if (len(scrapeList.data)==5):
+                # save(scrapeList.data, f'data/thicctable/wikiCrawl/{scrapeMetrics.count}.sav')
                 scrapeList.clear()
 
             queueSize = lineQueue.qsize()
@@ -109,8 +107,7 @@ def crawl_wiki_data(inPath, outPath, queueDepth, workerNum):
     with open(inPath, 'r') as wikiFile:
         for line in wikiFile:
             lineQueue.put(line)
-
-    print('here')
+    print('\nScraping Complete')
     del knowledgeProcessor
     del freqDict
     return True
