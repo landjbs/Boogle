@@ -19,7 +19,7 @@ from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
 # print("Processor loaded")
 
 
-def topSearch(rawSearch, database, knowledgeProcessor, WORDS):
+def topSearch(rawSearch, database, uniqueWords, knowledgeProcessor):
     """
     Highest level search analyzer that takes in a raw search and decides
     which search function to employ.

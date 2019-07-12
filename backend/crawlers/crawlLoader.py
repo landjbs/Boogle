@@ -20,7 +20,7 @@ def load_crawled_pages(filePath):
     """
     # initialize database with knowledgeSet buckets
     print(colored('Loading Knowledge Set', 'red'), end='\r')
-    knowledgeSet = load('data/outData/knowledge/knowledgeSet.sav')
+    knowledgeSet = load('backend/data/outData/knowledge/knowledgeSet.sav')
     print(colored('Complete: Loading Knowledge Set', 'cyan'))
     database = Thicctable(knowledgeSet)
     del knowledgeSet
@@ -29,7 +29,7 @@ def load_crawled_pages(filePath):
         try:
             pageList = load(f'{filePath}/{file}')
             for pageDict in pageList:
-                databse.bucket_page(Page(pageDict))
+                database.bucket_page(Page(pageDict))
             print(colored(f'Building Database: {i}', 'red'), end='\r')
         except Exception as e:
             print(f'{e} at "{file}".')
