@@ -84,9 +84,9 @@ def find_weighted_tokenCounts(inStr, knowledgeProcessor):
     return countedTokens
 
 
-def score_token(token, tokenFreq, specialMultiplier):
+def score_token(token, tokenFreq, multiplier):
     """
-    Scores individual token in a div
+    Scores individual token in a div by frequency, multiplier, and (soon) distribution
     """
     ### NORMALIZE TOKEN FREQUENCY ###
     # get term and document frequency of token in freqDict built on scraped data
@@ -99,10 +99,8 @@ def score_token(token, tokenFreq, specialMultiplier):
     # tokens with negative normedFreq will automatically have scores of 0
     if normedFreq <= 0:
         return 0
-    # apply sublinear scaling normedFreq to reduce impact of token-spamming
-    # scaledFreq = 1 + log(normedFreq)
     ### Apply specialMultiplier ###
-    score = normedFreq * specialMultiplier
+    score = normedFreq * multiplier
     return round(score, 3)
 
 
@@ -124,7 +122,7 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
 
     # use knowledgeProcessor to extract weighted token counts from divText
     weightedTokenCounts = find_weighted_tokenCounts(divText, knowledgeProcessor)
-    specialMultiplier = divMultipier
+    multiplier = divMultipier
     # apply div specific scoring
     # if (div=='all'):
     #     ### TOKEN DISTRIBUTION SCORING ###
@@ -141,15 +139,16 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
     #     specialMultiplier = lengthMultiplier
     # else:
     #     specialMultiplier = 0
+
     # create dict mapping tokens to scores as function of frequency
     tokenScores = {token:score_token(token=token,
                                     tokenFreq=(weightedCount/divLen),
-                                    specialMultiplier=specialMultiplier)
+                                    multiplier=multiplier)
                     for token, weightedCount in weightedTokenCounts.items()}
     # filter scores below cuoff
     filteredScores = {token: score for token, score in tokenScores.items()
                         if score > cutoff}
-    return Counter(filteredScores)
+    return filteredScores
 
 
 def score_divDict(divDict, knowledgeProcessor, freqDict):
@@ -164,9 +163,11 @@ def score_divDict(divDict, knowledgeProcessor, freqDict):
     scoreCounter = Counter()
     # iterate over divisions in divDict
     for div in divDict:
-        # get text inside div
-        divText = divDict[div]
-        # get Counter of tokens in divText and their scores
-        divScores = find_scoredTokens(divText, div, knowledgeProcessor, freqDict, 0.005)
+        # get dict mapping tokens in divText to thier scores
+        divScores = find_scoredTokens(divText=divDict[div],
+                                        div=div,
+                                        knowledgeProcessor=knowledgeProcessor,
+                                        freqDict=freqDict,
+                                        cutoff=0.005)
         scoreCounter.update(divScores)
     return scoreCounter
