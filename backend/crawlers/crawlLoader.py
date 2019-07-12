@@ -52,6 +52,6 @@ def load_crawled_pages(filePath):
                 uniqueWords.update({word:length})
     print(colored('Complete: Finding Unique Words', 'cyan'))
     # flashtext processor to find keywords in search
-    # searchProcessor = build_knowledgeProcessor(uniqueWords)
-    searchProcessor = load('backend/data/outData/knowledge/knowledgeProcessor.sav')
+    searchProcessor = build_knowledgeProcessor(uniqueWords)
+    # searchProcessor = load('backend/data/outData/knowledge/knowledgeProcessor.sav')
     return(database, uniqueWords, searchProcessor)

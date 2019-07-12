@@ -37,10 +37,7 @@ def topSearch(rawSearch, database, uniqueWords, knowledgeProcessor):
 
     # use single
     if (len(tokenList) == 1):
-        return (correctionDisplay, databaseSearcher.smart_single_search(tokenList[0], database))
+        return (correctionDisplay, databaseSearcher.single_search(tokenList[0], database))
 
     elif (len(tokenList)>1):
         return (correctionDisplay, databaseSearcher.and_search(tokenList, database))
-
-    else:
-        return
