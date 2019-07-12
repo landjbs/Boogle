@@ -76,60 +76,33 @@ def find_weighted_tokenCounts(inStr, knowledgeProcessor):
             for word in splitToken:
                 subTokens += knowledgeProcessor.extract_keywords(word)
     # get counts of sub tokens and normalize by 0.7
-    subCounter = Counter(subTokens)
-    weightedSubCounter = {token:(0.7*subCounter[token]) for token in subCounter}
+    weightedSubCounter = {token:(0.7*count)
+                            for token, count in Counter(subTokens).items()}
     # combine greedTokens and normalized subTokens to get weighted token counts
     countedTokens = Counter(greedyTokens)
     countedTokens.update(weightedSubCounter)
     return countedTokens
 
-def score_token(token, div, divText, divLen, divMultipier, tokensFound):
-    """
-    Scores individual token in div
-    """
 
-    ### FIND TOKEN FREQUENCY ###
-    tokenNum = url_count_token(token, divText) if (div=='url') else count_token(token, divText)
-    tokenFreq = tokenNum / divLen
-
+def score_token(token, tokenFreq, specialMultiplier):
+    """
+    Scores individual token in a div
+    """
     ### NORMALIZE TOKEN FREQUENCY ###
     # get term and document frequency of token in freqDict built on scraped data
     try:
         termFreq, docFreq = freqDict[token]
     except:
         termFreq, inverseDocFreq = 0, 0
-
     # normalize tokenFreq using a tf-idf schema
     normedFreq = tokenFreq - (1.2 * termFreq)
-
     # tokens with negative normedFreq will automatically have scores of 0
     if normedFreq <= 0:
         return 0
-
     # apply sublinear scaling normedFreq to reduce impact of token-spamming
     # scaledFreq = 1 + log(normedFreq)
-
-    ### APPLY DIV-SPECIFIC SCORING MODELS ###
-    if (div=='all'):
-        ### TOKEN DISTRIBUTION SCORING ###
-        # find start and end location of each token usage in the text
-        tokenLocs = [(loc.span()[0], loc.span()[1]) for loc in re.finditer(token, divText, flags=re.IGNORECASE)]
-        # get loc of first token usage
-        firstUse = tokenLocs[0]
-        # give benefit to pages with tokens appearing early
-
-
-        ### RELATIVE LENGTH SCORING ###
-        # get page length relative to average word count (assumed 700)
-        relativeLen = divLen / 700
-        # use sigmoid function on relative length to benefit longer pages with equal token freq to shorter (multiplier asymptotes at 1 and ~5)
-        lengthMultiplier = (math.exp(0.25 * relativeLen) / (math.exp(0.25 * (relativeLen - 5.2)) + 1)) + 1
-        normedFreq *= lengthMultiplier
-
-    ### DIV MULTIPLICATION
-    # apply div multiplier to boost tokens in important divs
-    score = normedFreq * divMultipier
-
+    ### Apply specialMultiplier ###
+    score = normedFreq * specialMultiplier
     return round(score, 3)
 
 
@@ -145,42 +118,55 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
         divLen = len(divText) / 5
     else:
         divLen = len(divText.split())
+
     # find multiplier related to div
     divMultipier = divMultipiers[div]
-    # use knowledgeProcessor to extract tokens from divText
-    tokensFound = set(find_rawTokens(divText, knowledgeProcessor))
 
-    # apply analyze_token to create dict mapping tokens to scores
-    scoreDict = {token:score_token(token, div, divText, divLen, divMultipier, tokensFound)
-                    for token in tokensFound}
-
+    # use knowledgeProcessor to extract weighted token counts from divText
+    weightedTokenCounts = find_weighted_tokenCounts(divText, knowledgeProcessor)
+    specialMultiplier = divMultipier
+    # apply div specific scoring
+    # if (div=='all'):
+    #     ### TOKEN DISTRIBUTION SCORING ###
+    #     # find start and end location of each token usage in the text
+    #     # tokenLocs = [(loc.span()[0], loc.span()[1]) for loc in re.finditer(token, divText, flags=re.IGNORECASE)]
+    #     # get loc of first token usage
+    #     # firstUse = tokenLocs[0]
+    #     # give benefit to pages with tokens appearing early
+    #     ### RELATIVE LENGTH SCORING ###
+    #     # get page length relative to average word count (assumed 700)
+    #     relativeLen = divLen / 700
+    #     # use sigmoid function on relative length to benefit longer pages with equal token freq to shorter (multiplier asymptotes at 1 and ~5)
+    #     lengthMultiplier = (math.exp(0.25 * relativeLen) / (math.exp(0.25 * (relativeLen - 5.2)) + 1)) + 1
+    #     specialMultiplier = lengthMultiplier
+    # else:
+    #     specialMultiplier = 0
+    # create dict mapping tokens to scores as function of frequency
+    tokenScores = {token:score_token(token=token,
+                                    tokenFreq=(weightedCount/divLen),
+                                    specialMultiplier=specialMultiplier)
+                    for token, weightedCount in weightedTokenCounts.items()}
     # filter scores below cuoff
-    filteredScores = {token: score for token, score in scoreDict.items()
+    filteredScores = {token: score for token, score in tokenScores.items()
                         if score > cutoff}
-
-    return filteredScores
+    return Counter(filteredScores)
 
 
 def score_divDict(divDict, knowledgeProcessor, freqDict):
     """
     Args: Dict mapping page divisions to cleaned content (eg. {'title':'foo',
-    'p':'hello world'}), knowledgeProcessor to use for matching, and dict of
+    'all':'hello world'}), knowledgeProcessor to use for matching, and dict of
     average knowledge token frequency.
     Returns: Dict mapping all knowledge tokens found in divDict to score
     determined by div found and relative frequency.
     """
-    # initialize dict to hold tokens mapping to sum scores across all divs
-    scoreDict = {}
+    # initialize Counter to hold tokens mapping to sum scores across all divs
+    scoreCounter = Counter()
     # iterate over divisions in divDict
     for div in divDict:
         # get text inside div
         divText = divDict[div]
-        # get dict of tokens in divText and their scores
+        # get Counter of tokens in divText and their scores
         divScores = find_scoredTokens(divText, div, knowledgeProcessor, freqDict, 0.005)
-        # iterate over found tokens, adding their scores to the divDict
-        for token in divScores:
-            if token in scoreDict:
-                scoreDict[token] += divScores[token]
-            else:
-                scoreDict.update({token:divScores[token]})
-    return scoreDict
+        scoreCounter.update(divScores)
+    return scoreCounter

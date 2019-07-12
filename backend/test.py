@@ -8,13 +8,8 @@ from dataStructures.pageObj import Page
 from dataStructures.thicctable import Thicctable
 from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
 from searchers.searchLexer import topSearch
-from models.knowledge.knowledgeFinder import find_rawTokens, find_weighted_tokenCounts
+from models.knowledge.knowledgeFinder import find_rawTokens, score_divDict
 
-knowledgeProcessor = build_knowledgeProcessor({'harvard university', 'harvard', 'university', 'a'})
-
-while True:
-    text = input('text: ')
-    print(find_weighted_tokenCounts(text, knowledgeProcessor))
 
 crawl_wiki_data('data/inData/wikipedia_utf8_filtered_20pageviews.csv', 'data/thicctable/wikiCrawl', 100, 10)
 
