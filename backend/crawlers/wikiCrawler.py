@@ -37,7 +37,7 @@ def scrape_wiki_page(line, knowledgeProcessor, freqDict):
                 'all':      articleText}
     scoredNum = len(score_divDict(divDict, knowledgeProcessor, freqDict))
     rawNum = len(find_rawTokens(articleText, knowledgeProcessor))
-    print(f"Scored: {scoredNum} | Raw: {rawNum} | Reduction: {(rawNum-scoredNum)}")
+    print(f"Scored: {scoredNum} | Raw: {rawNum} | Reduction: {(rawNum-scoredNum)}", end='\n\n')
     knowledgeTokens = {}
     # determine text to show for the window
     windowText = articleText
