@@ -19,6 +19,19 @@ def single_search(token, database, n=20):
     print(f"{len(database.topDict[token])} results found.")
     return resultList
 
+def smart_single_search(token, database, n=20):
+    """
+    Performs a database search for a single token, but will look for similar
+    words and buckets to reach n results
+    """
+    print("SMART SINGLE search")
+    resultList = database.search_display(key=token, tokenList=[token], n=n)
+    resultLength = len(resultList)
+    if (resultLength < 20):
+        words = token.split()
+        if (len(words)>1):
+            resultList += and_search(words, database, n=(20-resultLength))
+    return resultList
 
 def or_search(tokenList, database, n=20):
     """

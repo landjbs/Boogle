@@ -26,7 +26,7 @@ def topSearch(rawSearch, database, uniqueWords, knowledgeProcessor):
     """
     cleanedSearch = clean_text(rawSearch)
 
-    correctedSearch = " ".join([correct(token, WORDS) if not (token[0]=='"' and token[-1]=='"') else token
+    correctedSearch = " ".join([correct(token, uniqueWords) if not (token[0]=='"' and token[-1]=='"') else token
                                 for token in cleanedSearch.split()])
 
     correctionDisplay = correctedSearch
@@ -37,7 +37,10 @@ def topSearch(rawSearch, database, uniqueWords, knowledgeProcessor):
 
     # use single
     if (len(tokenList) == 1):
-        return (correctionDisplay, databaseSearcher.single_search(tokenList[0], database))
+        return (correctionDisplay, databaseSearcher.smart_single_search(tokenList[0], database))
 
     elif (len(tokenList)>1):
         return (correctionDisplay, databaseSearcher.and_search(tokenList, database))
+
+    else:
+        return
