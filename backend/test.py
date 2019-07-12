@@ -8,6 +8,13 @@ from dataStructures.pageObj import Page
 from dataStructures.thicctable import Thicctable
 from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
 from searchers.searchLexer import topSearch
+from models.knowledge.knowledgeFinder import find_rawTokens, find_weighted_tokenCounts
+
+knowledgeProcessor = build_knowledgeProcessor({'harvard university', 'harvard', 'university', 'a'})
+
+while True:
+    text = input('text: ')
+    print(find_weighted_tokenCounts(text, knowledgeProcessor))
 
 crawl_wiki_data('data/inData/wikipedia_utf8_filtered_20pageviews.csv', 'data/thicctable/wikiCrawl', 100, 10)
 
@@ -20,12 +27,15 @@ database = Thicctable(knowledgeSet)
 del knowledgeSet
 
 for i, file in enumerate(listdir('data/thicctable/wikiCrawl')):
-    pagesList = load(f'data/thicctable/wikiCrawl/{file}')
-    for pageDict in pagesList:
-        pageObj = Page(pageDict)
-        database.bucket_page(pageObj)
-    print(colored(f'Building Database: {i}', 'red'), end='\r')
-    del pagesList
+    try:
+        pagesList = load(f'data/thicctable/wikiCrawl/{file}')
+        for pageDict in pagesList:
+            pageObj = Page(pageDict)
+            database.bucket_page(pageObj)
+        print(colored(f'Building Database: {i}', 'red'), end='\r')
+        del pagesList
+    except Exception as e:
+        print(f"{e} at '{file}'")
 print(colored('Complete: Building Database', 'cyan'))
 
 print(colored('Cleaning Database', 'red'), end='\r')
@@ -39,7 +49,8 @@ print(colored('Complete: Sorting Database', 'cyan'))
 
 # get dict mapping token to length of posting list
 print(colored('Finding Posting Lengths', 'red'), end='\r')
-WORDS = database.all_lengths()
+# WORDS = database.all_lengths()
+WORDS = {token:1 for token in ['harvard', 'college', 'university', 'radio', 'station', 'harvard college', 'harvard university', 'harvard radio', 'radio station']}
 print(colored('Complete: Finding Posting Lengths', 'cyan'))
 
 searchProcessor = build_knowledgeProcessor(WORDS)

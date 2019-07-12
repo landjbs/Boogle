@@ -7,6 +7,8 @@ import re
 import math
 from numpy import log
 import matplotlib.pyplot as plt
+from collections import Counter
+
 
 # dict mapping html divs to score  multiplier
 divMultipiers = {'url':         5,
@@ -58,21 +60,34 @@ def find_rawTokens(inStr, knowledgeProcessor):
     return allTokens
 
 
-def find_countedTokens(inStr, knowledgeProcessor):
+def find_weighted_tokenCounts(inStr, knowledgeProcessor):
     """
     Finds dict mapping tokens used in inStr to number of times used.
     Does not normalize by length, div, or average frequency.
-    Subtokens should be given 3/4 the weighting of full tokens
+    Subtokens should be given 0.7 the weighting of full tokens
     """
-    tokensFound = find_rawTokens(inStr)
-    return {token:count_token(token, inStr) for token in tokensFound}
-
+    # get multi-occurence (!!!) list of the greedy tokens in inStr
+    greedyTokens = knowledgeProcessor.extract_keywords(inStr)
+    # get multi-occurence list of sub tokens in ' '-split greed tokens
+    subTokens = []
+    for token in greedyTokens:
+        splitToken = token.split()
+        if not (len(splitToken)==1):
+            for word in splitToken:
+                subTokens += knowledgeProcessor.extract_keywords(word)
+    # get counts of sub tokens and normalize by 0.7
+    subCounter = Counter(subTokens)
+    weightedSubCounter = {token:(0.7*subCounter[token]) for token in subCounter}
+    # combine greedTokens and normalized subTokens to get weighted token counts
+    countedTokens = Counter(greedyTokens)
+    countedTokens.update(weightedSubCounter)
+    return countedTokens
 
 def score_token(token, div, divText, divLen, divMultipier, tokensFound):
     """
     Scores individual token in div
     """
-    
+
     ### FIND TOKEN FREQUENCY ###
     tokenNum = url_count_token(token, divText) if (div=='url') else count_token(token, divText)
     tokenFreq = tokenNum / divLen

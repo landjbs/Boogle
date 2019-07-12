@@ -59,7 +59,7 @@ def and_search(tokenList, database, n=20):
     print(f"{len(intersectionPages)} pages found.")
     # rank intersection pages according to all tokens
     rankedPages = [(score_intersection(pageObj, tokenList), pageObj) for pageObj in intersectionPages]
-    rankedPages.sort(reverse=True)
-
+    rankedPages.sort(reverse=True, key=(lambda elt: elt[0]))
+    print('sorted')
     returnPages = [pageElt[1].display(tokenList) for i, pageElt in enumerate(rankedPages) if i < n]
     return returnPages

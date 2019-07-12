@@ -5,7 +5,7 @@ from threading import Thread
 
 from dataStructures.objectSaver import load, save
 from dataStructures.scrapingStructures import Simple_List, Metrics
-from models.knowledge.knowledgeFinder import score_divDict
+from models.knowledge.knowledgeFinder import score_divDict, find_rawTokens
 from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
 
 
@@ -33,9 +33,12 @@ def scrape_wiki_page(line, knowledgeProcessor, freqDict):
     url = make_wiki_url(title)
     # build divDict and analyze for knowledgeTokens
     divDict = {'url':       url,
-                'title':    title,
+                'h3':       title,
                 'all':      articleText}
-    knowledgeTokens = score_divDict(divDict, knowledgeProcessor, freqDict)
+    scoredNum = len(score_divDict(divDict, knowledgeProcessor, freqDict))
+    rawNum = len(find_rawTokens(articleText, knowledgeProcessor))
+    print(f"Scored: {scoredNum} | Raw: {rawNum} | Reduction: {(rawNum-scoredNum)}")
+    knowledgeTokens = {}
     # determine text to show for the window
     windowText = articleText
     # build and return pageDict of article attributes
@@ -57,16 +60,13 @@ def crawl_wiki_data(inPath, outPath, queueDepth, workerNum):
     Crawls cleaned wikipedia data at file path
     and saves page data to files under outPath
     """
-    knowledgeSet = {'harvard', 'harvard college', 'harvard university', 'radio', 'radio station'}
     # load freqDict
     print(colored('Loading Freq Dict', 'red'), end='\r')
-    # freqDict = load('data/outData/knowledge/freqDict.sav')
-    freqDict = {}
+    freqDict = load('data/outData/knowledge/freqDict.sav')
     print(colored('Complete: Loading Freq Dict', 'cyan'))
     # load knowledgeProcessor
     print(colored('Loading Knowledge Processor', 'red'), end='\r')
-    # knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
-    knowledgeProcessor = build_knowledgeProcessor(knowledgeSet)
+    knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
     print(colored('Complete: Loading Knowledge Processor', 'cyan'))
 
     # Queue to store lines from wiki file
@@ -111,6 +111,6 @@ def crawl_wiki_data(inPath, outPath, queueDepth, workerNum):
             lineQueue.put(line)
 
     print('here')
-    # del knowledgeProcessor
-    # del freqDict
+    del knowledgeProcessor
+    del freqDict
     return True
