@@ -28,7 +28,6 @@ def load_crawled_pages(filePath):
     for i, file in enumerate(listdir(filePath)):
         try:
             pageList = load(f'{filePath}/{file}')
-            print(f'\n{len(pageList)}\n')
             for pageDict in pageList:
                 database.bucket_page(Page(pageDict))
             print(colored(f'Building Database: {i}', 'red'), end='\r')
@@ -53,6 +52,7 @@ def load_crawled_pages(filePath):
                 uniqueWords.update({word:length})
     print(colored('Complete: Finding Unique Words', 'cyan'))
     # flashtext processor to find keywords in search
-    searchProcessor = build_knowledgeProcessor(uniqueWords)
+    # searchProcessor = build_knowledgeProcessor(uniqueWords)
+    searchProcessor = load('backend/data/outData/knowledge/knowledgeProcessor.sav')
     # searchProcessor = load('backend/data/outData/knowledge/knowledgeProcessor.sav')
     return(database, uniqueWords, searchProcessor)

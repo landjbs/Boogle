@@ -1,10 +1,8 @@
 from time import time
 from termcolor import colored
-from queue import Queue
-from threading import Thread
 
 from dataStructures.objectSaver import load, save
-from dataStructures.scrapingStructures import Simple_List, Metrics
+from dataStructures.scrapingStructures import Simple_List
 from models.knowledge.knowledgeFinder import score_divDict
 from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
 
@@ -52,7 +50,7 @@ def scrape_wiki_page(line, knowledgeProcessor, freqDict):
     return(pageDict)
 
 
-def crawl_wiki_data(inPath, outPath, queueDepth, workerNum):
+def crawl_wiki_data(inPath, outPath):
     """
     Crawls cleaned wikipedia data at file path
     and saves page data to files under outPath
@@ -66,45 +64,22 @@ def crawl_wiki_data(inPath, outPath, queueDepth, workerNum):
     knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
     print(colored('Complete: Loading Knowledge Processor', 'cyan'))
 
-    # Queue to store lines from wiki file
-    lineQueue = Queue(maxsize=queueDepth)
     # Simple_List to store pageDicts
     scrapeList = Simple_List()
-    # Metrics to store scraping info
-    scrapeMetrics = Metrics()
 
-    def worker():
-        """
-        Scrapes popped wiki line from lineQueue and
-        stores data in scrapeList
-        """
-        while True:
-            line = lineQueue.get()
+    with open(inPath, 'r') as wikiFile:
+        for i, line in enumerate(wikiFile):
             try:
                 pageDict = scrape_wiki_page(line, knowledgeProcessor, freqDict)
                 scrapeList.add(pageDict)
-                scrapeMetrics.add(error=False)
             except Exception as e:
                 print(f"ERROR: {e}")
-                scrapeMetrics.add(error=True)
 
-            if (len(scrapeList.data)>=5):
-                save(scrapeList.data, f'{outPath}/{scrapeMetrics.count}.sav')
+            if (len(scrapeList.data)>=3):
+                save(scrapeList.data, f'{outPath}/{i}.sav')
                 scrapeList.clear()
 
-            queueSize = lineQueue.qsize()
-            print(f'Pages Analyzed: {scrapeMetrics.count} | Errors: {scrapeMetrics.errors} | Queue Length: {queueSize}', end='\r')
-            lineQueue.task_done()
+            print(f'Pages Analyzed: {i}', end='\r')
 
-    # spawn workerNum workers
-    for _ in range(workerNum):
-        t = Thread(target=worker)
-        t.daemon = True
-        t.start()
-
-    # load wiki lines into lineQueue
-    with open(inPath, 'r') as wikiFile:
-        for line in wikiFile:
-            lineQueue.put(line)
-    print('\nScraping Complete')
+    print('\n\nScraping Complete\n')
     return True
