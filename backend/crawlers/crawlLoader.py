@@ -28,6 +28,7 @@ def load_crawled_pages(filePath):
     for i, file in enumerate(listdir(filePath)):
         try:
             pageList = load(f'{filePath}/{file}')
+            print(f'\n{len(pageList)}\n')
             for pageDict in pageList:
                 database.bucket_page(Page(pageDict))
             print(colored(f'Building Database: {i}', 'red'), end='\r')

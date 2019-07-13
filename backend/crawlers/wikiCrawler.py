@@ -63,8 +63,7 @@ def crawl_wiki_data(inPath, outPath, queueDepth, workerNum):
     print(colored('Complete: Loading Freq Dict', 'cyan'))
     # load knowledgeProcessor
     print(colored('Loading Knowledge Processor', 'red'), end='\r')
-    knowledgeProcessor = build_knowledgeProcessor({'the', 'test', 'a'})
-    # knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
+    knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
     print(colored('Complete: Loading Knowledge Processor', 'cyan'))
 
     # Queue to store lines from wiki file
@@ -89,8 +88,8 @@ def crawl_wiki_data(inPath, outPath, queueDepth, workerNum):
                 print(f"ERROR: {e}")
                 scrapeMetrics.add(error=True)
 
-            if (len(scrapeList.data)==5):
-                # save(scrapeList.data, f'data/thicctable/wikiCrawl/{scrapeMetrics.count}.sav')
+            if (len(scrapeList.data)>=5):
+                save(scrapeList.data, f'{outPath}/{scrapeMetrics.count}.sav')
                 scrapeList.clear()
 
             queueSize = lineQueue.qsize()
@@ -108,6 +107,4 @@ def crawl_wiki_data(inPath, outPath, queueDepth, workerNum):
         for line in wikiFile:
             lineQueue.put(line)
     print('\nScraping Complete')
-    del knowledgeProcessor
-    del freqDict
     return True

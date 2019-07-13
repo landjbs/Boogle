@@ -8,7 +8,7 @@ from searchers.searchLexer import topSearch
 
 app = Flask(__name__)
 
-database, uniqueWords, searchProcessor = load_crawled_pages('backend/data/thicctable/wikiCrawl')
+database, uniqueWords, searchProcessor = load_crawled_pages('backend/data/thicctable/wikiCrawl2')
 
 @app.route("/")
 def index():
