@@ -29,6 +29,8 @@ def load_crawled_pages(filePath):
         try:
             pageList = load(f'{filePath}/{file}')
             for pageDict in pageList:
+                pageObj = Page(pageDict)
+                print(pageObj.baseScore, pageObj.pageVec)
                 database.bucket_page(Page(pageDict))
             print(colored(f'Building Database: {i*(3)}', 'red'), end='\r')
         except Exception as e:
