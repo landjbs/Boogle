@@ -61,7 +61,7 @@ def topSearch(rawSearch, database, uniqueWords, knowledgeProcessor, freqDict):
         print('TOP: AND')
         # score the importance of each token and perform intersectional weighted search
         tokenScores, searchVec = score_token_importance(cleanedSearch, tokenSet, freqDict)
-        andResults = databaseSearcher.weighted_and_search(tokenScores, database, n)
+        andResults = databaseSearcher.weighted_and_search(tokenScores, searchVec, database, n)
         # update search metrics
         numResults += andResults[0]
         resultList += andResults[1]

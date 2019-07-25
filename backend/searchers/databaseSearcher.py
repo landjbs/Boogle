@@ -6,7 +6,7 @@ for lists of results.
 from itertools import chain
 
 from models.binning.docVecs import vectorize_doc
-from models.ranking.intersectionalRanker import score_simple_intersection
+from models.ranking.intersectionalRanker import score_simple_intersection, score_vector_intersection
 
 
 ### Simple search algorithms ###
@@ -67,7 +67,7 @@ def or_search(tokenList, database, n=20):
     return resultList
 
 ### Weight Search Algorithms ###
-def weighted_and_search(tokenScores, database, n=20):
+def weighted_and_search(tokenScores, searchVec, database, n=20):
     """
     Performs AND search for intersection of multiple tokens where tokens are
     each given ranking of importance in the search
@@ -84,7 +84,7 @@ def weighted_and_search(tokenScores, database, n=20):
     # find those pages in that of the most important token and any of the others
     intersectionPages = importantBucket.intersection(otherBuckets)
     # rank the pages according to their tokens and sort by ranking
-    rankedPages = [(score_simple_intersection(pageObj, tokenScores), pageObj)
+    rankedPages = [(score_vector_intersection(pageObj, searchVec, tokenScores), pageObj)
                     for pageObj in intersectionPages]
     rankedPages.sort(reverse=True, key=(lambda elt:elt[0]))
     # find number of pages before filtering to n
