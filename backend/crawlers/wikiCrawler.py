@@ -4,6 +4,7 @@ from termcolor import colored
 from dataStructures.objectSaver import load, save
 from dataStructures.scrapingStructures import Simple_List
 from models.processing.cleaner import clean_text
+from models.binning.docVecs import vectorize_doc
 from models.knowledge.knowledgeFinder import score_divDict
 from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
 
