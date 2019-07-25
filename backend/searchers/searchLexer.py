@@ -30,6 +30,7 @@ def topSearch(rawSearch, database, uniqueWords, knowledgeProcessor, freqDict):
     numResults, resultList = 0, []
     # protocol for single token at top level of search
     if (len(tokenSet) == 1):
+        print('TOP: SINGLE')
         topToken = list(tokenSet)[0]
         # query database for single token bucket. error means it's empty
         try:
@@ -39,7 +40,7 @@ def topSearch(rawSearch, database, uniqueWords, knowledgeProcessor, freqDict):
         except:
             pass
         if numResults < n:
-            print('AND')
+            print(f'AND After {numResults}')
             words = topToken.split()
             numWords = len(words)
             if (numWords > 1):
@@ -57,7 +58,7 @@ def topSearch(rawSearch, database, uniqueWords, knowledgeProcessor, freqDict):
 
     # protocol for more than one token
     elif (len(tokenSet) > 1):
-        print('AND')
+        print('TOP: AND')
         # score the importance of each token and perform intersectional weighted search
         tokenScores, searchVec = score_token_importance(cleanedSearch, tokenSet, freqDict)
         andResults = databaseSearcher.weighted_and_search(tokenScores, database, n)
