@@ -8,9 +8,9 @@ def score_token_intersection(pageObj, tokenWeights):
     pageTokens = pageObj.knowledgeTokens
     knowledgeScore = 0
 
-    for curTokens, curWeight in tokenWeights.items():
+    for curToken, curWeight in tokenWeights.items():
         if curToken in pageTokens:
-            knowledgeScore += curWeight * knowledgeTokens[token]
+            knowledgeScore += curWeight * pageTokens[curToken]
         else:
             knowledgeScore -= curWeight
 
@@ -26,7 +26,7 @@ def score_vector_intersection(pageObj, tokenScores, searchVec):
     print(searchVec, pageObj.pageVec)
     vecScore = (1 / euclidean(searchVec, pageObj.pageVec))
 
-    tokenAndBaseScore = score_token_intersection(pageObj, tokenWeights)
+    tokenAndBaseScore = score_token_intersection(pageObj, tokenScores)
     print(f'\tvecScore: {vecScore}')
     aggregateScore = tokenAndBaseScore + vecScore
 

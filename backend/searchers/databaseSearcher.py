@@ -111,8 +111,6 @@ def weighted_or_search(tokenScores, database, n):
 
 def weighted_vector_search(tokenScores, searchVec, database, n):
     """ Weighted and search that uses ML on vector """
-    # vectorize the search text
-    searchVec = vectorize_doc(searchText)
     # find the most important token and retrive its bucket
     importantToken = max(tokenScores, key=(lambda elt:tokenScores[elt]))
     importantBucket = set(database.search_pageObj(key=importantToken, n=100000))
