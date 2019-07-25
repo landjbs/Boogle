@@ -1,10 +1,3 @@
-from models.knowledge.knowledgeBuilder import build_corr_dict, build_knowledgeProcessor
-from dataStructures.objectSaver import load
-freqDict = load('data/outData/knowledge/freqDict.sav')
+from models.binning.textClustering import cluster_file_contents
 
-while True:
-    s = input('search: ')
-    try:
-        print(freqDict[s])
-    except Exception as e:
-        print(e)
+cluster_file_contents(filePath='data/thicctable/wikiCrawl4')
