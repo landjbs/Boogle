@@ -38,13 +38,15 @@ def scrape_wiki_page(line, knowledgeProcessor, freqDict):
                 'h3':       title,
                 'all':      cleanedText}
     knowledgeTokens = score_divDict(divDict, knowledgeProcessor, freqDict)
+    # vectorize the article text
+    pageVec = vectorize_doc(articleText)
     # determine text to show for the window
     windowText = articleText
     # build and return pageDict of article attributes
     pageDict = {'url':              url,
                 'title':            title,
                 'knowledgeTokens':  knowledgeTokens,
-                'pageVec':          {},
+                'pageVec':          pageVec,
                 'linkList':         [],
                 'loadTime':         0.5,
                 'loadDate':         loadDate,
