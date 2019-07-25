@@ -103,6 +103,7 @@ def weighted_or_search(tokenScores, database, n):
 
 def weighted_vector_search():
     """ Weighted and search that uses ML on vector """
+    pass
 
 
 ### Smart Search Algorithms ###
