@@ -124,7 +124,7 @@ def weighted_vector_search(tokenScores, searchVec, database, n):
     # find those pages in that of the most important token and any of the others
     intersectionPages = importantBucket.intersection(otherBuckets)
     # rank the pages according to their tokens and sort by ranking
-    rankedPages = [(score_intersection(pageObj, tokenScores), pageObj) for pageObj in intersectionPages]
+    rankedPages = [(score_vector_intersection(pageObj, tokenScores, searchVec), pageObj) for pageObj in intersectionPages]
     rankedPages.sort(reverse=True)  # key=(lambda elt:elt[0])
     # find number of pages before filtering to n
     numResults = len(rankedPages)

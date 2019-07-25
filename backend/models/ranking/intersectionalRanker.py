@@ -18,13 +18,16 @@ def score_token_intersection(pageObj, tokenWeights):
     print(f'baseScore: {baseScore} || knowledgeScore: {knowledgeScore}')
     return aggregateScore
 
-def score_vector_intersection(pageObj, tokenWeights, searchVec):
+def score_vector_intersection(pageObj, tokenScores, searchVec):
     """
     Scores page by baseScore, score of multiple tokens, and relationship
     with search vector
     """
+    print(searchVec, pageObj.pageVec)
     vecScore = (1 / euclidean(searchVec, pageObj.pageVec))
 
     tokenAndBaseScore = score_token_intersection(pageObj, tokenWeights)
-    print(f'vecScore: {vecScore}')
+    print(f'\tvecScore: {vecScore}')
     aggregateScore = tokenAndBaseScore + vecScore
+
+    return aggregateScore
