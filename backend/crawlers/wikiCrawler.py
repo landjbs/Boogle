@@ -41,6 +41,9 @@ def scrape_wiki_page(line, knowledgeProcessor, freqDict):
     knowledgeTokens = score_divDict(divDict, knowledgeProcessor, freqDict)
     # vectorize the article text
     pageVec = vectorize_doc(articleText)
+    # create dict of base attributes of the page and score
+    baseAttributes = {'loadTime': 0.5, 'imageScore':0, 'videoScore':0}
+    baseScore = calc_base_score(baseAttributes)
     # determine text to show for the window
     windowText = articleText
     # build and return pageDict of article attributes
@@ -49,10 +52,8 @@ def scrape_wiki_page(line, knowledgeProcessor, freqDict):
                 'knowledgeTokens':  knowledgeTokens,
                 'pageVec':          pageVec,
                 'linkList':         [],
-                'loadTime':         0.5,
                 'loadDate':         loadDate,
-                'imageScore':       0,
-                'videoScore':       0,
+                'baseScore':        baseScore,
                 'windowText':       windowText}
     return(pageDict)
 
