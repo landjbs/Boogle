@@ -1,4 +1,4 @@
-loadLambda = lambda loadtime: loadTime
+loadLambda = lambda loadTime: loadTime
 
 def calc_base_score(baseAttributes):
     """

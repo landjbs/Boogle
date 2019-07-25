@@ -7,8 +7,6 @@ from dataStructures.scrapingStructures import Metrics
 from crawlers.htmlAnalyzer import get_pageText, detect_language
 
 
-print(f"{'-'*80}THIS COMPUTER IS WORKING ON IMPORTANT THINGS—PLEASE DON'T CLOSE{'-'*80}")
-
 ### Match objects compiled for quick calls in functions ###
 # matcher for url in dmozDF line
 urlString = r'(?<=").+(?="\t)'
