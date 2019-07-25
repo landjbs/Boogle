@@ -1,5 +1,6 @@
 import numpy as np
 from os import listdir
+from scipy.spatial.distance import euclidean
 
 from dataStructures.objectSaver import load
 
@@ -15,6 +16,19 @@ def cluster_file_contents(filePath, n):
             break
         pageList = load(f'{filePath}/{file}')
         for pageDict in pageList:
-            if pageDict['title'].strip() in people:
-                peopleVecs.append(pageDict['pageVec'])
-            vecDict.update({pageDict['title']: pageDict['pageVec']})
+            title, vec = pageDict['title'].strip(), pageDict['pageVec']
+            if title in people:
+                peopleVecs.append(vec)
+            vecDict.update({title: vec})
+
+    peopleAverage = np.average(peopleVecs, axis=0)
+    print(peopleAverage)
+    rankedList = []
+    for title, vec in vecDict.keys():
+        if not title in people:
+            distance = euclidean(vec, peopleAverage)
+            rankedList.append((distance, title))
+    rankedList.sort()
+
+    for elt in rankedList:
+        print(f'{elt[0]} - {elt[1]}')
