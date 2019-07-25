@@ -3,22 +3,112 @@
 
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
   <meta name="description" content="Homepage for Boogle, a ground-up search engine.">
   <meta name="author" content="Landon Smith">
 
-  <title>🅱️oogle</title>
+  <title>Boogle</title>
+
+  <style>
+
+    body {
+      font-family: 'Helvetica';
+      text-align: center;
+      /* background-image: url('abstract_paint.jpeg'); */
+      background-image: url('http://blog.pshares.org/files/2014/08/abstract_paint.jpeg');
+      background-size: 100%;
+    }
+
+    .special {
+      font-weight: bold;
+      color: #73faff;
+    }
+
+    .special:hover {
+      color: #3be8ff;
+    }
+
+    ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    li {
+      float: left;
+    }
+
+    li a {
+      display: block;
+      color: white;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      font-size: 20px;
+    }
+
+    /* Change the link color to #111 (black) on hover */
+    li a:hover {
+      color: white;
+    }
+
+    input {
+      color: white;
+      border-radius: 1em;
+      padding: 0.6em;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-right: -50%;
+      transform: translate(-50%, -50%);
+      width: 60%;
+      height: 10%;
+      font-size: 90px;
+      border-color: rgba(0, 0, 0, 0);
+    }
+
+    .home-search input {
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    .home-search input:hover {
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .home-search input:focus {
+      background-color: rgba(0, 0, 0, 0.7);
+      outline: none;
+    }
+
+    .home-search input::placeholder {
+      text-align: left; /* placeholder aligned in center */
+      color: rgb(240,240,240); /* placeholder is grey */
+    }
+
+    .home-search input:focus::placeholder {
+      color: rgba(0, 0, 0, 0);
+    }
+
+  </style>
 
 </head>
 
-
 <body>
-  <center>
-    <br><br><br>
-    <h1>BOOGLE</h1>
-    <form action = "http://localhost:5000/result" method = "POST">
-      <input type = "text" name = "Search" placeholder="Search..."/>
-      <p><input type = "submit" value = "submit" /></p>
-    </form>
-  </center>
+  <div class="nav-bar">
+    <ul>
+      <li><a class="special" href="#">Boogle</a></li>
+      <li><a href="#news">News</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li style="float:right"><a class="active" href="#about">About</a></li>
+    </ul>
+  </div>
+  <br><br><br>
+  <div class="home-search">
+  <form action="http://localhost:5000/result" method="POST">
+    <input type="text" name="Search" placeholder="Boogle...                                🔍"/>
+  </form>
+</div>
+
 </body>
 </html>

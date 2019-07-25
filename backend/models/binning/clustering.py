@@ -20,6 +20,37 @@ from sklearn.metrics.pairwise import cosine_similarity
 import models.binning.docVecs as docVecs
 
 
+class FuzzyVec():
+    """ Class to store a single embeded string/vector and pointers to neighbors """
+    def __init__(self, name):
+        self.name = name
+        self.vec = docVecs.vectorize_doc(name)
+        self.neighbors = []
+
+    def find_nearest(self, fuzzyVecList, cutoff):
+        """
+        Finds neighbors in list of FuzzyVec()s within cutoff distance and
+        stores in ranked list of (dist, FuzzyVec)
+        """
+        selfVec = self.vec
+        neighbors = []
+        for fuzzyObj in fuzzyVecList:
+            if not fuzzyObj == self:
+                curDist = euclidean(fuzzyObj.vec, selfVec)
+                if (curDist < cutoff):
+                    neighbors.append((curDist, fuzzyObj))
+        neighbors.sort()
+        self.neighbors = neighbors
+
+
+
+# class FuzzyStore():
+#     """ Class to store nearest neighbors of FuzzyVecs """
+#     def __init__
+
+
+
+
 class ClusterElement():
     """ Class to define an object in a cluster """
     def __init__(self, name, vector):

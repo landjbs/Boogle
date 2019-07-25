@@ -1,37 +1,51 @@
 """
 Database searcher provides several methods for searching a Thicctable database
 for lists of results.
-    Methods:
-        single_search:
 """
 
-from models.ranking.pageRanker import score_intersection
 from itertools import chain
 
+from models.ranking.pageRanker import score_intersection
+
+
+### Simple search algorithms ###
 def single_search(token, database, n=20):
     """
     Performs a a databases search for a single token and returns the display
     attributes of the top n items.
     Fastest type of search: no intersection and no re-ranking.
     """
-    print("SINGLE search")
-    resultList = database.search_display(key=token, tokenList=[token], n=n)
-    print(f"{len(database.topDict[token])} results found.")
-    return resultList
+    # find all pages in token bucket
+    resultList = database.search_pageObj(key=token, n=100000)
+    # find number of pages before filtering to n
+    numResults = len(resultList)
+    # filter results to top n; ranking isn't necessary because it was completed during indexing
+    return (numResults, resultList[:n])
 
-def smart_single_search(token, database, n=20):
+def and_search(tokenList, database, n=20):
     """
-    Performs a database search for a single token, but will look for similar
-    words and buckets to reach n results
+    Preforms an AND search for the intersection multiple search tokens.
+    Slower than single_search or or_search as pages need to be reranked.
     """
-    print("SMART SINGLE search")
-    resultList = database.search_display(key=token, tokenList=[token], n=n)
-    resultLength = len(resultList)
-    if (resultLength < 20):
-        words = token.split()
-        if (len(words)>1):
-            resultList += and_search(words, database, n=(20-resultLength))
-    return resultList
+    # get list of all result buckets associate with each tokens in the token list
+    bucketList = [database.search_pageObj(key=token, n=100000) for token in tokenList]
+    # get list of length of each bucket in bucketList
+    lengthList = [len(bucket) for bucket in bucketList]
+    # pop shortest bucket from bucketList and cast as set
+    shortestBucket = set(bucketList.pop(lengthList.index(min(lengthList))))
+    # concatenate all buckets but the shortest
+    otherBuckets = list(chain.from_iterable(bucketList))
+    # cast shortestBucket to a set and get its interesction with otherBuckets
+    intersectionPages = shortestBucket.intersection(otherBuckets)
+    # rank intersection pages according to all tokens
+    rankedPages = [(score_intersection(pageObj, tokenList), pageObj) for pageObj in intersectionPages]
+    rankedPages.sort(reverse=True, key=(lambda elt: elt[0]))
+    # find number of pages before filtering to n
+    numResults = len(rankedPages)
+    # return top n pages and disregard their scores
+    resultList = [pageElt[1] for i, pageElt in enumerate(rankedPages) if i < n]
+    return (numResults, resultList)
+
 
 def or_search(tokenList, database, n=20):
     """
@@ -41,38 +55,92 @@ def or_search(tokenList, database, n=20):
     NB: The presence of multiple tokens from tokenList in a page does not
     influence it's ranking.
     """
-    print("OR search")
     # get list of all result bukcets associate with each tokens in the token list
     bucketLists = [database.search_full(key=token, n=100000) for token in tokenList]
     # combine bucketLists into a single, sorted list
-    sortedResults = list(chain.from_iterable(bucketLists)).sort(key=(lambda result:result[-1]), reverse=True)
-    print(sortedResults)
-    print(f"{len(sortedResults)} results found.")
-    resultList = [pageElt[0].display(tokenList) for i, pageElt in enumerate(sortedResults) if i < n]
+    sortedResults = list(chain.from_iterable(bucketLists))
+    sortedResults.sort(key=(lambda result:result[0]), reverse=True)
+    resultList = [pageElt[1].display(tokenList) for i, pageElt in enumerate(sortedResults) if i < n]
+    return resultList
+
+### Weight Search Algorithms ###
+def weighted_and_search(tokenScores, database, n=20):
+    """
+    Performs AND search for intersection of multiple tokens where tokens are
+    each given ranking of importance in the search
+    """
+    # find the most important token and retrive its bucket
+    importantToken = max(tokenScores, key=(lambda elt:tokenScores[elt]))
+    importantBucket = set(database.search_pageObj(key=importantToken, n=100000))
+    # get the buckets of the less important tokens in the search
+    otherTokens = tokenScores.copy()
+    _ = otherTokens.pop(importantToken)
+    bucketList = [database.search_pageObj(key=token, n=100000) for token in otherTokens]
+    otherBuckets = list(chain.from_iterable(bucketList))
+    # find those pages in that of the most important token and any of the others
+    intersectionPages = importantBucket.intersection(otherBuckets)
+    # rank the pages according to their tokens and sort by ranking
+    rankedPages = [(score_intersection(pageObj, tokenScores), pageObj) for pageObj in intersectionPages]
+    rankedPages.sort(reverse=True, key=(lambda elt:elt[0]))
+    # find number of pages before filtering to n
+    numResults = len(rankedPages)
+    # return top n pages and disregard their scores
+    resultList = [pageElt[1] for i, pageElt in enumerate(rankedPages) if i < n]
+    return (numResults, resultList)
+
+def weighted_or_search(tokenScores, database, n):
+    """
+    The same as weighted_and_search, but pages do not need to be a max
+    importance bucket to qualify for ranking
+    """
+    bucketList = [database.search_pageObj(key=token, n=100000) for token in tokenScores]
+    allPages = list(chain.from_iterable(bucketList))
+    rankedPages = [(score_intersection(pageObj, tokenScores), pageObj) for pageObj in allPages]
+    rankedPages.sort(reverse=True, key=(lambda elt:elt[0]))
+    resultList = [pageElt[1].display(tokenScores.keys()) for i, pageElt in enumerate(rankedPages) if i < n]
     return resultList
 
 
-def and_search(tokenList, database, n=20):
-    """
-    Preforms an AND search for the intersection multiple search tokens.
-    Slower than single_search or or_search as pages need to be reranked.
-    """
-    print("AND Search")
-    # get list of all result buckets associate with each tokens in the token list
-    bucketList = [database.search_pageObj(key=token, n=100000) for token in tokenList]
-    print(f"{len(bucketList)} buckets found.")
-    # get list of length of each bucket in bucketList
-    lengthList = [len(bucket) for bucket in bucketList]
-    # pop shortest bucket from bucketList and cast as set
-    shortestBucket = set(bucketList.pop(lengthList.index(min(lengthList))))
-    # concatenate all buckets but the shortest
-    otherBuckets = list(chain.from_iterable(bucketList))
-    # cast shortestBucket to a set and get its interesction with otherBuckets
-    intersectionPages = shortestBucket.intersection(otherBuckets)
-    print(f"{len(intersectionPages)} pages found.")
-    # rank intersection pages according to all tokens
-    rankedPages = [(score_intersection(pageObj, tokenList), pageObj) for pageObj in intersectionPages]
-    rankedPages.sort(reverse=True, key=(lambda elt: elt[0]))
-    print('sorted')
-    returnPages = [pageElt[1].display(tokenList) for i, pageElt in enumerate(rankedPages) if i < n]
-    return returnPages
+def weighted_vector_search():
+    """ Weighted and search that uses ML on vector """
+
+
+### Smart Search Algorithms ###
+# def smart_single_search(token, database, n=20):
+#     """
+#     Performs a database search for a single token, but will look for similar
+#     words and buckets to reach n results
+#     """
+#     try:
+#         resultList = database.search_display(key=token, tokenList=[token], n=n)
+#     except:
+#         resultList = []
+#     resultLength = len(resultList)
+#     if (resultLength < n):
+#         words = token.split()
+#         if (len(words)>1):
+#             andResults = and_search(words, database, n=(n-resultLength))
+#             for result in andResults:
+#                 if not result in resultList:
+#                     resultList.append(result)
+#         else:
+#             # search for tokens in nearby euclidean space
+#             pass
+#     return resultList
+#
+#
+# def smart_and_search(tokenScores, database, n=20):
+#     """
+#     Preforms an AND search for the intersection multiple search tokens.
+#     Slower than single_search or or_search as pages need to be reranked.
+#     """
+#     if (len(tokenSet) <= 2):
+#         return (and_search(tokenSet, n))
+#     else:
+#         tokenScores = score_token_importance(x)
+#
+#     resultList = weighted_and_search(tokenScores, database, n)
+#     resultLength = len(resultLsit)
+#     if (resultLength < n):
+#         orResults = weighted_for_search()
+#     return resultList

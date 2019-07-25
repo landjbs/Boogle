@@ -34,26 +34,22 @@ def score_single(pageObj, token):
     return normalizedScore
 
 
-def score_intersection(pageObj, tokenList):
+def score_intersection(pageObj, tokenWeights):
     """
-    Scores page by load time and score list of multiple tokens
+    Scores page by load time and score of multiple tokens
     """
     tokenScore = 0
     knowledgeTokens = pageObj.knowledgeTokens
 
-    # aggregate score for each token in token list
-    # (pages with absent tokens aren't punished currently)
-    for token in tokenList:
+    # tokenScore is the sum of weighted token scores for each token in the page
+    for token in tokenWeights:
         try:
-            tokenScore += knowledgeTokens[token]
+            tokenScore += (tokenWeights[token]) * (knowledgeTokens[token])
         except:
-            pass
-
+            tokenScore -= 1
+    print(f"{pageObj.url}\n\t{tokenWeights}")
     loadPenalty = loadLambda(pageObj.loadTime)
 
     aggregateScore = tokenScore - loadPenalty
     normalizedScore = normalizationLambda(aggregateScore)
-
-    print(f"{pageObj.url}\n\t{normalizedScore}")
-
     return normalizedScore

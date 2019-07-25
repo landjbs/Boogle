@@ -1,43 +1,79 @@
 """
 Parses a raw search string and employs a search algorithm from
-searchers.databaseSearcher depending on lexical parsing of the query
+searchers.databaseSearcher depending on lexical understanding of the query
 """
 
-import searchers.databaseSearcher as databaseSearcher
-from models.processing.cleaner import clean_text
-from models.knowledge.knowledgeFinder import find_rawTokens
-from dataStructures.objectSaver import load
 import re
+
+import searchers.databaseSearcher as databaseSearcher
+from searchers.querySentiment import score_token_importance
 from searchers.spellingCorrector import correct
-from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
+from models.processing.cleaner import clean_search
+from models.knowledge.knowledgeFinder import find_rawTokens
 
 
-# load knowledgeProcessor for finding tokens in search
-# print('Loading Knowledge Processor')
-# knowledgeProcessor = build_knowledgeProcessor({'the', 'discovered', 'harvard'})
-# # knowledgeProcessor = load('backend/data/outData/knowledge/knowledgeProcessor.sav')
-# print("Processor loaded")
-
-
-def topSearch(rawSearch, database, uniqueWords, knowledgeProcessor):
+def topSearch(rawSearch, database, uniqueWords, knowledgeProcessor, freqDict):
     """
     Highest level search analyzer that takes in a raw search and decides
     which search function to employ.
     """
-    cleanedSearch = clean_text(rawSearch)
-
-    correctedSearch = " ".join([correct(token, uniqueWords) if not (token[0]=='"' and token[-1]=='"') else token
+    ### QUERY PROCESSING ###
+    n = 20
+    cleanedSearch = clean_search(rawSearch)
+    correctedSearch = " ".join([correct(token, uniqueWords) if not (token.startswith('"') and token.endswith('"')) else token[1:-1]
                                 for token in cleanedSearch.split()])
+    correctionDisplay = None if (cleanedSearch==correctedSearch) else (correctedSearch, cleanedSearch)
+    # find greedy tokens only for the first search
+    tokenSet = set(knowledgeProcessor.extract_keywords(correctedSearch))
 
-    correctionDisplay = correctedSearch
-    # correctionDisplay = None if (cleanedSearch==correctedSearch) else correctedSearch
+    ### SEARCHING ###
+    numResults, resultList = 0, []
+    # protocol for single token at top level of search
+    if (len(tokenSet) == 1):
+        topToken = list(tokenSet)[0]
+        # query database for single token bucket. error means it's empty
+        try:
+            singleResults = databaseSearcher.single_search(topToken, database)
+            numResults += singleResults[0]
+            resultList += singleResults[1]
+        except:
+            pass
+        if numResults < n:
+            print('AND')
+            words = topToken.split()
+            numWords = len(words)
+            if (numWords > 1):
+                tokenSet.update(find_rawTokens(cleanedSearch, knowledgeProcessor))
+                tokenScores = score_token_importance(cleanedSearch, words, freqDict)
+                andResults = databaseSearcher.weighted_and_search(tokenScores, database, (n-numResults))
+                numResults += andResults[0]
+                # add all results from andResult if they aren't already there
+                for andResult in andResults[1]:
+                    if not andResult in resultList:
+                        resultList.append(andResult)
+            else:
+                pass
 
-    # tokenList = find_rawTokens(correctedSearch, knowledgeProcessor)
-    tokenList = knowledgeProcessor.extract_keywords(correctedSearch)
+    # protocol for more than one token
+    elif (len(tokenSet) > 1):
+        print('AND')
+        # score the importance of each token and perform intersectional weighted search
+        tokenScores = score_token_importance(cleanedSearch, tokenSet, freqDict)
+        andResults = databaseSearcher.weighted_and_search(tokenScores, database, n)
+        # update search metrics
+        numResults += andResults[0]
+        resultList += andResults[1]
 
-    # use single
-    if (len(tokenList) == 1):
-        return (correctionDisplay, databaseSearcher.single_search(tokenList[0], database))
+    else:
+        print(f"WARNING: No tokens found in search {cleanedSearch}")
 
-    elif (len(tokenList)>1):
-        return (correctionDisplay, databaseSearcher.and_search(tokenList, database))
+    # determine if an inverted result should be shown
+    invertedResult = None
+    for i, page in enumerate(resultList[:5]):
+        if (((page.title).lower().strip())==(correctedSearch)):
+            invertedResult = resultList.pop(i).display_inverted(tokenSet)
+
+    # get display obejcts of each page in resultList
+    displayResultList = [pageObj.display(tokenSet) for pageObj in resultList]
+
+    return (correctionDisplay, numResults, invertedResult, displayResultList)

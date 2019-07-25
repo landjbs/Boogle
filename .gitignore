@@ -17,3 +17,5 @@
 *.tar
 *copy
 *.gz
+*gstmp
+*.jsonl

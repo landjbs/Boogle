@@ -1,28 +1,171 @@
 <!doctype html>
 <html>
-  <header>
+  <head>
     <title>{{ correctionDisplay }} - Boogle Search</title>
-  </header>
+    <style>
+
+      body {
+        font-family: 'Helvetica';
+        /* background-image: url('abstract_paint.jpeg'); */
+        background-image: url('http://blog.pshares.org/files/2014/08/abstract_paint.jpeg');
+        background-size: 100%;
+      }
+
+      .title-bar {
+        text-align: center;
+        padding:10px;
+        background-color: rgba(255, 255, 255, 0.95);
+      }
+
+      .search-bar {
+        background-color: white;
+        text-align: left;
+        padding: 10px;
+        background-color: rgba(255, 255, 255, 0.95);
+      }
+
+      .search-bar input {
+        border-radius: 1em;
+        width: 30%;
+        height: 10%;
+        font-size: 20;
+        padding: 0.5em;
+      }
+
+      .search-results {
+        text-align: center;
+      }
+
+      .inverted-result {
+        width: 600px;
+        height: 300px;
+        position: relative;
+        background-color: rgba(240, 240, 237, 0.95);
+        border: 5px solid black;
+        padding: 10px;
+        text-align: left;
+      }
+
+      .inverted-title a {
+        font-size: 23px;
+        color: #ed7d2d;
+      }
+
+      .inverted-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding-bottom: 25px;
+      }
+
+      li {
+        display: inline-grid;
+        position: relative;
+        width: 300px;
+        height: 300px;
+        padding-left: 5px;
+        padding-right: 5px;
+        background-color: rgba(240, 240, 237, 0.95);
+        border: 5px solid black;
+      }
+
+      li:hover {
+        background-color: rgba(220, 220, 220, 1);
+      }
+
+      .display-title {
+        text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-weight: bold;
+        padding-top: 15px;
+      }
+
+      .display-title a {
+        color: #ed7d2d;
+      }
+
+      .display-url {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .display-url a {
+        color: #3be8ff;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .display-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding-bottom: 15px;
+      }
+
+    </style>
+
+  </head>
    <body>
-     <h1>🅱️oogle</h1>
-     <i>{{ searchStats[0] }} pages returned in {{ searchStats[1] }} seconds.</i>
-     <p>Showing results for <u>{{ correctionDisplay }}</u>.</p>
+     <div class='title-bar'>
+       <h1>Boogle</h1>
+       <i>{{ searchStats[0] }} pages returned in {{ searchStats[1] }} seconds.</i>
+       {% if correctionDisplay %}
+          <p>Showing results for <strong>{{ correctionDisplay[0] }}</strong>. Search instead for <strong>{{ correctionDisplay[1] }}</strong>.</p>
+       {% else %}
+       {% endif %}
+     </div>
 
-     <form action = "http://localhost:5000/result" method = "POST">
-       <p>Search: <input type = "text" name = "Search" /></p>
-       <!-- <p><input type = "submit" value = "submit" /></p> -->
-     </form>
+     <div class='search-bar'>
+       <form action = "http://localhost:5000/result" method = "POST">
+         <input type="text" name="Search" placeholder="Boogle..." />
+       </form>
+     </div>
 
-     <ul>
-        {% for result in resultList %}
-          <li>
-            <a href='www.harvard.edu'><strong>{{ result[1] }}</strong></a>
-            <br>
-            <i>{{ result[0] }}</i><br>
-            {{ result[2] }}
-          </li>
-          <br>
-        {% endfor %}
-      </ul>
+     <div class='search-results'>
+       <br>
+       {% if invertedResult %}
+       <center>
+       <div class='inverted-result'>
+          <div class='inverted-text'>
+            {% for word in invertedResult[2].split() %}
+              {% if word.lower() in searchWords %}
+                <strong>{{ word }}</strong>
+              {% else %}
+                {{ word }}
+              {% endif %}
+            {% endfor %}
+          </div>
+          <div class='inverted-title'>
+            <a href='{{ ''.join([invertedResult[0]]) }}'>{{ invertedResult[1] }}</a>
+          </div>
+          <div class='display-url'>
+            <a class='display-url' href='{{ ''.join([invertedResult[0]]) }}'><i>{{ invertedResult[0] }}</i></a><br>
+          </div>
+       </div>
+       </center>
+       {% else %}
+       {% endif %}
+
+       <ul>
+          {% for result in resultList %}
+            <li>
+              <div class='display-title'>
+                <a href='{{ ''.join([result[0]]) }}'>{{ result[1] }}</a>
+              </div>
+              <div class='display-url'>
+                <a class='display-url' href='{{ ''.join([result[0]]) }}'><i>{{ result[0] }}</i></a><br>
+              </div>
+              <div class='display-text'>
+                {% for word in result[2].split() %}
+                  {% if word.lower() in searchWords %}
+                    <strong>{{ word }}</strong>
+                  {% else %}
+                    {{ word }}
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
    </body>
 </html>

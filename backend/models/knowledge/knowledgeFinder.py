@@ -66,7 +66,7 @@ def find_weighted_tokenCounts(inStr, knowledgeProcessor):
     Does not normalize by length, div, or average frequency.
     Subtokens should be given 0.7 the weighting of full tokens
     """
-    # get multi-occurence (!!!) list of the greedy tokens in inStr
+    # get multi-occurence list of the greedy tokens in inStr
     greedyTokens = knowledgeProcessor.extract_keywords(inStr)
     # get multi-occurence list of sub tokens in ' '-split greed tokens
     subTokens = []
@@ -168,6 +168,6 @@ def score_divDict(divDict, knowledgeProcessor, freqDict):
                                         div=div,
                                         knowledgeProcessor=knowledgeProcessor,
                                         freqDict=freqDict,
-                                        cutoff=0.005)
+                                        cutoff=0.002)
         scoreCounter.update(divScores)
     return scoreCounter

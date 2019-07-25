@@ -3,6 +3,7 @@ from termcolor import colored
 
 from dataStructures.objectSaver import load, save
 from dataStructures.scrapingStructures import Simple_List
+from models.processing.cleaner import clean_text
 from models.knowledge.knowledgeFinder import score_divDict
 from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
 
@@ -27,15 +28,17 @@ def scrape_wiki_page(line, knowledgeProcessor, freqDict):
     # get the article text and strip whitespace
     articleText = rawText[(titleEnd+2):]
     articleText = articleText.strip()
+    # clean the articleText
+    cleanedText = clean_text(articleText)
     # build link of the webpage
     url = make_wiki_url(title)
     # build divDict and analyze for knowledgeTokens
     divDict = {'url':       url,
                 'h3':       title,
-                'all':      articleText}
+                'all':      cleanedText}
     knowledgeTokens = score_divDict(divDict, knowledgeProcessor, freqDict)
     # determine text to show for the window
-    windowText = articleText[:400]
+    windowText = articleText
     # build and return pageDict of article attributes
     pageDict = {'url':              url,
                 'title':            title,

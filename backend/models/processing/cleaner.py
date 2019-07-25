@@ -13,6 +13,7 @@ Functions:
 """
 
 import re
+from unidecode import unidecode
 
 ## Matchers ##
 # matches things that look like a single html tag
@@ -29,7 +30,8 @@ slashMatcher = re.compile(r".\r|.\n|.\t")
 urlMatcher = re.compile(r"https|http|www|com|org|edu")
 # matches for the end of files
 fileMatcher = re.compile(r"\.\S+")
-
+# matcher for search spacing; identical to spaceMatcher, but " are preserved
+searchSpaceMatcher = re.compile(r'[\t\n\s_.?!:;/<>*&^%$#@()~`+-]+')
 
 # converts anything that looks like a year range (eg. 1910-11) into two years (eg. 1910 1911)
 # rangedString = re.sub(r'\b(?P<firstTwo>[0-9]{2})(?P<secondTwo>[0-9]{2})-(?P<lastTwo>[0-9]{2}) ', "\g<firstTwo>\g<secondTwo> \g<firstTwo>\g<lastTwo>", dewikiedWiki)
@@ -48,6 +50,8 @@ def clean_text(rawString):
     Cleans rawString by replacing spaceMatcher and tagMatcher with a single
     space, removing non-alpha chars, and lowercasing alpha chars
     """
+    # replace accented characters with non-accent representation
+    deaccentedString = unidecode(rawString)
     # replace stripMatcher with ""
     cleanedString = re.sub(stripMatcher, "", rawString)
     # replace spaceMatcher with " " and strip surround whitespace
@@ -125,8 +129,14 @@ def clean_search(rawSearch):
     form rather than removed (eg. : meaning -> colon meaning)
     """
     # to fix
-    puncSubbed = re.sub(r"?P<punc>{puncMatcher}", puncDict['\g<punc>'], rawSearch)
-    return clean_text(puncSubbed)
+    # puncSubbed = re.sub(r"?P<punc>{puncMatcher}", puncDict['\g<punc>'], rawSearch)
+    # replace stripMatcher with ""
+    cleanedString = re.sub(stripMatcher, "", rawSearch)
+    # replace spaceMatcher with " " and strip surround whitespace
+    spacedString = re.sub(searchSpaceMatcher, " ", cleanedString).strip()
+    # lowercase the alpha chars that remain
+    loweredString = spacedString.lower()
+    return loweredString
 
 
 def end_test(rawString):

@@ -2,7 +2,7 @@ import operator
 import re
 
 
-def bold_and_window(tokenList, text, windowSize=200):
+def bold_and_window(tokenList, text, windowSize=400):
     """ Gets relevant window from pageText and bolds search tokens """
     # create matcher for all tokens in tokenList
     tokenString = ""
@@ -42,6 +42,6 @@ def bold_and_window(tokenList, text, windowSize=200):
         windowText += "..."
 
     # sub token matches for token surrounded by <strong> tags
-    boldedText = re.sub(f"(?P<token>{tokenString})", "<strong>\g<token></strong>", windowText, flags=re.IGNORECASE)
+    # boldedText = re.sub(f"(?P<token>{tokenString})", "<strong>\g<token></strong>", windowText, flags=re.IGNORECASE)
 
-    return boldedText
+    return windowText

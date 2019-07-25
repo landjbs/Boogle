@@ -1,0 +1,6 @@
+import os
+
+import dataStructures.knowledgeObjects.creationObjects as creationObjects
+import dataStructures.knowledgeObjects.itemObjects as itemObjects
+import dataStructures.knowledgeObjects.locationObjects as locationObjects
+import dataStructures.knowledgeObjects.peopleObjects as peopleObjects

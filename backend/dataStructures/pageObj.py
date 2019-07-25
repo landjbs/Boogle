@@ -24,6 +24,12 @@ class Page():
 
     def display(self, tokenList):
         """
-        Returns the parts of the page that would be displayed as search results
+        Returns the parts of the page to be displayed as search results
         """
         return (self.url, self.title, bold_and_window(tokenList, self.windowText))
+
+    def display_inverted(self, tokenList):
+        """
+        Returns the parts of the page that would be displayed an inverted result
+        """
+        return (self.url, self.title, f"{(self.windowText)[:1000]}...")
