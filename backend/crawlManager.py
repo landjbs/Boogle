@@ -15,4 +15,7 @@ from crawlers.wikiCrawler import crawl_wiki_data
 #
 # print([elt for elt in dir()])
 
-crawl_wiki_data('data/inData/wikipedia_utf8_filtered_20pageviews.csv', 'data/thicctable/wikiCrawl3', stopNum=10000)
+crawl_wiki_data(inPath='data/inData/wikipedia_utf8_filtered_20pageviews.csv',
+                outPath='data/thicctable/wikiCrawl4',
+                startNum=None,
+                endNum=None)

@@ -59,7 +59,7 @@ def scrape_wiki_page(line, knowledgeProcessor, freqDict):
     return(pageDict)
 
 
-def crawl_wiki_data(inPath, outPath, stopNum=None):
+def crawl_wiki_data(inPath, outPath, startNum=None, endNum=None):
     """
     Crawls cleaned wikipedia data at file path
     and saves page data to files under outPath
@@ -70,31 +70,31 @@ def crawl_wiki_data(inPath, outPath, stopNum=None):
     print(colored('Complete: Loading Freq Dict', 'cyan'))
     # load knowledgeProcessor
     print(colored('Loading Knowledge Processor', 'red'), end='\r')
-    # knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
-    knowledgeProcessor = build_knowledgeProcessor({'harvard', 'search', 'artificial intelligence', 'ai'})
+    knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
     print(colored('Complete: Loading Knowledge Processor', 'cyan'))
 
     # Simple_List to store pageDicts
     scrapeList = Simple_List()
 
-    if not stopNum:
-        stopNum = inf
+    if not startNum:    (startNum = 0)
+    if not endNum:      (endNum = inf)
 
     with open(inPath, 'r') as wikiFile:
         for i, line in enumerate(wikiFile):
-            if i > stopNum:
+            if i > endNum:
                 break
-            try:
-                pageDict = scrape_wiki_page(line, knowledgeProcessor, freqDict)
-                scrapeList.add(pageDict)
-            except Exception as e:
-                print(f"ERROR: {e}")
+            if i >= startNum:
+                try:
+                    pageDict = scrape_wiki_page(line, knowledgeProcessor, freqDict)
+                    scrapeList.add(pageDict)
+                except Exception as e:
+                    print(f"ERROR: {e}")
 
-            if (len(scrapeList.data)>=3):
-                save(scrapeList.data, f'{outPath}/{i}.sav')
-                scrapeList.clear()
+                if (len(scrapeList.data)>=3):
+                    save(scrapeList.data, f'{outPath}/{i}.sav')
+                    scrapeList.clear()
 
-            print(f'Pages Analyzed: {i}', end='\r')
+                print(f'Pages Analyzed: {i}', end='\r')
 
     print('\n\nScraping Complete\n')
     return True
