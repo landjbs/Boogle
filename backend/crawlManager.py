@@ -1,8 +1,6 @@
-# from os import listdir
-
-# from crawlers.wikiCrawler import crawl_wiki_data
+from crawlers.wikiCrawler import crawl_wiki_data
 # from dataStructures.objectSaver import load
-from models.knowledge.knowledgeBuilder import build_corr_dict, build_knowledgeProcessor
+# from models.knowledge.knowledgeBuilder import build_corr_dict, build_knowledgeProcessor
 
 # urlList = list(map(lambda url:(url[:-4]), listdir('data/outData/dmozProcessed/All')[345:1000]))
 # scrape_urlList(urlList)
@@ -17,6 +15,4 @@ from models.knowledge.knowledgeBuilder import build_corr_dict, build_knowledgePr
 #
 # print([elt for elt in dir()])
 
-build_corr_dict('data/inData/wikipedia_utf8_filtered_20pageviews.csv', build_knowledgeProcessor({'test', 'the'}), {'the':(0.0001, 1)})
-
-# crawl_wiki_data('data/inData/wikipedia_utf8_filtered_20pageviews.csv', 'data/thicctable/wikiCrawl2')
+crawl_wiki_data('data/inData/wikipedia_utf8_filtered_20pageviews.csv', 'data/thicctable/wikiCrawl2', stopNum=10)

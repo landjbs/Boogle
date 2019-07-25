@@ -1,3 +1,4 @@
+from math import inf
 from time import time
 from termcolor import colored
 
@@ -58,7 +59,7 @@ def scrape_wiki_page(line, knowledgeProcessor, freqDict):
     return(pageDict)
 
 
-def crawl_wiki_data(inPath, outPath):
+def crawl_wiki_data(inPath, outPath, stopNum=None):
     """
     Crawls cleaned wikipedia data at file path
     and saves page data to files under outPath
@@ -69,14 +70,20 @@ def crawl_wiki_data(inPath, outPath):
     print(colored('Complete: Loading Freq Dict', 'cyan'))
     # load knowledgeProcessor
     print(colored('Loading Knowledge Processor', 'red'), end='\r')
-    knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
+    # knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
+    knowledgeProcessor = build_knowledgeProcessor({'the', 'test', 'search', 'city'})
     print(colored('Complete: Loading Knowledge Processor', 'cyan'))
 
     # Simple_List to store pageDicts
     scrapeList = Simple_List()
 
+    if not stopNum:
+        stopNum = inf
+
     with open(inPath, 'r') as wikiFile:
         for i, line in enumerate(wikiFile):
+            if i > stopNum:
+                break
             try:
                 pageDict = scrape_wiki_page(line, knowledgeProcessor, freqDict)
                 scrapeList.add(pageDict)
