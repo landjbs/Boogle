@@ -101,7 +101,7 @@ class Thicctable():
         for token in pageTokens:
             try:
                 # get score of page from pageRanker
-                pageScore = pageRanker.score_single(pageObj, token)
+                pageScore = sort_score(pageObj, token)
                 # create bucket-specific pageTuple of score and pageObj
                 pageTuple = (pageScore, pageObj)
                 # insert tuple of score and pageObj into appropriate bin

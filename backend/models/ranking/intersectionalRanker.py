@@ -1,6 +1,6 @@
 def score_simple_intersection(pageObj, tokenWeights):
     """
-    Scores page by load time and score of multiple tokens
+    Scores page by baseScore and score of multiple tokens
     """
     baseScore = pageObj.baseScore
     pageTokens = pageObj.knowledgeTokens
@@ -11,7 +11,7 @@ def score_simple_intersection(pageObj, tokenWeights):
             knowledgeScore += curWeight * knowledgeTokens[token]
         else:
             knowledgeScore -= curWeight
-            
+
     aggregateScore = baseScore + knowledgeScore
 
     return aggregateScore
