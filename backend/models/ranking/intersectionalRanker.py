@@ -23,9 +23,7 @@ def score_vector_intersection(pageObj, tokenWeights, searchVec):
     Scores page by baseScore, score of multiple tokens, and relationship
     with search vector
     """
-    pageVec = pageObj.pageVec
-
-    vecScore = euclidean(searchVec, pageVec)
+    vecScore = (1 / euclidean(searchVec, pageObj.pageVec))
 
     tokenAndBaseScore = score_token_intersection(pageObj, tokenWeights)
     print(f'vecScore: {vecScore}')
