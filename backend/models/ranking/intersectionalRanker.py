@@ -1,5 +1,6 @@
 from scipy.spatial.distance import euclidean
 
+
 def score_token_intersection(pageObj, tokenWeights):
     """
     Scores page by baseScore and score of multiple tokens
@@ -17,6 +18,7 @@ def score_token_intersection(pageObj, tokenWeights):
     aggregateScore = baseScore + knowledgeScore
     print(f'baseScore: {baseScore} || knowledgeScore: {knowledgeScore}')
     return aggregateScore
+
 
 def score_vector_intersection(pageObj, tokenScores, searchVec):
     """

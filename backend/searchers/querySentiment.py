@@ -5,16 +5,15 @@ stop words, classifying the search desire, and determining
 locational/temporal tokens
 """
 
-from numpy import log
+import numpy as np
 from math import exp
 from collections import Counter
 
 from models.binning.docVecs import vectorize_doc
 # from models.binning.tokenScoring import get_masked_weights
 
-# TO DO::: HAND TUNE SIGMOID ACTIVATION FUNCTION
 # calc_score_activation = lambda freq : exp(freq) / (exp(freq) + 1)
-calc_score_activation = lambda freq : (1/freq)
+calc_score_activation = lambda freq : freq
 
 def score_token_importance(cleanedSearch, tokenSet, freqDict):
     """
@@ -25,6 +24,7 @@ def score_token_importance(cleanedSearch, tokenSet, freqDict):
     # tokens are ranked with td-idf schema using freqDict: tokenScore = inverseDocumentFreq * termFreq
     tokenScores = {token : calc_score_activation(freqDict[token][0])
                     for token in tokenSet}
+    print(tokenScores)
     # numPoints = sum([tokenScores[token] for token in tokenScores])
     # tokenScores = dict(map(lambda elt : (tokenScores[elt] / numPoints), tokenScores))
     # print(tokenScores)
