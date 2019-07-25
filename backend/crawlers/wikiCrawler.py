@@ -71,7 +71,7 @@ def crawl_wiki_data(inPath, outPath, stopNum=None):
     # load knowledgeProcessor
     print(colored('Loading Knowledge Processor', 'red'), end='\r')
     # knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
-    knowledgeProcessor = build_knowledgeProcessor({'the', 'test', 'search', 'city'})
+    knowledgeProcessor = build_knowledgeProcessor({'harvard', 'search', 'artificial intelligence', 'ai'})
     print(colored('Complete: Loading Knowledge Processor', 'cyan'))
 
     # Simple_List to store pageDicts
