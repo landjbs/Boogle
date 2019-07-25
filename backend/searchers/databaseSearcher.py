@@ -61,7 +61,7 @@ def or_search(tokenList, database, n=20):
     bucketLists = [database.search_full(key=token, n=100000) for token in tokenList]
     # combine bucketLists into a single, sorted list
     sortedResults = list(chain.from_iterable(bucketLists))
-    sortedResults.sort(key=(lambda result:result[0]), reverse=True)
+    sortedResults.sort(reverse=True) # key=(lambda result:result[0]), 
     resultList = [pageElt[1].display(tokenList)
                     for i, pageElt in enumerate(sortedResults) if i < n]
     return resultList
@@ -86,7 +86,7 @@ def weighted_and_search(tokenScores, searchVec, database, n=20):
     # rank the pages according to their tokens and sort by ranking
     rankedPages = [(score_vector_intersection(pageObj, searchVec, tokenScores), pageObj)
                     for pageObj in intersectionPages]
-    rankedPages.sort(reverse=True, key=(lambda elt:elt[0]))
+    rankedPages.sort(reverse=True) # key=(lambda elt:elt[0])
     # find number of pages before filtering to n
     numResults = len(rankedPages)
     # return top n pages and disregard their scores
@@ -103,7 +103,7 @@ def weighted_or_search(tokenScores, database, n):
     allPages = list(chain.from_iterable(bucketList))
     rankedPages = [(score_simple_intersection(pageObj, tokenScores), pageObj)
                     for pageObj in allPages]
-    rankedPages.sort(reverse=True, key=(lambda elt:elt[0]))
+    rankedPages.sort(reverse=True)  # key=(lambda elt:elt[0])
     resultList = [pageElt[1].display(tokenScores.keys())
                     for i, pageElt in enumerate(rankedPages) if i < n]
     return resultList
@@ -125,7 +125,7 @@ def weighted_vector_search(tokenScores, searchVec, database, n):
     intersectionPages = importantBucket.intersection(otherBuckets)
     # rank the pages according to their tokens and sort by ranking
     rankedPages = [(score_intersection(pageObj, tokenScores), pageObj) for pageObj in intersectionPages]
-    rankedPages.sort(reverse=True, key=(lambda elt:elt[0]))
+    rankedPages.sort(reverse=True)  # key=(lambda elt:elt[0])
     # find number of pages before filtering to n
     numResults = len(rankedPages)
     # return top n pages and disregard their scores
