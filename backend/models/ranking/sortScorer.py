@@ -16,6 +16,6 @@ def sort_score(pageObj, token):
     # pull out the base score of the page
     baseScore = pageObj.baseScore
 
-    aggregateScore = tokenScore - loadPenalty
+    aggregateScore = tokenScore + baseScore
     normalizedScore = normalizationLambda(aggregateScore)
     return normalizedScore
