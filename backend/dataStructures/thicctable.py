@@ -1,8 +1,9 @@
-from dataStructures.objectSaver import save, load
-import matplotlib.pyplot as plt
-import numpy as np
-import models.ranking.pageRanker as pageRanker
 import json
+import numpy as np
+import matplotlib.pyplot as plt
+
+from models.ranking.sortScorer import sort_score
+from dataStructures.objectSaver import save, load
 
 
 ### LAMBDAS CALLED BY THICCTABLE FUNCTIONS ###
