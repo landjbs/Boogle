@@ -29,4 +29,5 @@ def score_token_importance(cleanedSearch, tokenSet, freqDict):
     # tokenScores = dict(map(lambda elt : (tokenScores[elt] / numPoints), tokenScores))
     # print(tokenScores)
     tokenVec = vectorize_doc(cleanedSearch)
+    print(f'Search: {tokenVec}')
     return (tokenScores, tokenVec)
