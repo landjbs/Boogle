@@ -6,7 +6,7 @@ for lists of results.
 from itertools import chain
 
 from models.binning.docVecs import vectorize_doc
-from models.ranking.intersectionalRanker import score_simple_intersection, score_vector_intersection
+from models.ranking.intersectionalRanker import score_token_intersection, score_vector_intersection
 
 
 ### Simple search algorithms ###
@@ -61,7 +61,7 @@ def or_search(tokenList, database, n=20):
     bucketLists = [database.search_full(key=token, n=100000) for token in tokenList]
     # combine bucketLists into a single, sorted list
     sortedResults = list(chain.from_iterable(bucketLists))
-    sortedResults.sort(reverse=True) # key=(lambda result:result[0]), 
+    sortedResults.sort(reverse=True) # key=(lambda result:result[0]),
     resultList = [pageElt[1].display(tokenList)
                     for i, pageElt in enumerate(sortedResults) if i < n]
     return resultList
