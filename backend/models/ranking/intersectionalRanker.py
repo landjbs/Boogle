@@ -10,5 +10,3 @@ def score_simple_intersection(pageObj, tokenWeights):
             tokenScore += curWeight * knowledgeTokens[token]
         else:
             tokenScore -= curWeight
-
-    load
