@@ -109,25 +109,25 @@ def weighted_or_search(tokenScores, database, n):
     return resultList
 
 
-# def weighted_vector_search(tokenScores, searchText, database, n):
-#     """ Weighted and search that uses ML on vector """
-#     # vectorize the search text
-#     searchVec = vectorize_doc(searchText)
-#     # find the most important token and retrive its bucket
-#     importantToken = max(tokenScores, key=(lambda elt:tokenScores[elt]))
-#     importantBucket = set(database.search_pageObj(key=importantToken, n=100000))
-#     # get the buckets of the less important tokens in the search
-#     otherTokens = tokenScores.copy()
-#     _ = otherTokens.pop(importantToken)
-#     bucketList = [database.search_pageObj(key=token, n=100000) for token in otherTokens]
-#     otherBuckets = list(chain.from_iterable(bucketList))
-#     # find those pages in that of the most important token and any of the others
-#     intersectionPages = importantBucket.intersection(otherBuckets)
-#     # rank the pages according to their tokens and sort by ranking
-#     rankedPages = [(score_intersection(pageObj, tokenScores), pageObj) for pageObj in intersectionPages]
-#     rankedPages.sort(reverse=True, key=(lambda elt:elt[0]))
-#     # find number of pages before filtering to n
-#     numResults = len(rankedPages)
-#     # return top n pages and disregard their scores
-#     resultList = [pageElt[1] for i, pageElt in enumerate(rankedPages) if i < n]
-#     return (numResults, resultList)
+def weighted_vector_search(tokenScores, searchVec, database, n):
+    """ Weighted and search that uses ML on vector """
+    # vectorize the search text
+    searchVec = vectorize_doc(searchText)
+    # find the most important token and retrive its bucket
+    importantToken = max(tokenScores, key=(lambda elt:tokenScores[elt]))
+    importantBucket = set(database.search_pageObj(key=importantToken, n=100000))
+    # get the buckets of the less important tokens in the search
+    otherTokens = tokenScores.copy()
+    _ = otherTokens.pop(importantToken)
+    bucketList = [database.search_pageObj(key=token, n=100000) for token in otherTokens]
+    otherBuckets = list(chain.from_iterable(bucketList))
+    # find those pages in that of the most important token and any of the others
+    intersectionPages = importantBucket.intersection(otherBuckets)
+    # rank the pages according to their tokens and sort by ranking
+    rankedPages = [(score_intersection(pageObj, tokenScores), pageObj) for pageObj in intersectionPages]
+    rankedPages.sort(reverse=True, key=(lambda elt:elt[0]))
+    # find number of pages before filtering to n
+    numResults = len(rankedPages)
+    # return top n pages and disregard their scores
+    resultList = [pageElt[1] for i, pageElt in enumerate(rankedPages) if i < n]
+    return (numResults, resultList)

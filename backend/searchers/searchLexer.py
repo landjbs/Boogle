@@ -44,8 +44,9 @@ def topSearch(rawSearch, database, uniqueWords, knowledgeProcessor, freqDict):
             numWords = len(words)
             if (numWords > 1):
                 tokenSet.update(find_rawTokens(cleanedSearch, knowledgeProcessor))
-                tokenScores = score_token_importance(cleanedSearch, words, freqDict)
-                andResults = databaseSearcher.weighted_and_search(tokenScores, database, (n-numResults))
+                tokenScores, searchVec = score_token_importance(cleanedSearch, words, freqDict)
+                # andResults = databaseSearcher.weighted_and_search(tokenScores, database, (n-numResults))
+                andResults = databaseSearcher.weighted_vector_search(tokenScores, database, searchVec, n)
                 numResults += andResults[0]
                 # add all results from andResult if they aren't already there
                 for andResult in andResults[1]:
@@ -58,7 +59,7 @@ def topSearch(rawSearch, database, uniqueWords, knowledgeProcessor, freqDict):
     elif (len(tokenSet) > 1):
         print('AND')
         # score the importance of each token and perform intersectional weighted search
-        tokenScores = score_token_importance(cleanedSearch, tokenSet, freqDict)
+        tokenScores, searchVec = score_token_importance(cleanedSearch, tokenSet, freqDict)
         andResults = databaseSearcher.weighted_and_search(tokenScores, database, n)
         # update search metrics
         numResults += andResults[0]
