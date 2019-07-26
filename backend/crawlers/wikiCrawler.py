@@ -76,8 +76,10 @@ def crawl_wiki_data(inPath, outPath, startNum=None, endNum=None):
     # Simple_List to store pageDicts
     scrapeList = Simple_List()
 
-    if not startNum:    (startNum = 0)
-    if not endNum:      (endNum = inf)
+    if not startNum:
+        startNum = 0
+    if not endNum:
+        endNum = inf
 
     with open(inPath, 'r') as wikiFile:
         for i, line in enumerate(wikiFile):
