@@ -46,4 +46,4 @@ def scramble_fake_queries(queryNum, queryLen=9, outPath=None):
     return queryDf
 
 
-print(scramble_fake_queries(6215, "fakeQueryDf.sav"))
+fakeQueryDf = scramble_fake_queries(6215, outPath="fakeQueryDf.sav")
