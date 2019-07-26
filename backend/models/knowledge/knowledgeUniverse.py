@@ -1,6 +1,5 @@
-import os
+import wptools
 
-import dataStructures.knowledgeObjects.creationObjects as creationObjects
-import dataStructures.knowledgeObjects.itemObjects as itemObjects
-import dataStructures.knowledgeObjects.locationObjects as locationObjects
-import dataStructures.knowledgeObjects.peopleObjects as peopleObjects
+so = wptools.page('Stack Overflow').get_parse()
+
+print(so.infobox)
