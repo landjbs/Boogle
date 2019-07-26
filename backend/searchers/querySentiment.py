@@ -27,6 +27,6 @@ def score_token_importance(cleanedSearch, tokenSet, freqDict):
                     for token in tokenSet}
     searchVec = vectorize_doc(cleanedSearch)
     # whether the query is in question form (eg. "what is the best search engine?")
-    questionFormat = True if (formatModel.predict(np.expand_dims(searchVec, axis=0))>0.9) else False
+    questionFormat = True if (formatModel.predict(np.expand_dims(searchVec, axis=0)[0][0])>0.9) else False
     print(questionFormat)
     return (tokenScores, searchVec)
