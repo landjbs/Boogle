@@ -26,6 +26,8 @@ def load_crawled_pages(filePath):
     del knowledgeSet
     # bucket each page in each file in filePath
     for i, file in enumerate(listdir(filePath)):
+        if i > 10:
+            break
         try:
             pageList = load(f'{filePath}/{file}')
             for pageDict in pageList:

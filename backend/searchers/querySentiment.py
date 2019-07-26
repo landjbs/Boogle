@@ -13,7 +13,7 @@ from keras.models import load_model
 from models.binning.docVecs import vectorize_doc
 
 # model to determine whether or not the query is in question form
-formatModel = load_model('data/outData/searchAnalysis/questionFormatModel.sav')
+formatModel = load_model('backend/data/outData/searchAnalysis/questionFormatModel.sav')
 
 # calc_score_activation = lambda freq : exp(freq) / (exp(freq) + 1)
 calc_score_activation = lambda freq : freq
