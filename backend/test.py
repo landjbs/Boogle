@@ -1,14 +1,14 @@
 import numpy as np
 from keras.models import load_model
 from dataStructures.objectSaver import load
-# from models.binning.docVecs import vectorize_doc
+from models.binning.docVecs import vectorize_doc
 from crawlers.crawlLoader import load_crawled_pages
 
-# paraModel = load_model('data/outData/searchAnalysis/paragraphAnswering2.sav')
-# formatModel = load_model('data/outData/searchAnalysis/questionFormatModel.sav')
-#
-# database, uniqueWords, searchProcessor = load_crawled_pages('data/thicctable/wikiCrawl4')
-# freqDict = load('data/outData/knowledge/freqDict.sav')
+paraModel = load_model('data/outData/searchAnalysis/paragraphAnswering2.sav')
+formatModel = load_model('data/outData/searchAnalysis/questionFormatModel.sav')
+
+database, uniqueWords, searchProcessor = load_crawled_pages('data/thicctable/wikiCrawl4')
+freqDict = load('data/outData/knowledge/freqDict.sav')
 
 paraList = []
 
