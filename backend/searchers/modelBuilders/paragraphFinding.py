@@ -19,8 +19,8 @@ print(answerDf.head())
 answerList = []
 for row in answerDf.iterrows():
   rowInfo = row[-1]
-  distVec = np.subtract(rowInfo['paraVec'], rowInfo['questionVec'])
-  rowDict = {dim:scalar for dim,scalar in enumerate(distVec)}
+  # distVec = np.subtract(rowInfo['paraVec'], rowInfo['questionVec'])
+  rowDict = {dim:scalar for dim,scalar in enumerate(rowInfo['paraVec'])}
   rowDict.update({'score': rowInfo['score']})
   answerList.append(rowDict)
 
@@ -43,17 +43,19 @@ print(normedFeatures.describe())
 # model training
 model = Sequential()
 
+weights = {0:0.3, 1:0.7}
+
 # input layer
 model.add(Dense(30, activation='relu', input_dim=(normedFeatures.shape)[1]))
 # first hidden layer
 model.add(Dense(100, activation='relu'))
 # second hidden layer
-model.add(Dense(100, activation='relu', kernel_regularizer=l2(0.01)))
+model.add(Dense(100, activation='relu', kernel_regularizer=l2(0.02)))
 # output layer
 model.add(Dense(1, activation='sigmoid'))
 
 model.compile(optimizer ='adam',loss='binary_crossentropy', metrics =['accuracy'])
 
-model.fit(np.array(normedFeatures), targets, validation_split=0.1, epochs=15)
+model.fit(np.array(normedFeatures), targets, validation_split=0.1, epochs=30, class_weight=weights)
 
-model.save('data/outData/searchAnalysis/paragraphAnswering.sav')
+model.save('data/outData/searchAnalysis/paragraphAnswering2.sav')

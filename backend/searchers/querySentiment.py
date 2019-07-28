@@ -19,7 +19,7 @@ testVec = np.random.uniform(-1,1, size=1024)
 print(formatModel.predict(np.expand_dims(testVec, axis=0)))
 
 # calc_score_activation = lambda freq : exp(freq) / (exp(freq) + 1)
-calc_score_activation = lambda freq : freq
+calc_score_activation = lambda freq : (1/freq)
 
 def score_token_importance(cleanedSearch, tokenSet, freqDict):
     """

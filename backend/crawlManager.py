@@ -17,5 +17,5 @@ from crawlers.wikiCrawler import crawl_wiki_data
 
 crawl_wiki_data(inPath='data/inData/wikipedia_utf8_filtered_20pageviews.csv',
                 outPath='data/thicctable/wikiCrawl4',
-                startNum=10000,
+                startNum=75882,
                 endNum=None)
