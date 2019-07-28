@@ -15,9 +15,6 @@ from models.binning.docVecs import vectorize_doc
 # model to determine whether or not the query is in question form
 formatModel = load_model('backend/data/outData/searchAnalysis/questionFormatModel.sav')
 
-testVec = np.random.uniform(-1,1, size=1024)
-print(formatModel.predict(np.expand_dims(testVec, axis=0)))
-
 # calc_score_activation = lambda freq : exp(freq) / (exp(freq) + 1)
 calc_score_activation = lambda freq : (1/freq)
 

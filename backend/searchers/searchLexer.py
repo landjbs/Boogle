@@ -15,7 +15,7 @@ from models.knowledge.knowledgeFinder import find_rawTokens
 from keras.models import load_model
 from models.binning.docVecs import vectorize_doc
 
-paraModel = load_model('data/outData/searchAnalysis/paragraphAnswering2.sav')
+paraModel = load_model('backend/data/outData/searchAnalysis/paragraphAnswering2.sav')
 
 def topSearch(rawSearch, database, uniqueWords, knowledgeProcessor, freqDict):
     """
@@ -55,17 +55,6 @@ def topSearch(rawSearch, database, uniqueWords, knowledgeProcessor, freqDict):
                 andResults = databaseSearcher.weighted_vector_search(tokenScores, database, searchVec, n)
                 numResults += andResults[0]
 
-                if queryType=="question":
-                    print('Type: question')
-                    topPage = andResults[0]
-                    topText = topPage.windowText
-                    halfChar = len(topWords) / 2
-                    paraList = [topText[:halfChar], topText[halfChar:]]
-                    for para in paraList:
-                        paraVec = vectorize_doc(para)
-                        distVec = np.subtract(searchVec, paraVec)
-
-
                 # add all results from andResult if they aren't already there
                 for andResult in andResults[1]:
                     if not andResult in resultList:
@@ -77,8 +66,27 @@ def topSearch(rawSearch, database, uniqueWords, knowledgeProcessor, freqDict):
     elif (len(tokenSet) > 1):
         print('TOP: AND')
         # score the importance of each token and perform intersectional weighted search
-        tokenScores, searchVec = score_token_importance(cleanedSearch, tokenSet, freqDict)
+        tokenScores, searchVec, queryType = score_token_importance(cleanedSearch, tokenSet, freqDict)
         andResults = databaseSearcher.weighted_vector_search(tokenScores, searchVec, database, n)
+
+        if queryType=="question":
+            print('Type: question')
+            topPage = andResults[1][0]
+            print(topPage)
+            topText = topPage.windowText
+            halfChar = len(topText) / 2
+            paraList = [topText[:halfChar], topText[halfChar:]]
+            print(paraList)
+            scoreList = []
+            for para in paraList:
+                paraVec = vectorize_doc(para)
+                distVec = np.subtract(searchVec, paraVec)
+                prediction = paraModel.predict(np.expand_dims(distVec, axis=0))
+                scoreList.append((prediction, para))
+            print(scoreList)
+            scoreList.sort(reverse=True)
+            print(scoreList[0][1])
+
         # update search metrics
         numResults += andResults[0]
         resultList += andResults[1]
