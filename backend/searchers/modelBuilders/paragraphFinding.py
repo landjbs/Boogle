@@ -19,8 +19,7 @@ print(answerDf.head())
 answerList = []
 for row in answerDf.iterrows():
   rowInfo = row[-1]
-  # distVec = np.subtract(rowInfo['paraVec'], rowInfo['questionVec'])
-  rowDict = {dim:scalar for dim,scalar in enumerate(rowInfo['paraVec'])}
+  distVec = np.subtract(rowInfo['questionVec'], rowInfo['paraVec'])
   rowDict.update({'score': rowInfo['score']})
   answerList.append(rowDict)
 

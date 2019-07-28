@@ -32,7 +32,5 @@ def score_token_importance(cleanedSearch, tokenSet, freqDict):
     # whether the query is in question form (eg. "what is the best search engine?")
     searchArray = np.expand_dims(searchVec, axis=0)
     prediction = formatModel.predict(searchArray)
-    print(prediction)
-    questionFormat = True if (prediction>0.8) else False
-    print(questionFormat)
-    return (tokenScores, searchVec)
+    queryType = "question" if (prediction>0.6) else "other"
+    return (tokenScores, searchVec, queryType)

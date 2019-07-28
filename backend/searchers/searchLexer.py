@@ -4,6 +4,7 @@ searchers.databaseSearcher depending on lexical understanding of the query
 """
 
 import re
+import numpy as np
 
 import searchers.databaseSearcher as databaseSearcher
 from searchers.querySentiment import score_token_importance
@@ -11,6 +12,10 @@ from searchers.spellingCorrector import correct
 from models.processing.cleaner import clean_search
 from models.knowledge.knowledgeFinder import find_rawTokens
 
+from keras.models import load_model
+from models.binning.docVecs import vectorize_doc
+
+paraModel = load_model('data/outData/searchAnalysis/paragraphAnswering2.sav')
 
 def topSearch(rawSearch, database, uniqueWords, knowledgeProcessor, freqDict):
     """
@@ -45,10 +50,22 @@ def topSearch(rawSearch, database, uniqueWords, knowledgeProcessor, freqDict):
             numWords = len(words)
             if (numWords > 1):
                 tokenSet.update(find_rawTokens(cleanedSearch, knowledgeProcessor))
-                tokenScores, searchVec = score_token_importance(cleanedSearch, words, freqDict)
+                tokenScores, searchVec, queryType = score_token_importance(cleanedSearch, words, freqDict)
                 # andResults = databaseSearcher.weighted_and_search(tokenScores, database, (n-numResults))
                 andResults = databaseSearcher.weighted_vector_search(tokenScores, database, searchVec, n)
                 numResults += andResults[0]
+
+                if queryType=="question":
+                    print('Type: question')
+                    topPage = andResults[0]
+                    topText = topPage.windowText
+                    halfChar = len(topWords) / 2
+                    paraList = [topText[:halfChar], topText[halfChar:]]
+                    for para in paraList:
+                        paraVec = vectorize_doc(para)
+                        distVec = np.subtract(searchVec, paraVec)
+
+
                 # add all results from andResult if they aren't already there
                 for andResult in andResults[1]:
                     if not andResult in resultList:

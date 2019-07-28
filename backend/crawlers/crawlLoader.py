@@ -26,13 +26,12 @@ def load_crawled_pages(filePath):
     del knowledgeSet
     # bucket each page in each file in filePath
     for i, file in enumerate(listdir(filePath)):
-        if i > 10:
+        if i > 1000:
             break
         try:
             pageList = load(f'{filePath}/{file}')
             for pageDict in pageList:
                 database.bucket_page(Page(pageDict))
-                print(f"\n\n{'-'*80}{pageDict['windowText']}{'-'*80}\n")
             print(colored(f'Building Database: {i*(3)}', 'red'), end='\r')
         except Exception as e:
             print(f'{e} at "{file}".')
