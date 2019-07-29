@@ -20,6 +20,7 @@ answerList = []
 for row in answerDf.iterrows():
   rowInfo = row[-1]
   distVec = np.subtract(rowInfo['questionVec'], rowInfo['paraVec'])
+  rowDict = {dim:scalar for dim,scalar in enumerate(distVec)}
   rowDict.update({'score': rowInfo['score']})
   answerList.append(rowDict)
 
@@ -47,9 +48,9 @@ weights = {0:0.3, 1:0.7}
 # input layer
 model.add(Dense(30, activation='relu', input_dim=(normedFeatures.shape)[1]))
 # first hidden layer
-model.add(Dense(100, activation='relu'))
+model.add(Dense(10, activation='relu'))
 # second hidden layer
-model.add(Dense(100, activation='relu', kernel_regularizer=l2(0.02)))
+model.add(Dense(10, activation='relu', kernel_regularizer=l2(0.02)))
 # output layer
 model.add(Dense(1, activation='sigmoid'))
 

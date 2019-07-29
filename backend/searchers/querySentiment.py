@@ -9,6 +9,7 @@ import numpy as np
 from math import exp
 from collections import Counter
 from keras.models import load_model
+from scipy.special import softmax
 
 from models.binning.docVecs import vectorize_doc
 
@@ -30,4 +31,7 @@ def score_token_importance(cleanedSearch, tokenSet, freqDict):
     searchArray = np.expand_dims(searchVec, axis=0)
     prediction = formatModel.predict(searchArray)
     queryType = "question" if (prediction>0.6) else "other"
+
+    # normalize token scores
+    # tokenScores = softmax(tokenScores.values())
     return (tokenScores, searchVec, queryType)
