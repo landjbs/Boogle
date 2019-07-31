@@ -16,9 +16,11 @@ class ResultObject():
             -searchTime:        The time at which the search was undertaken
             -user:              The user who initiated the search
         """
-        self.rawSearch = rawSearch
-        self.searchLen = searchLen
-        self.pagesReturned  = pagesReturned
-        self.correction = correction
-        self.invertedResult = invertedResult
-        self.questionAnswer =
+        self.rawSearch          =   rawSearch
+        self.searchLen          =   searchLen
+        self.pagesReturned      =   pagesReturned
+        self.correction         =   correction
+        self.invertedResult     =   invertedResult
+        self.questionAnswer     =   questionAnswer
+        self.searchtime         =   searchTime
+        self.user               =   user
