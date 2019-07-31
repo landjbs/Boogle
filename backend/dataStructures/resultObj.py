@@ -24,3 +24,6 @@ class ResultObject():
         self.questionAnswer     =   questionAnswer
         self.searchtime         =   searchTime
         self.user               =   user
+
+    def log(self):
+        """ Logs information about the search to the command line """
