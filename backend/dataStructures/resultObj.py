@@ -7,6 +7,7 @@ class ResultObject():
     def __init__(self, rawSearch, runTime, numResults, correction,
                 invertedResult, questionAnswer, resultList, searchTime, user):
         """
+        Result objects are initialized with search specific info in searchLexer
             -rawSearch:         The raw string of the search text
             -runTime:           The amount of time the search took to complete
             -numResults:          The number of pages returned for the search

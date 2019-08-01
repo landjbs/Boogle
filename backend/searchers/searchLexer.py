@@ -5,25 +5,29 @@ searchers.databaseSearcher depending on lexical understanding of the query
 
 import re
 import numpy as np
+from time import time
+from keras.models import load_model
 
+from dataStructures.resultObj import ResultObject
 import searchers.databaseSearcher as databaseSearcher
 from searchers.querySentiment import score_token_importance
 from searchers.spellingCorrector import correct
 from models.processing.cleaner import clean_search
 from models.knowledge.knowledgeFinder import find_rawTokens
-
-from keras.models import load_model
 from models.binning.docVecs import vectorize_doc
 
-paraModel = load_model('backend/data/outData/searchAnalysis/paragraphAnswering2.sav')
+n = 20
+
+# paraModel = load_model('backend/data/outData/searchAnalysis/paragraphAnswering2.sav')
 
 def topSearch(rawSearch, database, uniqueWords, knowledgeProcessor, freqDict):
     """
     Highest level search analyzer that takes in a raw search and decides
     which search function to employ.
     """
+    timeStart = time()
+
     ### QUERY PROCESSING ###
-    n = 20
     cleanedSearch = clean_search(rawSearch)
     correctedSearch = " ".join([correct(token, uniqueWords) if not (token.startswith('"') and token.endswith('"')) else token[1:-1]
                                 for token in cleanedSearch.split()])
@@ -33,7 +37,7 @@ def topSearch(rawSearch, database, uniqueWords, knowledgeProcessor, freqDict):
 
     ### SEARCHING ###
     numResults, resultList = 0, []
-    # protocol for single token at top level of search
+    # single token protocol
     if (len(tokenSet) == 1):
         print('TOP: SINGLE')
         topToken = list(tokenSet)[0]
@@ -62,7 +66,7 @@ def topSearch(rawSearch, database, uniqueWords, knowledgeProcessor, freqDict):
             else:
                 pass
 
-    # protocol for more than one token
+    # multi token protocol
     elif (len(tokenSet) > 1):
         print('TOP: AND')
         # score the importance of each token and perform intersectional weighted search
@@ -103,4 +107,15 @@ def topSearch(rawSearch, database, uniqueWords, knowledgeProcessor, freqDict):
     # get display obejcts of each page in resultList
     displayResultList = [pageObj.display(tokenSet) for pageObj in resultList]
 
-    return (correctionDisplay, numResults, invertedResult, displayResultList)
+    # calculate length of search time
+    runTime = round((time() - timeStart), 4)
+
+    # built result object to pass to app
+    resultObj = ResultObject(rawSearch=rawSearch, runTime=runTime,
+                            numResults=numResults, correction=correctionDisplay,
+                            invertedResult=invertedResult, questionAnswer=None,
+                            resultList=displayResultList, searchTime=timeStart,
+                            user=None)
+
+    return resultObj
+    # return (correctionDisplay, numResults, invertedResult, displayResultList)
