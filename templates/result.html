@@ -107,9 +107,9 @@
    <body>
      <div class='title-bar'>
        <h1>Boogle</h1>
-       <i>{{ searchStats[0] }} pages returned in {{ searchStats[1] }} seconds.</i>
+       <i>{{ resultObj.numResults }} pages returned in {{ resultObj.runTime }} seconds.</i>
        {% if correctionDisplay %}
-          <p>Showing results for <strong>{{ correctionDisplay[0] }}</strong>. Search instead for <strong>{{ correctionDisplay[1] }}</strong>.</p>
+          <p>Showing results for <strong>{{ resultObj.correction }}</strong>. Search instead for <strong>{{ resultObj.rawSearch }}</strong>.</p>
        {% else %}
        {% endif %}
      </div>
@@ -122,12 +122,12 @@
 
      <div class='search-results'>
        <br>
-       {% if invertedResult %}
+       {% if resultObj.invertedResult %}
        <center>
        <div class='inverted-result'>
           <div class='inverted-text'>
-            {% for word in invertedResult[2].split() %}
-              {% if word.lower() in searchWords %}
+            {% for word in resultObj.invertedResult[2].split() %}
+              {% if word.lower() in resultObj.searchWords %}
                 <strong>{{ word }}</strong>
               {% else %}
                 {{ word }}
@@ -135,10 +135,10 @@
             {% endfor %}
           </div>
           <div class='inverted-title'>
-            <a href='{{ ''.join([invertedResult[0]]) }}'>{{ invertedResult[1] }}</a>
+            <a href='{{ ''.join([invertedResult[0]]) }}'>{{ resultObj.invertedResult[1] }}</a>
           </div>
           <div class='display-url'>
-            <a class='display-url' href='{{ ''.join([invertedResult[0]]) }}'><i>{{ invertedResult[0] }}</i></a><br>
+            <a class='display-url' href='{{ ''.join([invertedResult[0]]) }}'><i>{{ resultObj.invertedResult[0] }}</i></a><br>
           </div>
        </div>
        </center>
@@ -146,7 +146,7 @@
        {% endif %}
 
        <ul>
-          {% for result in resultList %}
+          {% for result in resultObj.resultList %}
             <li>
               <div class='display-title'>
                 <a href='{{ ''.join([result[0]]) }}'>{{ result[1] }}</a>
@@ -156,7 +156,7 @@
               </div>
               <div class='display-text'>
                 {% for word in result[2].split() %}
-                  {% if word.lower() in searchWords %}
+                  {% if word.lower() in resultObj.searchWords %}
                     <strong>{{ word }}</strong>
                   {% else %}
                     {{ word }}

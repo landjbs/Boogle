@@ -24,8 +24,11 @@ class ResultObject():
         self.correction         =   correction
         self.invertedResult     =   invertedResult
         self.questionAnswer     =   questionAnswer
+        self.resultList         =   resultList
         self.searchTime         =   searchTime
         self.user               =   user
+        # searchWords NEEDS REWRITE
+        self.searchWords        =   rawSearch.split()
 
     def log(self):
         """ Logs information about the search to the command line """
