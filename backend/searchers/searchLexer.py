@@ -73,24 +73,6 @@ def topSearch(rawSearch, database, uniqueWords, knowledgeProcessor, freqDict):
         tokenScores, searchVec, queryType = score_token_importance(cleanedSearch, tokenSet, freqDict)
         andResults = databaseSearcher.weighted_vector_search(tokenScores, searchVec, database, n)
 
-        if queryType=="question":
-            print('Type: question')
-            topPage = andResults[1][0]
-            print(topPage)
-            topText = topPage.windowText
-            halfChar = len(topText) / 2
-            paraList = [topText[:halfChar], topText[halfChar:]]
-            print(paraList)
-            scoreList = []
-            for para in paraList:
-                paraVec = vectorize_doc(para)
-                distVec = np.subtract(searchVec, paraVec)
-                prediction = paraModel.predict(np.expand_dims(distVec, axis=0))
-                scoreList.append((prediction, para))
-            print(scoreList)
-            scoreList.sort(reverse=True)
-            print(scoreList[0][1])
-
         # update search metrics
         numResults += andResults[0]
         resultList += andResults[1]
