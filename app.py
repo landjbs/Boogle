@@ -27,11 +27,11 @@ def result():
             # correctionDisplay, numResults, invertedResult, resultList = topSearch(rawSearch, database, uniqueWords, searchProcessor, freqDict)
             resultObj = topSearch(rawSearch, database, uniqueWords, searchProcessor, freqDict)
 
-            runTime = 0
-            searchStats = (numResults, searchTime)
+            resultObj.log()
 
             # return search info
-            return render_template('result.html', searchStats=searchStats, correctionDisplay=correctionDisplay, invertedResult=invertedResult, resultList=resultList, searchWords=rawSearch.split())
+            # return render_template('result.html', searchStats=searchStats, correctionDisplay=correctionDisplay, invertedResult=invertedResult, resultList=resultList, searchWords=rawSearch.split())
+            return render_template('result.html', resultObj=resultObj)
     elif request.method == 'GET':
         ## Fix to render the page that was clicked on and save the info ##
         pass
