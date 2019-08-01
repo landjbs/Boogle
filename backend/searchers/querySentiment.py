@@ -11,10 +11,10 @@ from collections import Counter
 from keras.models import load_model
 from scipy.special import softmax
 
-from models.binning.docVecs import vectorize_doc
+# from models.binning.docVecs import vectorize_doc
 
 # model to determine whether or not the query is in question form
-formatModel = load_model('backend/data/outData/searchAnalysis/questionFormatModel.sav')
+# formatModel = load_model('backend/data/outData/searchAnalysis/questionFormatModel.sav')
 
 # calc_score_activation = lambda freq : exp(freq) / (exp(freq) + 1)
 calc_score_activation = lambda freq : (1/freq)
@@ -26,11 +26,13 @@ def score_token_importance(cleanedSearch, tokenSet, freqDict):
     """
     tokenScores = {token : calc_score_activation(freqDict[token][0])
                     for token in tokenSet}
-    searchVec = vectorize_doc(cleanedSearch)
+    # searchVec = vectorize_doc(cleanedSearch)
     # whether the query is in question form (eg. "what is the best search engine?")
-    searchArray = np.expand_dims(searchVec, axis=0)
-    prediction = formatModel.predict(searchArray)
-    queryType = "question" if (prediction>0.6) else "other"
+    # searchArray = np.expand_dims(searchVec, axis=0)
+    # prediction = formatModel.predict(searchArray)
+    # queryType = "question" if (prediction>0.6) else "other"
+    queryType = "other"
+    searchVec = []
 
     # normalize token scores
     # tokenScores = softmax(tokenScores.values())
