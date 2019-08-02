@@ -14,7 +14,6 @@ from searchers.querySentiment import score_token_importance
 from searchers.spellingCorrector import correct
 from models.processing.cleaner import clean_search
 from models.knowledge.knowledgeFinder import find_rawTokens
-from models.binning.docVecs import vectorize_doc
 
 n = 20
 
@@ -71,7 +70,8 @@ def topSearch(rawSearch, database, uniqueWords, knowledgeProcessor, freqDict):
         print('TOP: AND')
         # score the importance of each token and perform intersectional weighted search
         tokenScores, searchVec, queryType = score_token_importance(cleanedSearch, tokenSet, freqDict)
-        andResults = databaseSearcher.weighted_vector_search(tokenScores, searchVec, database, n)
+        # andResults = databaseSearcher.weighted_vector_search(tokenScores, searchVec, database, n)
+        andResults = databaseSearcher.weighted_and_search(tokenScores, database, n)
 
         # update search metrics
         numResults += andResults[0]
