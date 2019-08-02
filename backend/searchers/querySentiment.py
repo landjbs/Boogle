@@ -18,7 +18,7 @@ QUESTION_STOP_WORDS = ['what', 'who', 'why', 'when', 'how', 'in', 'the',
                         'a', 'is', 'was', 'did', 'will']
 
 # model to determine whether or not the query is in question form
-formatModel = load_model('backend/data/outData/searchAnalysis/queryFormatModel.sav')
+formatModel = load_model('backend/data/outData/searchAnalysis/queryFormatModel.h5')
 
 # calc_score_activation = lambda freq : exp(freq) / (exp(freq) + 1)
 calc_score_activation = lambda freq : (1/freq)
