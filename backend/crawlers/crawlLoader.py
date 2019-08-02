@@ -26,7 +26,7 @@ def load_crawled_pages(filePath):
     del knowledgeSet
     # bucket each page in each file in filePath
     for i, file in enumerate(listdir(filePath)):
-        if i > 10:
+        if i > 10000000:
             break
         try:
             pageList = load(f'{filePath}/{file}')
@@ -37,16 +37,16 @@ def load_crawled_pages(filePath):
             print(f'{e} at "{file}".')
     print(colored('Complete: Building Database', 'cyan'))
     # clean and sort the database
-    print(colored('Cleaning Database', 'red'), end='\r')
-    database.kill_empties()
-    print(colored('Complete: Cleaning Database', 'cyan'))
+    # print(colored('Cleaning Database', 'red'), end='\r')
+    # database.kill_empties()
+    # print(colored('Complete: Cleaning Database', 'cyan'))
     print(colored('Sorting Database', 'red'), end='\r')
     database.sort_all()
     print(colored('Complete: Sorting Database', 'cyan'))
     # find all unique, non-empty words in the database and the length of their posting list
     print(colored('Finding Unique Words', 'red'), end='\r')
     nonemptyTokens = database.all_lengths()
-    uniqueWords = nonemptyTokens.copy()
+    # uniqueWords = nonemptyTokens.copy()
     for token, length in nonemptyTokens.items():
         words = token.split()
         for word in words:
@@ -55,7 +55,7 @@ def load_crawled_pages(filePath):
     print(colored('Complete: Finding Unique Words', 'cyan'))
     # flashtext processor to find keywords in search
     print(colored('Loading Processor', 'red'), end='\r')
-    searchProcessor = build_knowledgeProcessor(uniqueWords)
-    # searchProcessor = load('backend/data/osutData/knowledge/knowledgeProcessor.sav')
+    # searchProcessor = build_knowledgeProcessor(uniqueWords)
+    searchProcessor = load('backend/data/outData/knowledge/knowledgeProcessor.sav')
     print(colored('Complete: Loading Processor', 'cyan'))
     return(database, uniqueWords, searchProcessor)

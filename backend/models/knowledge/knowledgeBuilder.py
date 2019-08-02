@@ -176,7 +176,8 @@ def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
 
     # get list of all the tokens in the wiki files as observed in freqDict
     tokenList = [token for token, freqTuple in freqDict.items()
-                if corrable(token, freqTuple)]
+                    if corrable(token, freqTuple)]
+
     # get a list of the counters of each token on each page
     counterList = []
     with open(filePath, 'r') as wikiFile:
@@ -184,6 +185,7 @@ def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
             if i < 10:
                 counterList.append(Counter(knowledgeProcessor.extract_keywords(page)))
                 print(f'Building Page Counter List: {i}', end='\r')
+                
     # analyze readingNum tokens at a time until tokenList is empty
     print('\n')
     print(tokenList)
@@ -202,11 +204,11 @@ def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
                 curTokenCounter.update(specificCounter)
                 print(curTokenCounter)
 
-    # while tokenList != []:
-    #     curTokenDict = {token:Counter() for token in tokenList[:readingNum]}
-    #     tokenList = tokenList[readingNum:]
-    #     print(f'Analyzing Token Correlations. Remaining: {len(tokenList)}')
-    #     for pageCounter in enumerate(counterList):
-    #         for token in curTokenDict:
-    #             if token in curTokenDict:
-    #                 curTokenDict[token].update()
+    while tokenList != []:
+        curTokenDict = {token:Counter() for token in tokenList[:readingNum]}
+        tokenList = tokenList[readingNum:]
+        print(f'Analyzing Token Correlations. Remaining: {len(tokenList)}')
+        for pageCounter in enumerate(counterList):
+            for token in curTokenDict:
+                if token in curTokenDict:
+                    curTokenDict[token].update()

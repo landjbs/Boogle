@@ -86,7 +86,7 @@ def weighted_and_search(tokenScores, database, n=20):
     # rank the pages according to their tokens and sort by ranking
     rankedPages = [(score_token_intersection(pageObj, tokenScores), pageObj)
                     for pageObj in intersectionPages]
-    rankedPages.sort(reverse=True) # key=(lambda elt:elt[0])
+    rankedPages.sort(reverse=True, key=(lambda elt:elt[0]))
     # find number of pages before filtering to n
     numResults = len(rankedPages)
     # return top n pages and disregard their scores
@@ -123,7 +123,7 @@ def weighted_vector_search(tokenScores, searchVec, database, n):
     intersectionPages = importantBucket.intersection(otherBuckets)
     # rank the pages according to their tokens and sort by ranking
     rankedPages = [(score_vector_intersection(pageObj, tokenScores, searchVec), pageObj) for pageObj in intersectionPages]
-    rankedPages.sort(reverse=True)  # key=(lambda elt:elt[0])
+    rankedPages.sort(reverse=True, key=(lambda elt:elt[0]))
     # find number of pages before filtering to n
     numResults = len(rankedPages)
     # return top n pages and disregard their scores
