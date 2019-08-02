@@ -63,4 +63,4 @@ model.compile(optimizer ='adam',loss='binary_crossentropy', metrics =['accuracy'
 
 model.fit(np.array(normedFeatures), targets, validation_split=0.1, epochs=15)
 
-model.save('data/outData/searchAnalysis/questionFormatModel.h5')
+model.save('data/outData/searchAnalysis/queryFormatModel.h5')
