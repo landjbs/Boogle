@@ -46,7 +46,7 @@ def load_crawled_pages(filePath):
     # find all unique, non-empty words in the database and the length of their posting list
     print(colored('Finding Unique Words', 'red'), end='\r')
     nonemptyTokens = database.all_lengths()
-    # uniqueWords = nonemptyTokens.copy()
+    uniqueWords = nonemptyTokens.copy()
     for token, length in nonemptyTokens.items():
         words = token.split()
         for word in words:
