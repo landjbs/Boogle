@@ -165,10 +165,23 @@ def fredDict_from_folderPath(folderPath, knowledgeProcessor, outPath=""):
 
 
 def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
-                    corrNum=5, outPath=None):
+                    bufferSize=4000, corrNum=5, outPath=None):
     """
-    Builds dict mapping tokens to the ranked list of tokens with the highest
-    normalized correlation
+    Builds dict mapping tokens to the ranked list of corrNum tokens with the
+    highest normalized co-occurence in filePath.
+    Args:
+        -filePath:              Path to the csv file in which the wikipdia
+                                    articles are stored
+        -knowledgeProcessor:    Flashtext processor for knowledge tokens
+        -freqDict:              Dictionary of frequency tuples for observed tokens
+        -freqCutoff:            Upper frequency that a token can have and
+                                    still be analyzed.
+        -bufferSize:            Number of texts to analyze in RAM at one time
+        -corrNum:               Max number of tokens to include in the ranked
+                                    corrList of each token.
+        -outPath:               Path to which to save the final corrDict. All
+                                    temporary files created during run will
+                                    be deleted.
     """
 
     def corrable(token, freqTuple):
@@ -189,7 +202,7 @@ def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
 
     # iterate over each article in filePath
     with open(filePath, 'r') as wikiFile:
-        for page in tqdm(wikiFile):
+        for page in enumerate(tqdm(wikiFile)):
             # build a counter of raw number of tokens on the page
             pageTokens = Counter(knowledgeProcessor.extract_keywords(page))
             # normalize token counts by token frequency
