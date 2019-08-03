@@ -14,11 +14,12 @@ paper: https://arxiv.org/pdf/1711.00046.pdf. The matcher is applied in
 knowledgeFinder.
 """
 
-import os, re
-from flashtext import KeywordProcessor
-from collections import Counter
+import os
+import re
 from numpy import log
 from tqdm import tqdm
+from collections import Counter
+from flashtext import KeywordProcessor
 
 from dataStructures.objectSaver import save, load
 from models.processing.cleaner import clean_text, clean_wiki
@@ -184,13 +185,16 @@ def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
                                     be deleted.
     """
 
+    TEMP_FOLDER_PATH = 'corrDictTablets'
+
     def corrable(token, freqTuple):
         """ Helper determines if token corr should be taken """
         return False if (freqTuple[0]>freqCutoff) or (False) else True
 
-    # get dict mapping observed tokens with frequency below freqCutoff to empty Counter()
-    tokenDict = {token:Counter() for token, freqTuple in freqDict.items()
-                    if corrable(token, freqTuple)}
+    # dictionary mapping tokens with frequency below freqCutoff to empty counters
+    # aways remains empty as a template for tablets, which will be saved and merged
+    emptyTokenDict = {token:Counter() for token, freqTuple in freqDict.items()
+                        if corrable(token, freqTuple)}
 
     def norm_pageTokens(pageTokens):
         """
@@ -198,11 +202,16 @@ def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
         and cuts those that are below freqCutoff
         """
         return {token : (rawCount / freqDict[token][0]) for token, rawCount
-                in pageTokens.items() if token in tokenDict}
+                in pageTokens.items() if token in emptyTokenDict}
+
+    # create temp folder for tablets of tokenDict; delete after merging
+    os.mkdir(TEMP_FOLDER_PATH)
+
+    curTokenDict = emptyTokenDict.copy()
 
     # iterate over each article in filePath
     with open(filePath, 'r') as wikiFile:
-        for page in enumerate(tqdm(wikiFile)):
+        for i, page in enumerate(tqdm(wikiFile)):
             # build a counter of raw number of tokens on the page
             pageTokens = Counter(knowledgeProcessor.extract_keywords(page))
             # normalize token counts by token frequency
@@ -213,18 +222,40 @@ def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
                     curTokenCounter = normedTokens.copy()
                     del curTokenCounter[token]
                     tokenDict[token].update(curTokenCounter)
+            # save to temp foldder if at buffer size
+            if (i % bufferSize == 0):
+                # clean empty tokens from curTokenDict
+                cleanTokenDict = {token:counts for token, counts in curTokenDict.items()
+                                    if counts.values() != []}
+                del curTokenDict
+                # save cleaned token dict in temp folder and delete from ram
+                save(cleanTokenDict, f'{TEMP_FOLDER_PATH}/tokenDict{i}.sav')
+                del cleanTokenDict
+                # reinitialize curTokenDict
+                curTokenDict = emptyTokenDict.copy()
+
+    # use empty token dict to fold temp tokenDicts together with generator
+    for file in os.listdir(TEMP_FOLDER_PATH):
+        tokenDict = load(f'{TEMP_FOLDER_PATH}/{file}')
+        emptyTokenDict.update(tokenDict)
+        del tokenDict
 
     # build corrDict of top corrNum tokens for each token in tokenDict
     corrDict = {}
-    for token, counter in tokenDict.items():
+    for token, counter in emptyTokenDict.items():
         corrList = [(score, otherToken)
                     for otherToken, score in counter.items()]
-        corrList.sort(reverse=True)
-        topTokens = [tokenTuple[1] for tokenTuple in corrList[:corrNum]]
-        corrDict.update({token : topTokens})
+        if corrList != []:
+            corrList.sort(reverse=True)
+            topTokens = [tokenTuple[1] for tokenTuple in corrList[:corrNum]]
+            corrDict.update({token : topTokens})
 
-    print(corrDict)
 
+    # delete the temporary folder and emptyTokenDict
+    os.rmdir(TEMP_FOLDER_PATH)
+    del emptyTokenDict
+
+    # save corrDict if prompted
     if outPath:
         save(corrDict, outPath)
 
