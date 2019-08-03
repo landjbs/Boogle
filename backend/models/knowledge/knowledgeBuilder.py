@@ -270,8 +270,6 @@ def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
 
 
 
-
-
 # def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
 #                     listLength=5, outPath="", readingNum=10000):
 #     """

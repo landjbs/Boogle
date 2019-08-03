@@ -1,15 +1,18 @@
 """
 Loads files that have been crawled into a thicctable
 """
+
+from math import inf
 from os import listdir
 from termcolor import colored
 
 from dataStructures.objectSaver import load, save
 from dataStructures.pageObj import Page
-from dataStructures.thicctable import Thicctable
+# from dataStructures.thicctable import Thicctable
+from dataStructures.thicctableNEW import ThicctableNEW
 from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
 
-def load_crawled_pages(filePath):
+def load_crawled_pages(filePath, n=inf):
     """
     Loads crawled pages under filePath into a Thicctable().
     Returns:
@@ -18,15 +21,26 @@ def load_crawled_pages(filePath):
                             the database and their lengths
         -searchProcessor:   knowledgeProcessor to find words in database
     """
-    # initialize database with knowledgeSet buckets
+    # initialize database with knowledgeSet buckets and corrDict relatedTokens
     print(colored('Loading Knowledge Set', 'red'), end='\r')
     knowledgeSet = load('backend/data/outData/knowledge/knowledgeSet.sav')
     print(colored('Complete: Loading Knowledge Set', 'cyan'))
-    database = Thicctable(knowledgeSet)
+
+    print(colored('Loading Corr Dict', 'red'), end='\r')
+    # corrDict = load('backend/data/outData/knowledge/corrDict.sav')
+    corrDict = {}
+    corrDict.update({token:[] for token in knowledgeSet
+                        if not token in corrDict})
     del knowledgeSet
+    print(colored('Complete: Loading Corr Dict', 'cyan'))
+
+    database = ThicctableNEW(corrDict)
+
+    del corrDict
+
     # bucket each page in each file in filePath
     for i, file in enumerate(listdir(filePath)):
-        if i > 10000000:
+        if i > n:
             break
         try:
             pageList = load(f'{filePath}/{file}')
@@ -55,7 +69,7 @@ def load_crawled_pages(filePath):
     print(colored('Complete: Finding Unique Words', 'cyan'))
     # flashtext processor to find keywords in search
     print(colored('Loading Processor', 'red'), end='\r')
-    # searchProcessor = build_knowledgeProcessor(uniqueWords)
-    searchProcessor = load('backend/data/outData/knowledge/knowledgeProcessor.sav')
+    searchProcessor = build_knowledgeProcessor(uniqueWords)
+    # searchProcessor = load('backend/data/outData/knowledge/knowledgeProcessor.sav')
     print(colored('Complete: Loading Processor', 'cyan'))
     return(database, uniqueWords, searchProcessor)
