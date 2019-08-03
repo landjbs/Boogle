@@ -177,7 +177,9 @@ def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
         -freqDict:              Dictionary of frequency tuples for observed tokens
         -freqCutoff:            Upper frequency that a token can have and
                                     still be analyzed.
-        -bufferSize:            Number of texts to analyze in RAM at one time
+        -bufferSize:            Number of texts to analyze in RAM at one time.
+                                    At bufferSize, the current tokenDict is saved
+                                    under TEMP_FOLDER_PATH and deleted from RAM.
         -corrNum:               Max number of tokens to include in the ranked
                                     corrList of each token.
         -outPath:               Path to which to save the final corrDict. All
