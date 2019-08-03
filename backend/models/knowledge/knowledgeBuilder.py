@@ -212,9 +212,8 @@ def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
     # iterate over each article in filePath
     with open(filePath, 'r') as wikiFile:
         for i, page in enumerate(tqdm(wikiFile)):
-            # build a counter of raw number of tokens on the page
+            # build counter of token numbers on page and normalize counts by frequency
             pageTokens = Counter(knowledgeProcessor.extract_keywords(page))
-            # normalize token counts by token frequency
             normedTokens = norm_pageTokens(pageTokens)
             # update the related tokens of each token on the page with all the others
             for token in normedTokens.keys():
@@ -240,6 +239,10 @@ def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
         emptyTokenDict.update(tokenDict)
         del tokenDict
 
+    # minScore is min normed co-occurence score that tokens need to qualify for topTokens
+    from math import inf
+    minScore = inf
+
     # build corrDict of top corrNum tokens for each token in tokenDict
     corrDict = {}
     for token, counter in emptyTokenDict.items():
@@ -247,7 +250,8 @@ def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
                     for otherToken, score in counter.items()]
         if corrList != []:
             corrList.sort(reverse=True)
-            topTokens = [tokenTuple[1] for tokenTuple in corrList[:corrNum]]
+            topTokens = [tokenTuple[1] for tokenTuple in corrList[:corrNum]
+                            if tokenTuple[1] > minScore]
             corrDict.update({token : topTokens})
 
 
