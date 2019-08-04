@@ -16,7 +16,7 @@ knowledgeFinder.
 
 import os
 import re
-from numpy import log, dot
+from numpy import log
 from tqdm import tqdm
 from collections import Counter
 from flashtext import KeywordProcessor
@@ -239,6 +239,11 @@ def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
                 # reinitialize curTokenDict
                 curTokenDict = emptyTokenDict.copy()
 
+    # delete some big objects we won't need to conserve RAM
+    del knowledgeProcessor
+    del freqDict
+    del curTokenDict
+
     print('Folding tokenDict')
     # use empty token dict to fold temp tokenDicts together with generator
     for file in tqdm(os.listdir(TEMP_FOLDER_PATH)):
@@ -275,7 +280,7 @@ def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
     return corrDict
 
 
-def build_wiki_title_clusters(filePath, corrDict):
+def vector_update_corrDict(filePath, corrDict, outPath=None):
     """
     Assuming all knowledge tokens are the title of real wikipedia articles
     and that a correlation dict has already been built, adds a layer of scoring
@@ -284,6 +289,7 @@ def build_wiki_title_clusters(filePath, corrDict):
     each token is the title
         -filePath:      Path to csv of wiki texts
         -corrDict:      Dictionary mapping each token to a scored list of co-occurence tokens
+        -outPath:       Path to which to save the wikiTitle
     """
 
     # uses BERT client with default POOLING_STRATEGRY and MAX_LEN=800
@@ -333,7 +339,7 @@ def build_wiki_title_clusters(filePath, corrDict):
         # only update score if relatedToken has associated vector
         if relatedToken in vecDict:
             relatedVec = vecDict[relatedToken]
-            similarityScore = dot(relatedVec, baseVec)
+            similarityScore = 1 / cosine(relatedVec, baseVec)
             print(similarityScore)
             relatedScore += similarityScore
 
@@ -346,10 +352,40 @@ def build_wiki_title_clusters(filePath, corrDict):
             baseVec = vecDict[baseToken]
             print(baseVec)
 
-            corrDict[baseToken] = [score_similarity(relatedToken,
-                                                    relatedScore,
-                                                    baseVec)
+            rescoredRelatedTokens = [score_similarity(relatedToken,
+                                                        relatedScore,
+                                                        baseVec)
                                     for relatedScore, relatedToken
                                     in relatedTokens]
 
+            rescoredRelatedTokens.sort(reverse=True)
+            corrDict[baseToken] = rescoredRelatedTokens
+
+    if outPath:
+        save(corrDict, outPath)
+
     print(corrDict)
+
+    return corrDict
+
+
+def build_token_relationships(filePath, outPath=None):
+    """
+    Wraps both build_corr_dict and vector_update_corrDict to create dictionary
+    mapping each token to a ranked, scored list of related tokens in the form
+    {baseToken : [(relationScore, relatedToken)]}
+    """
+    knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
+    freqDict = load('data/outData/knowledge/freqDict.sav')
+
+    corrDict = build_corr_dict(filePath=filePath,
+                                knowledgeProcessor=knowledgeProcessor,
+                                freqDict=freqDict,
+                                corrNum=20,
+                                outPath=None)
+
+    vectoredCorrDict = vector_update_corrDict(filePath=filePath,
+                                                corrDict=corrDict,
+                                                outPath=outPath)
+
+    return vectoredCorrDict

@@ -1,7 +1,13 @@
-from models.knowledge.knowledgeBuilder import build_wiki_title_clusters
+from models.knowledge.knowledgeBuilder import vector_update_corrDict
 
-build_wiki_title_clusters('data/inData/wikipedia_utf8_filtered_20pageviews.csv', {'harvard yard':[(0, 'harvard college')],
-                                                                                    'harvard college':[]})
+vector_update_corrDict('data/inData/wikipedia_utf8_filtered_20pageviews.csv', {'harvard yard':[(0, 'harvard college'),
+                                                                                                (0,'james joyce'),
+                                                                                                (0, 'montana'),
+                                                                                                (0, 'boston')],
+                                                                                'harvard college':[],
+                                                                                'james joyce':[],
+                                                                                'montana':[],
+                                                                                'boston':[]})
 
 
 
