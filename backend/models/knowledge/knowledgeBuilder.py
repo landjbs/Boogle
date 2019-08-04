@@ -21,7 +21,6 @@ from tqdm import tqdm
 from collections import Counter
 from flashtext import KeywordProcessor
 from scipy.spatial.distance import cosine
-from bert_serving.client import BertClient
 
 from dataStructures.objectSaver import save, load
 from models.processing.cleaner import clean_text, clean_wiki
@@ -119,7 +118,7 @@ def fredDict_from_wikiFile(filePath, knowledgeProcessor, outPath=""):
     return freqDict
 
 
-def fredDict_from_folderPath(folderPath, knowledgeProcessor, outPath=""):
+def fredDict_from_folderPath(folderPath, knowledgeProcessor, outPath=None):
     """
     Args: folderPath to folder containing files from which to read,
     knowledgeProcessor for token extraction.
@@ -132,7 +131,7 @@ def fredDict_from_folderPath(folderPath, knowledgeProcessor, outPath=""):
     tokenCounts = Counter()
     # initialize counter to map knowledge tokens to number of docs they appear in
     tokenAppearances = Counter()
-    # initialize variable to keep track of total number of words used
+    # initialize variable to count total number of words used
     totalLength = 0
 
     # find and iterate over list of files within folderPath
@@ -161,7 +160,7 @@ def fredDict_from_folderPath(folderPath, knowledgeProcessor, outPath=""):
                         calc_docFreq(tokenAppearances[token]))
                 for token in tokenCounts}
 
-    if (outPath != ""):
+    if outPath:
         save(freqDict, outPath)
 
     return freqDict
@@ -187,6 +186,10 @@ def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
         -outPath:               Path to which to save the final corrDict. All
                                     temporary files created during run will
                                     be deleted.
+    Returns:
+        Dictionary mapping each qualifying token to scored and ranked list of
+        corrNum relatedTokens where scores in range (0, 1] and are rounded
+        to four decimal places.
     """
 
     TEMP_FOLDER_PATH = 'corrDictTablets'
@@ -208,14 +211,22 @@ def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
         return {token : (rawCount / freqDict[token][0]) for token, rawCount
                 in pageTokens.items() if token in emptyTokenDict}
 
-    # create temp folder for tablets of tokenDict; delete after merging
-    if os.path.exists(TEMP_FOLDER_PATH):
-        os.rmdir(TEMP_FOLDER_PATH)
+    def delete_temp_folder():
+        """ Helper deletes TEMP_FOLDER_PATH and contents before and after run """
+        if os.path.exists(TEMP_FOLDER_PATH):
+            for file in os.listdir(TEMP_FOLDER_PATH):
+                os.remove(f'{TEMP_FOLDER_PATH}/{file}')
+            os.rmdir(TEMP_FOLDER_PATH)
+            return True
+        else:
+            return False
+
+    # create temp folder for to hold tablets of tokenDict
+    delete_temp_folder()
     os.mkdir(TEMP_FOLDER_PATH)
 
-    curTokenDict = emptyTokenDict.copy()
-
     # iterate over each article in filePath
+    curTokenDict = emptyTokenDict.copy()
     with open(filePath, 'r') as wikiFile:
         for i, page in enumerate(tqdm(wikiFile)):
             # build counter of token numbers on page and normalize counts by frequency
@@ -263,14 +274,13 @@ def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
                     for otherToken, score in counter.items()]
         if corrList != []:
             corrList.sort(reverse=True)
-            topTokens = [tokenTuple[1] for tokenTuple in corrList[:corrNum]
+            topTokens = [tokenTuple for tokenTuple in corrList[:corrNum]
                             if tokenTuple[0] > minScore]
             corrDict.update({token : topTokens})
 
 
     # delete the temporary folder and emptyTokenDict
-    # os.rmdir(TEMP_FOLDER_PATH)
-
+    delete_temp_folder()
     del emptyTokenDict
 
     # save corrDict if prompted
@@ -285,14 +295,15 @@ def vector_update_corrDict(filePath, corrDict, outPath=None):
     Assuming all knowledge tokens are the title of real wikipedia articles
     and that a correlation dict has already been built, adds a layer of scoring
     onto the key-mapped list of (score, token) tuples for each tuple in corrDict
-    using weighted cosine similarity between BERT vectors of page texts of which
-    each token is the title
+    using (weighted) cosine similarity between BERT vectors of page texts of which
+    each token is the title.
         -filePath:      Path to csv of wiki texts
         -corrDict:      Dictionary mapping each token to a scored list of co-occurence tokens
         -outPath:       Path to which to save the wikiTitle
     """
 
-    # uses BERT client with default POOLING_STRATEGRY and MAX_LEN=800
+    # uses BERT client with default POOLING_STRATEGRY and MAX_LEN=400
+    from bert_serving.client import BertClient
     bc = BertClient()
 
     def analyze_wiki_line(wikiLine):
@@ -349,22 +360,21 @@ def vector_update_corrDict(filePath, corrDict, outPath=None):
     # by vector similarity
     for baseToken, relatedTokens in corrDict.items():
         if baseToken in vecDict:
+            # cache vector of first para of current baseToken
             baseVec = vecDict[baseToken]
-            print(baseVec)
-
+            # update the scores of related tokens using helper
             rescoredRelatedTokens = [score_similarity(relatedToken,
                                                         relatedScore,
                                                         baseVec)
-                                    for relatedScore, relatedToken
-                                    in relatedTokens]
-
+                                        for relatedScore, relatedToken
+                                        in relatedTokens]
+            # rerank relatedTokens according to new scores and update corrDict
             rescoredRelatedTokens.sort(reverse=True)
             corrDict[baseToken] = rescoredRelatedTokens
 
+    # save to outPath if prompted
     if outPath:
         save(corrDict, outPath)
-
-    print(corrDict)
 
     return corrDict
 
@@ -375,8 +385,9 @@ def build_token_relationships(filePath, outPath=None):
     mapping each token to a ranked, scored list of related tokens in the form
     {baseToken : [(relationScore, relatedToken)]}
     """
-    knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
     freqDict = load('data/outData/knowledge/freqDict.sav')
+    # knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
+    knowledgeProcessor = build_knowledgeProcessor({{'harvard', 'college', 'classes', 'montana', 'james joyce'})
 
     corrDict = build_corr_dict(filePath=filePath,
                                 knowledgeProcessor=knowledgeProcessor,
@@ -384,8 +395,13 @@ def build_token_relationships(filePath, outPath=None):
                                 corrNum=20,
                                 outPath=None)
 
+    print(corrDict)
+
     vectoredCorrDict = vector_update_corrDict(filePath=filePath,
                                                 corrDict=corrDict,
                                                 outPath=outPath)
+
+    if outPath:
+        save(vectoredCorrDict, outPath)
 
     return vectoredCorrDict

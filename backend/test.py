@@ -1,17 +1,7 @@
-from dataStructures.objectSaver import load
-from models.knowledge.knowledgeBuilder import vector_update_corrDict, build_corr_dict, build_knowledgeProcessor
+from models.knowledge.knowledgeBuilder import build_token_relationships
 
-freqDict = load('data/outData/knowledge/freqDict.sav')
-knowledgeProcessor = build_knowledgeProcessor({'harvard', 'college', 'classes', 'montana', 'james joyce'})
-
-print(build_corr_dict('data/inData/wikipedia_utf8_filtered_20pageviews.csv',
-                knowledgeProcessor,
-                freqDict)
-)
-
-
-
-
+relationDict = build_token_relationships('data/inData/wikipedia_utf8_filtered_20pageviews.csv')
+print(relationDict)
 
 # from models.knowledge.knowledgeBuilder import build_corr_dict, build_knowledgeProcessor
 # from dataStructures.objectSaver import load
