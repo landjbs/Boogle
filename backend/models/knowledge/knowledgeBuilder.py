@@ -192,8 +192,8 @@ def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
     TEMP_FOLDER_PATH = 'corrDictTablets'
 
     def corrable(token, freqTuple):
-        """ Helper determines if token corr should be taken """
-        return False if (freqTuple[0]>freqCutoff) or (token.is_digit()) else True
+        """ Helper determines if token corr should be taken STILL NEED TO CHECK IF TOKEN """
+        return False if (freqTuple[0]>freqCutoff) or (False) else True
 
     # dictionary mapping tokens with frequency below freqCutoff to empty counters
     # aways remains empty as a template for tablets, which will be saved and merged

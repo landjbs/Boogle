@@ -1,13 +1,15 @@
-from models.knowledge.knowledgeBuilder import vector_update_corrDict
+from dataStructures.objectSaver import load
+from models.knowledge.knowledgeBuilder import vector_update_corrDict, build_corr_dict, build_knowledgeProcessor
 
-vector_update_corrDict('data/inData/wikipedia_utf8_filtered_20pageviews.csv', {'harvard yard':[(0, 'harvard college'),
-                                                                                                (0,'james joyce'),
-                                                                                                (0, 'montana'),
-                                                                                                (0, 'boston')],
-                                                                                'harvard college':[],
-                                                                                'james joyce':[],
-                                                                                'montana':[],
-                                                                                'boston':[]})
+freqDict = load('data/outData/knowledge/freqDict.sav')
+knowledgeProcessor = build_knowledgeProcessor({'harvard', 'college', 'classes', 'montana', 'james joyce'})
+
+print(build_corr_dict('data/inData/wikipedia_utf8_filtered_20pageviews.csv',
+                knowledgeProcessor,
+                freqDict)
+)
+
+
 
 
 
