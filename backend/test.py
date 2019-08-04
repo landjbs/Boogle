@@ -1,16 +1,25 @@
-from models.knowledge.knowledgeBuilder import build_corr_dict
-from dataStructures.objectSaver import load
+from dataStructures.thicctableNEW import ThicctableNEW
+from dataStructures.pageObj import Page
 
-freqDict = load('data/outData/knowledge/freqDict.sav')
-knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
-# knowledgeProcessor = build_knowledgeProcessor({'harvard', 'college', 'university', 'classes', 'james', 'john', 'door'})
+db = ThicctableNEW({'harvard':['john'], 'college':[]})
+
+db.insert_pageTuple('harvard', (1, 'test'))
+
+print(db.all_lengths())
+
+
+# from models.knowledge.knowledgeBuilder import build_corr_dict, build_knowledgeProcessor
+# from dataStructures.objectSaver import load
 #
-build_corr_dict('data/inData/wikipedia_utf8_filtered_20pageviews.csv',
-                knowledgeProcessor=knowledgeProcessor,
-                freqDict=freqDict,
-                outPath='data/outData/knowledge/corrDict.sav')
-
-
-# for key,val in (load('data/outData/knowledge/corrDict.sav')).items():
-#     if len(val)!=0:
-#         print(f'{key}\n\t{val}')
+# freqDict = load('data/outData/knowledge/freqDict.sav')
+# knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
+# # knowledgeProcessor = build_knowledgeProcessor({'harvard', 'college', 'university', 'classes', 'james', 'john', 'door'})
+#
+# build_corr_dict('data/inData/wikipedia_utf8_filtered_20pageviews.csv',
+#                 knowledgeProcessor=knowledgeProcessor,
+#                 freqDict=freqDict,
+#                 outPath='data/outData/knowledge/corrDict.sav')
+#
+#
+# # for key,val in (load('data/outData/knowledge/corrDict.sav')).items():
+# #     print(f'{key}\n\t{val}')

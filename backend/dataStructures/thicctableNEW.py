@@ -44,6 +44,7 @@ class ThicctableNEW():
         """ Faster version of kill_smalls(n=1) to kill empty keys """
         emptyKeys = [key for key, posting in self.invertedIndex.items()
                         if posting.is_empty()]
+        print(f'Num Empty: {len(emptyKeys)}')
         for key in emptyKeys:
             del self.invertedIndex[key]
         return True
@@ -63,7 +64,7 @@ class ThicctableNEW():
         return True
 
     def insert_pageTuple(self, key, pageTuple):
-        """ Adds value to the list mapped by key in invertedIndex """
+        """ Adds value to the potsingList mapped by key in invertedIndex """
         self.invertedIndex[key].add_to_postingList(pageTuple)
         return True
 
@@ -95,19 +96,17 @@ class ThicctableNEW():
         pageTokens = pageObj.knowledgeTokens
         for token in pageTokens:
             try:
-                if token in self.invertedIndex:
-                    # get score of page from pageRanker
-                    pageScore = sort_score(pageObj, token)
-                    # create bucket-specific pageTuple of score and pageObj
-                    pageTuple = (pageScore, pageObj)
-                    # insert tuple of score and pageObj into appropriate bin
-                    self.insert_pageTuple(key=token, pageTuple=pageTuple)
-                else:
-                    # if token isn't in index yet, add it and re-call function
-                    self.add_key(token)
-                    self.bucket_page(pageObj)
+                # get score of page from pageRanker
+                pageScore = sort_score(pageObj, token)
+                # create bucket-specific pageTuple of score and pageObj
+                pageTuple = (pageScore, pageObj)
+                # insert tuple of score and pageObj into appropriate bin
+                self.insert_pageTuple(key=token, pageTuple=pageTuple)
             except Exception as e:
                 print(f"BUCKETING ERROR: {e}")
+                # if token isn't in index yet, add it and re-call function
+                self.add_key(token)
+                self.bucket_page(pageObj)
         return True
 
     ### SEARCH FUNCTIONS ###
@@ -117,7 +116,6 @@ class ThicctableNEW():
         window text according to token list
         """
         return self.invertedIndex[key].search_display_topPostings(tokenList, n)
-
 
     def search_pageObj(self, key, n):
         """
@@ -158,7 +156,8 @@ class ThicctableNEW():
     def all_lengths(self):
         """ Get length of posting list for each singe-word token in invertedIndex """
         return {key:(posting.len_posting())
-                for key, posting in self.invertedIndex if (len(key.split())==1) and (len(self.invertedIndex[key])>0)}
+                for key, posting in self.invertedIndex.items()
+                if not ((len(key.split())==1) and not (posting.is_empty()))}
 
     def plot_lengths(self, outPath=""):
         """

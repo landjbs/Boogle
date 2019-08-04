@@ -16,8 +16,15 @@ class Posting():
 
     def __init__(self, relatedTokens=[]):
         """ Postings are initialized as empty posting and related lists """
+        # ranked list of pageTuples for search results
         self.postingList = []
+        # ranked list of related knowledge tokens
         self.relatedTokens = relatedTokens
+        # number of time that posting's key has been used in a search
+        self.searchCount = 0
+        # the score of the posting as function of postingList length, searchCount,
+        # and relevance of related tokens. Relevance is independant of frequency
+        self.relevance = 0
 
     ### FUNCTIONS FOR MODIFYING POSTING LIST ###
     def add_to_postingList(self, pageTuple):
@@ -27,8 +34,7 @@ class Posting():
 
     def sort_postingList(self):
         """ Sorts posting list of pageTuples in descending order """
-        self.postingList = self.postingList.sort(reverse=True, key=get_score)
-        return True
+        self.postingList.sort(reverse=True, key=get_score)
 
     def clear_postingList(self):
         """ Clears posting list to empty """
@@ -75,10 +81,8 @@ class Posting():
     def add_to_relatedTokens(self, token, index=None):
         """
         Adds token to index of relatedTokens list. Token is added to the end
-        if no index is given NOT COMPLETE
+        if no index is given NOT COMPLETE !!!!!!
         """
-        # if index:
-        #     self.relatedTokens =
         self.relatedTokens.append(token)
 
     def remove_from_relatedTokens(self, token):
@@ -99,3 +103,16 @@ class Posting():
         """ Clears all tokens from relatedTokens list """
         self.relatedTokens = None
         return True
+
+    ### FUNCTIONS FOR MODIFYING SEARCH COUNT ###
+    def increment_search_count(self, i=1):
+        """ Increments search count by i """
+        self.searchCount += i
+
+    def reset_search_count(self):
+        """ Resets search count to 0 """
+        self.searchCount = 0
+
+    ### FUNCTIONS FOR MODIFYING RELEVANCE ###
+    def calc_relevance(self):
+        self.relevance = self.searchCount + self.len_posting()

@@ -166,7 +166,7 @@ def fredDict_from_folderPath(folderPath, knowledgeProcessor, outPath=""):
 
 
 def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
-                    bufferSize=4000, corrNum=5, outPath=None):
+                    bufferSize=40000, corrNum=5, outPath=None):
     """
     Builds dict mapping tokens to the ranked list of corrNum tokens with the
     highest normalized co-occurence in filePath.
@@ -191,7 +191,7 @@ def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
 
     def corrable(token, freqTuple):
         """ Helper determines if token corr should be taken """
-        return False if (freqTuple[0]>freqCutoff) or (False) else True
+        return False if (freqTuple[0]>freqCutoff) or (token.is_digit()) else True
 
     # dictionary mapping tokens with frequency below freqCutoff to empty counters
     # aways remains empty as a template for tablets, which will be saved and merged
@@ -207,6 +207,8 @@ def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
                 in pageTokens.items() if token in emptyTokenDict}
 
     # create temp folder for tablets of tokenDict; delete after merging
+    if os.path.exists(TEMP_FOLDER_PATH):
+        os.rmdir(TEMP_FOLDER_PATH)
     os.mkdir(TEMP_FOLDER_PATH)
 
     curTokenDict = emptyTokenDict.copy()
@@ -219,10 +221,10 @@ def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
             normedTokens = norm_pageTokens(pageTokens)
             # update the related tokens of each token on the page with all the others
             for token in normedTokens.keys():
-                if token in tokenDict:
+                if token in curTokenDict:
                     curTokenCounter = normedTokens.copy()
                     del curTokenCounter[token]
-                    tokenDict[token].update(curTokenCounter)
+                    curTokenDict[token].update(curTokenCounter)
             # save to temp foldder if at buffer size
             if (i % bufferSize == 0):
                 # clean empty tokens from curTokenDict
@@ -235,30 +237,33 @@ def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
                 # reinitialize curTokenDict
                 curTokenDict = emptyTokenDict.copy()
 
+    print('Folding tokenDict')
     # use empty token dict to fold temp tokenDicts together with generator
-    for file in os.listdir(TEMP_FOLDER_PATH):
+    for file in tqdm(os.listdir(TEMP_FOLDER_PATH)):
         tokenDict = load(f'{TEMP_FOLDER_PATH}/{file}')
         emptyTokenDict.update(tokenDict)
         del tokenDict
 
+
+    print('Building topTokens')
     # minScore is min normed co-occurence score that tokens need to qualify for topTokens
-    from math import inf
-    minScore = inf
+    minScore = 0
 
     # build corrDict of top corrNum tokens for each token in tokenDict
     corrDict = {}
-    for token, counter in emptyTokenDict.items():
+    for token, counter in tqdm(emptyTokenDict.items()):
         corrList = [(score, otherToken)
                     for otherToken, score in counter.items()]
         if corrList != []:
             corrList.sort(reverse=True)
             topTokens = [tokenTuple[1] for tokenTuple in corrList[:corrNum]
-                            if tokenTuple[1] > minScore]
+                            if tokenTuple[0] > minScore]
             corrDict.update({token : topTokens})
 
 
     # delete the temporary folder and emptyTokenDict
-    os.rmdir(TEMP_FOLDER_PATH)
+    # os.rmdir(TEMP_FOLDER_PATH)
+
     del emptyTokenDict
 
     # save corrDict if prompted
@@ -266,56 +271,3 @@ def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
         save(corrDict, outPath)
 
     return corrDict
-
-
-
-
-# def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
-#                     listLength=5, outPath="", readingNum=10000):
-#     """
-#     Builds dict mapping tokens to the ranked list of tokens with the highest
-#     normalized correlation
-#     """
-#
-#     def corrable(token, freqTuple):
-#         """ Helper determines if token corr should be taken: NEED TO CHECK IF NUMERIC!!!! """
-#         return False if (freqTuple[0]>freqCutoff) or () else True
-#
-#     # get list of all the tokens in the wiki files as observed in freqDict
-#     tokenList = [token for token, freqTuple in freqDict.items()
-#                     if corrable(token, freqTuple)]
-#
-#     # get a list of the counters of each token on each page
-#     counterList = []
-#     with open(filePath, 'r') as wikiFile:
-#         for i, page in enumerate(wikiFile):
-#             if i < 10:
-#                 counterList.append(Counter(knowledgeProcessor.extract_keywords(page)))
-#                 print(f'Building Page Counter List: {i}', end='\r')
-#
-#     # analyze readingNum tokens at a time until tokenList is empty
-#     print('\n')
-#     print(tokenList)
-#     while tokenList != []:
-#         curToken = tokenList.pop(0)
-#         print(curToken)
-#         curTokenCounter = Counter()
-#         print(f'Analyzing Token Correlations. Remaining: {len(tokenList)}')
-#         for i, pageCounter in enumerate(counterList):
-#             if curToken in pageCounter:
-#                 print(pageCounter)
-#                 specificCounter = pageCounter.copy()
-#                 tokenCount = specificCounter.pop(curToken)
-#                 specificCounter = dict(map(lambda token:(specificCounter[token] * tokenCount),
-#                                             specificCounter))
-#                 curTokenCounter.update(specificCounter)
-#                 print(curTokenCounter)
-#
-#     while tokenList != []:
-#         curTokenDict = {token:Counter() for token in tokenList[:readingNum]}
-#         tokenList = tokenList[readingNum:]
-#         print(f'Analyzing Token Correlations. Remaining: {len(tokenList)}')
-#         for pageCounter in enumerate(counterList):
-#             for token in curTokenDict:
-#                 if token in curTokenDict:
-#                     curTokenDict[token].update()

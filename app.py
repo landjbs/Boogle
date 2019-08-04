@@ -4,7 +4,7 @@ sys.path.append("/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/searc
 from dataStructures.objectSaver import load
 from crawlers.crawlLoader import load_crawled_pages
 
-database, uniqueWords, searchProcessor = load_crawled_pages('backend/data/thicctable/wikiCrawl4')
+database, uniqueWords, searchProcessor = load_crawled_pages('backend/data/thicctable/wikiCrawl4', n=10000000)
 freqDict = load('backend/data/outData/knowledge/freqDict.sav')
 
 from flask import Flask, render_template, request
