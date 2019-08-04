@@ -10,7 +10,7 @@ from termcolor import colored
 from dataStructures.objectSaver import load, save
 from dataStructures.pageObj import Page
 # from dataStructures.thicctable import Thicctable
-from dataStructures.thicctableNEW import ThicctableNEW
+from dataStructures.thicctable import Thicctable
 from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
 
 def load_crawled_pages(filePath, n=inf):
@@ -29,14 +29,13 @@ def load_crawled_pages(filePath, n=inf):
 
     print(colored('Loading Corr Dict', 'red'), end='\r')
     corrDict = load('backend/data/outData/knowledge/corrDict.sav')
-    # corrDict = {}
     corrDict.update({token:[] for token in knowledgeSet
                         if not token in corrDict})
     del knowledgeSet
     print(colored('Complete: Loading Corr Dict', 'cyan'))
 
-    database = ThicctableNEW(corrDict)
-
+    # build database, using corrDict to get keys and relatedTokens
+    database = Thicctable(corrDict)
     del corrDict
 
     # bucket each page in each file in filePath
@@ -49,8 +48,8 @@ def load_crawled_pages(filePath, n=inf):
                 database.bucket_page(Page(pageDict))
         except Exception as e:
             print(f'{e} at "{file}".')
-
     print(colored('Complete: Building Database', 'cyan'))
+
     # clean and sort the database
     print(colored('Cleaning Database', 'red'), end='\r')
     database.kill_empties()
@@ -61,6 +60,7 @@ def load_crawled_pages(filePath, n=inf):
     # find all unique, non-empty words in the database and the length of their posting list
     print(colored('Finding Unique Words', 'red'), end='\r')
 
+
     # nonemptyTokens = database.all_lengths()
     # print(f'\n\n{"-"*80}\nNonempty:\n{nonemptyTokens}\n{"-"*80}\n\n')
     # uniqueWords = nonemptyTokens.copy()
@@ -69,7 +69,7 @@ def load_crawled_pages(filePath, n=inf):
     #     for word in words:
     #         if not word in nonemptyTokens:
     #             uniqueWords.update({word:length})
-    uniqueWords = {key:10 for key in database.invertedIndex.keys()}
+    uniqueWords = database.all_relevances()
 
     print(colored('Complete: Finding Unique Words', 'cyan'))
     # flashtext processor to find keywords in search
@@ -77,5 +77,5 @@ def load_crawled_pages(filePath, n=inf):
     searchProcessor = build_knowledgeProcessor(uniqueWords)
     # searchProcessor = load('backend/data/outData/knowledge/knowledgeProcessor.sav')
     print(colored('Complete: Loading Processor', 'cyan'))
-    
+
     return(database, uniqueWords, searchProcessor)

@@ -17,7 +17,7 @@ def single_search(token, database, n=20):
     Fastest type of search: no intersection and no re-ranking.
     """
     # find all pages in token bucket
-    resultList = database.search_pageObj(key=token, n=100000)
+    resultList = database.search_pageObj(key=token, n=n)
     # find number of pages before filtering to n
     numResults = len(resultList)
     # filter results to top n; ranking isn't necessary because it was completed during indexing
@@ -75,6 +75,7 @@ def weighted_and_search(tokenScores, database, n=20):
     # find the most important token and retrive its bucket
     importantToken = max(tokenScores, key=(lambda elt:tokenScores[elt]))
     importantBucket = set(database.search_pageObj(key=importantToken, n=100000))
+    print(f'\n\n{"-"*80}\nBucket:\n{importantBucket}\n{"-"*80}\n\n')
     # get the buckets of the less important tokens in the search
     otherTokens = tokenScores.copy()
     _ = otherTokens.pop(importantToken)
@@ -103,7 +104,7 @@ def weighted_or_search(tokenScores, database, n):
     allPages = list(chain.from_iterable(bucketList))
     rankedPages = [(score_simple_intersection(pageObj, tokenScores), pageObj)
                     for pageObj in allPages]
-    rankedPages.sort(reverse=True)  # key=(lambda elt:elt[0])
+    rankedPages.sort(reverse=True, key=(lambda elt:elt[0]))
     resultList = [pageElt[1].display(tokenScores.keys())
                     for i, pageElt in enumerate(rankedPages) if i < n]
     return resultList

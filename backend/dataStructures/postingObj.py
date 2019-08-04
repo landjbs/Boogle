@@ -61,20 +61,25 @@ class Posting():
 
     def search_display_topPostings(self, tokenList, n):
         """
-        Returns display tuple from top n pages from (sorted) key with
+        Returns display tuple from top n pages from postingList with
         window text according to token list
         """
+        self.increment_search_count(i=1)
         return list(map(display_pageTuple, self.postingList[:n]))
 
-    def search_pageObj_topPostings(self, key, n):
+    def search_pageObj_topPostings(self, n):
         """
-        Returns list of page objects in key, discarding scores.
+        Returns list of page objects in postingList, discarding scores.
         Useful if pages need to be reranked (eg. and_search).
         """
-        return list(map(get_pageObj, self.postingList[:n]))
+        self.increment_search_count(i=1)
+        print(f'Related Objects:\n\t{self.relatedTokens}')
+        resultList = list(map(get_pageObj, self.postingList[:n]))
+        return resultList
 
-    def search_full_topPostings(self, key, n):
+    def search_full_topPostings(self, n):
         """ Returns the top n pageTuples of the list mapped by key in invertedIndex """
+        self.increment_search_count(i=1)
         return self.postingList[:n]
 
     ### FUNCTIONS FOR MODIFYING RELATED TOKENS LIST ###
@@ -116,3 +121,9 @@ class Posting():
     ### FUNCTIONS FOR MODIFYING RELEVANCE ###
     def calc_relevance(self):
         self.relevance = self.searchCount + self.len_posting()
+
+    def reset_relevence(self):
+        self.relevance = 0
+
+    def increment_relevence(self, i):
+        self.relevance += i

@@ -4,89 +4,85 @@ import matplotlib.pyplot as plt
 
 from models.ranking.sortScorer import sort_score
 from dataStructures.objectSaver import save, load
-
-
-### LAMBDAS CALLED BY THICCTABLE FUNCTIONS ###
-# check_url examines the url from a page obj (second elt of page tuple)
-check_url = lambda pageTuple : (pageTuple[1].url != url)
-# get_score gets the score from a page tuple (the first elt)
-get_score = lambda pageTuple : pageTuple[0]
-# get_pageObj gets the pageObj from a pageTuple (the second elt)
-get_pageObj = lambda pageTuple : pageTuple[1]
+from dataStructures.postingObj import Posting
 
 
 class Thicctable():
-    """
-    Class to store indexed webdata as keys mapping to
-    list of tuples of Page() objects and their score
-    """
+    """ Class to store indexed Page()s as keys mapping to Posting() objects """
 
     def __init__(self, keys):
-        """ Initialize branch as key-val store mapping keys to empty lists """
-        self.topDict = {key:[] for key in keys}
+        """
+        Initialize branch as key-val store mapping keys to Posting()s
+            -corrDict:  Dictionary mapping ALL tokens to a list of relatedTokens.
+                            If there are no relatedTokens found, maps to empty list.
+        """
+        self.invertedIndex = {key:Posting(relatedTokens)
+                                for key, relatedTokens in keys.items()}
         print(f"Table initialized with {len(keys)} buckets.")
 
     ### FUNCTIONS FOR MODIFYING KEYS ###
     def add_key(self, key):
-        """ Adds key and corresponding empty list to topDict """
-        self.topDict.update({key:[]})
+        """ Adds key and corresponding empty list to invertedIndex """
+        self.invertedIndex.update({key:Posting()})
         return True
 
     def remove_key(self, key):
-        """ Removes key and associated list from topDict """
-        del self.topDict[key]
+        """ Removes key and associated list from invertedIndex """
+        del self.invertedIndex[key]
         return True
 
     def kill_smalls(self, n):
         """ Removes keys with lists under length n. Use carefully! """
         # find keys that map to a list shorter than n
-        smallKeys = [key for key in self.topDict if len(self.topDict[key]) < n]
+        smallKeys = [key for key, posting in self.invertedIndex.items()
+                        if  posting.len_posting() < n]
         for key in smallKeys:
-            del self.topDict[key]
+            del self.invertedIndex[key]
         return True
 
     def kill_empties(self):
-        """ Faster version of kill_smalls(1) to kill empty keys """
-        emptyKeys = [key for key in self.topDict if ((self.topDict[key])==[])]
+        """ Faster version of kill_smalls(n=1) to kill empty keys """
+        emptyKeys = [key for key, posting in self.invertedIndex.items()
+                        if posting.is_empty()]
+        print(f'Num Empty: {len(emptyKeys)}')
         for key in emptyKeys:
-            del self.topDict[key]
+            del self.invertedIndex[key]
         return True
 
-    ### FUNCTIONS FOR MODIFYING KEY-MAPPED LISTS ###
+    ### FUNCTIONS FOR MODIFYING KEY-MAPPED POSTINGS LISTS ###
     def clear_key(self, key):
         """
-        Clears the list associated with a key in the topDict
+        Clears the list associated with a key in the invertedIndex
         Same funcitonality as clip_key(key, 0).
         """
-        self.topDict[key] = []
+        self.invertedIndex[key] = Posting()
         return True
 
     def clip_key(self, key, n):
         """ Clips list mapped by key to n elements """
-        self.topDict[key] = self.topDict[key][:n]
+        self.invertedIndex[key].clip_postingList(n)
         return True
 
     def insert_pageTuple(self, key, pageTuple):
-        """ Adds value to the list mapped by key in topDict """
-        self.topDict[key].append(pageTuple)
+        """ Adds value to the potsingList mapped by key in invertedIndex """
+        self.invertedIndex[key].add_to_postingList(pageTuple)
         return True
 
     def remove_value(self, key, url):
         """
-        Removes elements with given url from list mapped by key in topDict
+        Removes elements with given url from list mapped by key in invertedIndex
         """
-        self.topDict[key] = list(filter(check_url, self.topDict[key]))
+        self.invertedIndex[key].remove_from_postingList(url)
         return True
 
     def sort_key(self, key):
         """ Sorts key list based on page scores (first elt of tuple) """
-        self.topDict[key].sort(key=get_score, reverse=True)
+        self.invertedIndex[key].sort_postingList()
         return True
 
     def sort_all(self):
-        """ Sorts list mapped by each key in topDict based on index """
-        # iterate over keys and sort
-        for key in self.topDict:
+        """ Sorts list mapped by each key in invertedIndex based on index """
+        for key in self.invertedIndex:
             self.sort_key(key)
         return True
 
@@ -107,41 +103,54 @@ class Thicctable():
                 # insert tuple of score and pageObj into appropriate bin
                 self.insert_pageTuple(key=token, pageTuple=pageTuple)
             except Exception as e:
-                print(f"BUCKET ERROR: {e}")
+                print(f"BUCKETING ERROR: {e}")
+                # if token isn't in index yet, add it and re-call function
+                self.add_key(token)
+                self.bucket_page(pageObj)
+        return True
+
+    ### FUNCTIONS FOR MODIFYING KEY-MAPPED SEARCH COUNTS AND RELEVANCES ###
+    def initialize_relevances(self):
+        """ Initializes relevance computation across every key in the table """
+        for posting in self.invertedIndex.values():
+            posting.calc_relevance()
         return True
 
     ### SEARCH FUNCTIONS ###
-    def search_display(self, key, tokenList, n=20):
+    def search_display(self, key, tokenList, n):
         """
         Returns display tuple from top n pages from (sorted) key with
         window text according to token list
         """
-        # get pageObj from pageTuple and apply .describe method
-        display_pageTuple = lambda pageTuple : pageTuple[1].display(tokenList)
-        return list(map(display_pageTuple, self.topDict[key][:n]))
+        return self.invertedIndex[key].search_display_topPostings(tokenList, n)
 
-    def search_pageObj(self, key, n=20):
+    def search_pageObj(self, key, n):
         """
         Returns list of page objects in key, discarding scores.
         Useful if pages need to be reranked (eg. and_search).
         """
-        return list(map(get_pageObj, self.topDict[key][:n]))
+        print(self.invertedIndex[key].search_pageObj_topPostings(n))
+        return self.invertedIndex[key].search_pageObj_topPostings(n)
 
-    def search_full(self, key, n=20):
-        """ Returns the top n pageTuples of the list mapped by key in topDict """
-        return self.topDict[key][:n]
+    def search_full(self, key, n):
+        """ Returns the top n pageTuples of the list mapped by key in invertedIndex """
+        return self.invertedIndex[key].search_full_topPostings(n)
+
+    def search_relatedTokens(self, key, n):
+        """ Gets related tokens for a key """
+        return self.invertedIndex[key].relatedTokens[:n]
 
     ### SAVE/LOAD FUNCTIONS ###
     def save(self, outPath):
         """ Writes contents of Thicctable to json file in outPath.json """
         with open(f"{outPath}.json", 'w+') as FileObj:
-            json.dump(self.topDict, FileObj)
+            json.dump(self.invertedIndex, FileObj)
         return True
 
     def load(self, inPath):
-        """ Loads topDict saved in json file """
+        """ Loads invertedIndex saved in json file """
         with open(f"{inPath}.json", 'r') as FileObj:
-            self.topDict = json.load(FileObj)
+            self.invertedIndex = json.load(FileObj)
         return True
 
     ### METRICS FUNCTIONS ###
@@ -150,19 +159,28 @@ class Thicctable():
         Returns the length of the value list associated with a key.
         Useful metric for comparing importance of keys.
         """
-        return len(self.topDict[key])
+        return self.invertedIndex[key].len_posting()
 
     def all_lengths(self):
-        """ Get length of posting list for each singe-word token in topDict """
-        return {key:(len(self.topDict[key])) for key in self.topDict if (len(key.split())==1) and (len(self.topDict[key])>0)}
+        """ Get length of posting list for each singe-word token in invertedIndex """
+        return {key:(posting.len_posting())
+                for key, posting in self.invertedIndex.items()
+                if not ((len(key.split())==1) and not (posting.is_empty()))}
+
+    def all_relevances(self):
+        """
+        Returns dict mapping each token in the table to its relevance.
+        INITIALIZATION MUST BE COMPLETED FIRST AND SEPARATELY """
+        return {key:(posting.relevance())
+                for key, posting in self.invertedIndex.items()}
 
     def plot_lengths(self, outPath=""):
         """
-        Plot bar chart of lengths of value lists associated with topDict
+        Plot bar chart of lengths of value lists associated with invertedIndex
         keys and print length metrics across all lists.
         """
         # get list of all keys and list of length of values
-        keyList, lengthList = self.topDict.keys(), list(map(lambda elt : len(elt), self.topDict.values()))
+        keyList, lengthList = self.invertedIndex.keys(), list(map(lambda posting : posting.len_posting(), self.invertedIndex.values()))
         # get metrics of lengthList
         meanLength = np.mean(lengthList)
         minLength, maxLength= min(lengthList), max(lengthList)
@@ -185,7 +203,7 @@ class Thicctable():
         such as score, length, time, etc.
         """
         # fetch list mapped by key
-        valueList = self.topDict[key]
+        valueList = self.invertedIndex[key].postingList
         # apply indexLambda to get data of interest
         mappedList = list(map(indexLambda, valueList))
         # get metrics of mappedList
