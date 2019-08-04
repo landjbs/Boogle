@@ -60,6 +60,7 @@ def load_crawled_pages(filePath, n=inf):
     # find all unique, non-empty words in the database and the length of their posting list
     print(colored('Finding Unique Words', 'red'), end='\r')
 
+    database.initialize_relevances()
 
     # nonemptyTokens = database.all_lengths()
     # print(f'\n\n{"-"*80}\nNonempty:\n{nonemptyTokens}\n{"-"*80}\n\n')

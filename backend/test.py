@@ -1,11 +1,8 @@
-from dataStructures.thicctableNEW import ThicctableNEW
-from dataStructures.pageObj import Page
+from models.knowledge.knowledgeBuilder import build_wiki_title_clusters
 
-db = ThicctableNEW({'harvard':['john'], 'college':[]})
+build_wiki_title_clusters('data/inData/wikipedia_utf8_filtered_20pageviews.csv', {'harvard yard':[(0, 'harvard college')],
+                                                                                    'harvard college':[]})
 
-db.insert_pageTuple('harvard', (1, 'test'))
-
-print(db.all_lengths())
 
 
 # from models.knowledge.knowledgeBuilder import build_corr_dict, build_knowledgeProcessor

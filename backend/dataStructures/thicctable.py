@@ -171,7 +171,7 @@ class Thicctable():
         """
         Returns dict mapping each token in the table to its relevance.
         INITIALIZATION MUST BE COMPLETED FIRST AND SEPARATELY """
-        return {key:(posting.relevance())
+        return {key:(posting.relevance)
                 for key, posting in self.invertedIndex.items()}
 
     def plot_lengths(self, outPath=""):

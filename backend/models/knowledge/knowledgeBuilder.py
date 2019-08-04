@@ -16,10 +16,12 @@ knowledgeFinder.
 
 import os
 import re
-from numpy import log
+from numpy import log, dot
 from tqdm import tqdm
 from collections import Counter
 from flashtext import KeywordProcessor
+from scipy.spatial.distance import cosine
+from bert_serving.client import BertClient
 
 from dataStructures.objectSaver import save, load
 from models.processing.cleaner import clean_text, clean_wiki
@@ -271,3 +273,83 @@ def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
         save(corrDict, outPath)
 
     return corrDict
+
+
+def build_wiki_title_clusters(filePath, corrDict):
+    """
+    Assuming all knowledge tokens are the title of real wikipedia articles
+    and that a correlation dict has already been built, adds a layer of scoring
+    onto the key-mapped list of (score, token) tuples for each tuple in corrDict
+    using weighted cosine similarity between BERT vectors of page texts of which
+    each token is the title
+        -filePath:      Path to csv of wiki texts
+        -corrDict:      Dictionary mapping each token to a scored list of co-occurence tokens
+    """
+
+    # uses BERT client with default POOLING_STRATEGRY and MAX_LEN=800
+    bc = BertClient()
+
+    def analyze_wiki_line(wikiLine):
+        """
+        Helper pulls title and text out of a line in the wikiFile csv and
+        returns tuple of title and textVec if the title is a key in corrDict
+        """
+        # get everything after the first comma
+        commaLoc = wikiLine.find(',')
+        rawText = wikiLine[(commaLoc+2):]
+        # pull out the title
+        titleEnd = rawText.find('  ')
+        title = rawText[:titleEnd]
+        cleanTitle = clean_text(title)
+        # title is cleaned for checking but text isn't for better vectorization
+        if cleanTitle in corrDict:
+            textVec = bc.encode([rawText])[0]
+            return (cleanTitle, textVec)
+        else:
+            return None
+
+    # iterate over wikiFile texts, vectorizing if title is in corrDict
+    with open(filePath, 'r') as wikiFile:
+        vecList = [analyze_wiki_line(line) for line in tqdm(wikiFile)]
+
+    # convert vec list into dict mapping tokens from corrDict to thier article's text
+    vecDict = {tokenTuple[0]:tokenTuple[1] for tokenTuple in vecList
+                if not tokenTuple==None}
+    del vecList
+
+
+    def score_similarity(relatedToken, relatedScore, baseVec):
+        """
+        Helper returns updated score for related token based on vector
+        similarity if relatedToken has associated vector, otherwise returns the
+        same score
+        Args:
+            relatedToken:   Token from relatedTokens list of baseToken
+            relatedScore:   Weighted co-occurence score of relatedToken to baseToken
+            baseVec:        Vector of the base token
+        Returns:
+            scoreTuple:     (updatedScore, relatedToken)
+        """
+        # only update score if relatedToken has associated vector
+        if relatedToken in vecDict:
+            relatedVec = vecDict[relatedToken]
+            similarityScore = dot(relatedVec, baseVec)
+            print(similarityScore)
+            relatedScore += similarityScore
+
+        return (relatedScore, relatedToken)
+
+    # iterate over corrDict, updating the scores of each token's related tokens
+    # by vector similarity
+    for baseToken, relatedTokens in corrDict.items():
+        if baseToken in vecDict:
+            baseVec = vecDict[baseToken]
+            print(baseVec)
+
+            corrDict[baseToken] = [score_similarity(relatedToken,
+                                                    relatedScore,
+                                                    baseVec)
+                                    for relatedScore, relatedToken
+                                    in relatedTokens]
+
+    print(corrDict)

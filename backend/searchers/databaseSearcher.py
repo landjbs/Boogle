@@ -42,10 +42,10 @@ def and_search(tokenList, database, n=20):
     rankedPages = [(score_simple_intersection(pageObj, tokenList), pageObj)
                     for pageObj in intersectionPages]
     rankedPages.sort(reverse=True, key=(lambda elt: elt[0]))
-    # find number of pages before filtering to n
+    # find number of pages before filtering down to n
     numResults = len(rankedPages)
     # return top n pages and disregard their scores
-    resultList = [pageElt[1] for i, pageElt in enumerate(rankedPages) if i < n]
+    resultList = [pageElt[1] for pageElt in rankedPages[:n]]
     return (numResults, resultList)
 
 
