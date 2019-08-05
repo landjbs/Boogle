@@ -202,14 +202,16 @@ def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
     # aways remains empty as a template for tablets, which will be saved and merged
     emptyTokenDict = {token:Counter() for token, freqTuple in freqDict.items()
                         if corrable(token, freqTuple)}
+    print(emptyTokenDict)
 
-    def norm_pageTokens(pageTokens):
+    def norm_pageTokens(pageTokens, numWords):
         """
         Helper normalizes pageToken Counter() by dividing by token frequency
         and cuts those that are below freqCutoff
         """
-        return {token : (rawCount / freqDict[token][0]) for token, rawCount
-                in pageTokens.items() if token in emptyTokenDict}
+        return {token : ((rawCount / numWords) / freqDict[token][0])
+                for token, rawCount in pageTokens.items()
+                if token in emptyTokenDict}
 
     def delete_temp_folder():
         """ Helper deletes TEMP_FOLDER_PATH and contents before and after run """
@@ -217,13 +219,14 @@ def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
             for file in os.listdir(TEMP_FOLDER_PATH):
                 os.remove(f'{TEMP_FOLDER_PATH}/{file}')
             os.rmdir(TEMP_FOLDER_PATH)
-            return True
-        else:
-            return False
+
 
     # create temp folder for to hold tablets of tokenDict
     delete_temp_folder()
     os.mkdir(TEMP_FOLDER_PATH)
+
+    x = Counter()
+    x.pop
 
     # iterate over each article in filePath
     curTokenDict = emptyTokenDict.copy()
@@ -231,35 +234,40 @@ def build_corr_dict(filePath, knowledgeProcessor, freqDict, freqCutoff=0.0007,
         for i, page in enumerate(tqdm(wikiFile)):
             # build counter of token numbers on page and normalize counts by frequency
             pageTokens = Counter(knowledgeProcessor.extract_keywords(page))
-            normedTokens = norm_pageTokens(pageTokens)
+            numWords = len(page.split())
+            normedTokens = norm_pageTokens(pageTokens, numWords)
             # update the related tokens of each token on the page with all the others
             for token in normedTokens.keys():
                 if token in curTokenDict:
                     curTokenCounter = normedTokens.copy()
-                    del curTokenCounter[token]
+                    curTokenVal = curTokenCounter.pop(token)
+                    curTokenCounter = {otherToken : (otherVal * curTokenVal)
+                                        for otherToken, otherVal
+                                        in curTokenCounter.items()}
                     curTokenDict[token].update(curTokenCounter)
-            # save to temp foldder if at buffer size
+            # save to temp folder if i is at buffer size
             if (i % bufferSize == 0):
-                # clean empty tokens from curTokenDict
-                cleanTokenDict = {token:counts for token, counts in curTokenDict.items()
+                if i > 0:
+                    # clean empty tokens from curTokenDict
+                    cleanTokenDict = {token : counts
+                                    for token, counts in curTokenDict.items()
                                     if counts.values() != []}
-                del curTokenDict
-                # save cleaned token dict in temp folder and delete from ram
-                save(cleanTokenDict, f'{TEMP_FOLDER_PATH}/tokenDict{i}.sav')
-                del cleanTokenDict
-                # reinitialize curTokenDict
-                curTokenDict = emptyTokenDict.copy()
+                    del curTokenDict
+                    # save cleaned token dict in temp folder and delete from ram
+                    save(cleanTokenDict, f'{TEMP_FOLDER_PATH}/tokenDict{i}.sav')
+                    del cleanTokenDict
+                    # reinitialize curTokenDict
+                    curTokenDict = emptyTokenDict.copy()
 
     # delete some big objects we won't need to conserve RAM
     del knowledgeProcessor
     del freqDict
-    del curTokenDict
 
     print('Folding tokenDict')
-    # use empty token dict to fold temp tokenDicts together with generator
+    # use last, unsaved curTokenDict as accumulator to fold saved tokenDicts together
     for file in tqdm(os.listdir(TEMP_FOLDER_PATH)):
-        tokenDict = load(f'{TEMP_FOLDER_PATH}/{file}')
-        emptyTokenDict.update(tokenDict)
+        loadedTokenDict = load(f'{TEMP_FOLDER_PATH}/{file}')
+        curTokenDict.update(tokenDict)
         del tokenDict
 
 
@@ -301,6 +309,11 @@ def vector_update_corrDict(filePath, corrDict, outPath=None):
         -corrDict:      Dictionary mapping each token to a scored list of co-occurence tokens
         -outPath:       Path to which to save the wikiTitle
     """
+
+    CORR_WEIGHT = 0.7
+    VEC_WEIGHT = 0.3
+
+    assert ((CORR_WEIGHT + VEC_WEIGHT) == 1), "Sum of weights must be equal to 1."
 
     # uses BERT client with default POOLING_STRATEGRY and MAX_LEN=400
     from bert_serving.client import BertClient
@@ -350,7 +363,7 @@ def vector_update_corrDict(filePath, corrDict, outPath=None):
         # only update score if relatedToken has associated vector
         if relatedToken in vecDict:
             relatedVec = vecDict[relatedToken]
-            similarityScore = 1 / cosine(relatedVec, baseVec)
+            similarityScore = 1 - cosine(relatedVec, baseVec)
             print(similarityScore)
             relatedScore += similarityScore
 
@@ -387,7 +400,8 @@ def build_token_relationships(filePath, outPath=None):
     """
     freqDict = load('data/outData/knowledge/freqDict.sav')
     # knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
-    knowledgeProcessor = build_knowledgeProcessor({{'harvard', 'college', 'classes', 'montana', 'james joyce'})
+    knowledgeProcessor = build_knowledgeProcessor({'harvard', 'college', 'classes',
+                                                    'montana', 'james joyce'})
 
     corrDict = build_corr_dict(filePath=filePath,
                                 knowledgeProcessor=knowledgeProcessor,
