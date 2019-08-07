@@ -6,7 +6,8 @@ for lists of results.
 from itertools import chain
 
 from models.binning.docVecs import vectorize_doc
-from models.ranking.intersectionalRanker import score_token_intersection, score_vector_intersection
+from models.ranking.intersectionalRanker import (score_token_intersection,
+                                                score_vector_intersection)
 
 
 ### Simple search algorithms ###
@@ -17,10 +18,11 @@ def single_search(token, database, n=20):
     Fastest type of search: no intersection and no re-ranking.
     """
     # find all pages in token bucket
-    resultList = database.search_pageObj(key=token, n=n)
+    resultList = database.search_pageObj(key=token, n=100000)
     # find number of pages before filtering to n
     numResults = len(resultList)
-    # filter results to top n; ranking isn't necessary because it was completed during indexing
+    # filter results to top n;
+    # ranking isn't necessary because it was completed during indexing
     return (numResults, resultList[:n])
 
 def and_search(tokenList, database, n=20):
@@ -28,8 +30,9 @@ def and_search(tokenList, database, n=20):
     Preforms an AND search for the intersection multiple search tokens.
     Slower than single_search or or_search as pages need to be reranked.
     """
-    # get list of all result buckets associate with each tokens in the token list
-    bucketList = [database.search_pageObj(key=token, n=100000) for token in tokenList]
+    # get list of all result buckets associate with each tokens in token list
+    bucketList = [database.search_pageObj(key=token, n=100000)
+                    for token in tokenList]
     # get list of length of each bucket in bucketList
     lengthList = [len(bucket) for bucket in bucketList]
     # pop shortest bucket from bucketList and cast as set
@@ -57,14 +60,16 @@ def or_search(tokenList, database, n=20):
     NB: The presence of multiple tokens from tokenList in a page does not
     influence it's ranking.
     """
-    # get list of all result bukcets associate with each tokens in the token list
-    bucketLists = [database.search_full(key=token, n=100000) for token in tokenList]
+    # get list of all result buckets associate with each tokens in token list
+    bucketLists = [database.search_full(key=token, n=100000)
+                    for token in tokenList]
     # combine bucketLists into a single, sorted list
     sortedResults = list(chain.from_iterable(bucketLists))
     sortedResults.sort(reverse=True) # key=(lambda result:result[0]),
     resultList = [pageElt[1].display(tokenList)
                     for i, pageElt in enumerate(sortedResults) if i < n]
     return resultList
+
 
 ### Weight Search Algorithms ###
 def weighted_and_search(tokenScores, database, n=20):
@@ -75,7 +80,6 @@ def weighted_and_search(tokenScores, database, n=20):
     # find the most important token and retrive its bucket
     importantToken = max(tokenScores, key=(lambda elt:tokenScores[elt]))
     importantBucket = set(database.search_pageObj(key=importantToken, n=100000))
-    print(f'\n\n{"-"*80}\nBucket:\n{importantBucket}\n{"-"*80}\n\n')
     # get the buckets of the less important tokens in the search
     otherTokens = tokenScores.copy()
     _ = otherTokens.pop(importantToken)
@@ -93,6 +97,7 @@ def weighted_and_search(tokenScores, database, n=20):
     # return top n pages and disregard their scores
     resultList = [pageElt[1] for i, pageElt in enumerate(rankedPages) if i < n]
     return (numResults, resultList)
+
 
 def weighted_or_search(tokenScores, database, n):
     """
@@ -118,15 +123,18 @@ def weighted_vector_search(tokenScores, searchVec, database, n):
     # get the buckets of the less important tokens in the search
     otherTokens = tokenScores.copy()
     _ = otherTokens.pop(importantToken)
-    bucketList = [database.search_pageObj(key=token, n=100000) for token in otherTokens]
+    bucketList = [database.search_pageObj(key=token, n=100000)
+                    for token in otherTokens]
     otherBuckets = list(chain.from_iterable(bucketList))
     # find those pages in that of the most important token and any of the others
     intersectionPages = importantBucket.intersection(otherBuckets)
     # rank the pages according to their tokens and sort by ranking
-    rankedPages = [(score_vector_intersection(pageObj, tokenScores, searchVec), pageObj) for pageObj in intersectionPages]
+    rankedPages = [(score_vector_intersection(pageObj, tokenScores, searchVec),
+                                                pageObj)
+                    for pageObj in intersectionPages]
     rankedPages.sort(reverse=True, key=(lambda elt:elt[0]))
     # find number of pages before filtering to n
     numResults = len(rankedPages)
     # return top n pages and disregard their scores
-    resultList = [pageElt[1] for i, pageElt in enumerate(rankedPages) if i < n]
+    resultList = [pageElt[1] for pageElt in rankedPages[:n]]
     return (numResults, resultList)
