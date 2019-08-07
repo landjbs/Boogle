@@ -1,9 +1,8 @@
-import os
 from math import inf
 from time import time
 from termcolor import colored
 
-from dataStructures.objectSaver import load, save
+from dataStructures.objectSaver import load, save, delete_folder, make_folder
 from dataStructures.scrapingStructures import Simple_List
 from models.ranking.baseRanker import calc_base_score
 from models.processing.cleaner import clean_text
@@ -66,9 +65,9 @@ def crawl_wiki_data(inPath, outPath, startNum=None, endNum=None):
     Crawls cleaned wikipedia data at file path
     and saves page data to files under outPath
     """
-    if os.exists(outPath):
-        for file in os.listdir(outPath):
-            
+
+    delete_folder(outPath)
+    make_folder(outPath)
 
     # load freqDict
     print(colored('Loading Freq Dict', 'red'), end='\r')
