@@ -22,7 +22,7 @@ from collections import Counter
 from flashtext import KeywordProcessor
 from scipy.spatial.distance import cosine
 
-from dataStructures.objectSaver import save, load
+from dataStructures.objectSaver import save, load, delete_folder
 from models.processing.cleaner import clean_text, clean_wiki
 import models.knowledge.knowledgeFinder as knowledgeFinder
 
@@ -216,15 +216,8 @@ def build_corr_dict(filePath, freqDict, freqCutoff=0.0007, bufferSize=40000,
                 for token, rawCount in pageTokens.items()
                 if token in emptyTokenDict}
 
-    def delete_temp_folder():
-        """ Helper deletes TEMP_FOLDER_PATH and contents """
-        if os.path.exists(TEMP_FOLDER_PATH):
-            for file in os.listdir(TEMP_FOLDER_PATH):
-                os.remove(f'{TEMP_FOLDER_PATH}/{file}')
-            os.rmdir(TEMP_FOLDER_PATH)
-
     # create temp folder for to hold tablets of tokenDict
-    delete_temp_folder()
+    delete_folder(TEMP_FOLDER_PATH)
     os.mkdir(TEMP_FOLDER_PATH)
 
     # iterate over each article in filePath
@@ -288,7 +281,7 @@ def build_corr_dict(filePath, freqDict, freqCutoff=0.0007, bufferSize=40000,
             corrDict.update({token : topTokens})
 
     # delete the temporary folder and emptyTokenDict
-    delete_temp_folder()
+    delete_folder(TEMP_FOLDER_PATH)
     del emptyTokenDict
 
     # save corrDict if prompted

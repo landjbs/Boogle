@@ -1,3 +1,4 @@
+import os
 import pickle
 
 def save(object, path):
@@ -11,3 +12,10 @@ def load(path):
     file = open(path, "rb")
     object = pickle.load(file)
     return object
+
+def delete_folder(folderPath):
+    """ Deletes folderPath and contents """
+    if os.path.exists(folderPath):
+        for file in os.listdir(folderPath):
+            os.remove(f'{folderPath}/{file}')
+        os.rmdir(folderPath)

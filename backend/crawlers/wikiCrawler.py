@@ -1,3 +1,4 @@
+import os
 from math import inf
 from time import time
 from termcolor import colored
@@ -6,7 +7,7 @@ from dataStructures.objectSaver import load, save
 from dataStructures.scrapingStructures import Simple_List
 from models.ranking.baseRanker import calc_base_score
 from models.processing.cleaner import clean_text
-from models.binning.docVecs import vectorize_doc
+# from models.binning.docVecs import vectorize_doc
 from models.knowledge.knowledgeFinder import score_divDict
 from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
 
@@ -41,7 +42,8 @@ def scrape_wiki_page(line, knowledgeProcessor, freqDict):
                 'all':      cleanedText}
     knowledgeTokens = score_divDict(divDict, knowledgeProcessor, freqDict)
     # vectorize the article text
-    pageVec = vectorize_doc(articleText)
+    # pageVec = vectorize_doc(articleText)
+    pageVec = {}
     # create dict of base attributes of the page and score
     baseAttributes = {'loadTime': 0.5, 'imageScore':0, 'videoScore':0}
     baseScore = calc_base_score(baseAttributes)
@@ -64,6 +66,10 @@ def crawl_wiki_data(inPath, outPath, startNum=None, endNum=None):
     Crawls cleaned wikipedia data at file path
     and saves page data to files under outPath
     """
+    if os.exists(outPath):
+        for file in os.listdir(outPath):
+            
+
     # load freqDict
     print(colored('Loading Freq Dict', 'red'), end='\r')
     freqDict = load('data/outData/knowledge/freqDict.sav')
