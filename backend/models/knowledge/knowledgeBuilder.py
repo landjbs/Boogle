@@ -22,9 +22,13 @@ from collections import Counter
 from flashtext import KeywordProcessor
 from scipy.spatial.distance import cosine
 
-from dataStructures.objectSaver import save, load, delete_folder
 from models.processing.cleaner import clean_text, clean_wiki
 import models.knowledge.knowledgeFinder as knowledgeFinder
+from dataStructures.objectSaver import (save,
+                                        load, 
+                                        safe_make_folder,
+                                        delete_folder)
+
 
 ## Functions ##
 def build_knowledgeSet(knowledgeFile, additionalTokens=None, numberRange=None, outPath=None):
@@ -217,8 +221,7 @@ def build_corr_dict(filePath, freqDict, freqCutoff=0.0007, bufferSize=40000,
                 if token in emptyTokenDict}
 
     # create temp folder for to hold tablets of tokenDict
-    delete_folder(TEMP_FOLDER_PATH)
-    os.mkdir(TEMP_FOLDER_PATH)
+    safe_make_folder(TEMP_FOLDER_PATH)
 
     # iterate over each article in filePath
     curTokenDict = emptyTokenDict.copy()

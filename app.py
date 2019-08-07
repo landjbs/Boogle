@@ -18,6 +18,7 @@ def index():
 
 @app.route('/result', methods = ['POST', 'GET'])
 def result():
+    print(request.remote_addr)
     if request.method == 'POST':
         rawSearch = request.form.to_dict()['Search']
         if (rawSearch==""):

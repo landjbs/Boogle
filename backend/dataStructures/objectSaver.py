@@ -27,7 +27,7 @@ def delete_folder(folderPath):
         return False
 
 
-def make_folder(folderPath):
+def safe_make_folder(folderPath):
     """ Deletes folder if already exists and makes folder """
     delete_folder(folderPath)
     os.mkdir(folderPath)

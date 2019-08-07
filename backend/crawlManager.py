@@ -1,4 +1,4 @@
-# from crawlers.wikiCrawler import crawl_wiki_data
+from crawlers.wikiCrawler import crawl_wiki_data
 # from dataStructures.objectSaver import load
 # from models.knowledge.knowledgeBuilder import build_corr_dict, build_knowledgeProcessor
 
@@ -16,6 +16,6 @@
 # print([elt for elt in dir()])
 
 crawl_wiki_data(inPath='data/inData/wikipedia_utf8_filtered_20pageviews.csv',
-                outPath='data/thicctable/wikiCrawl4',
+                outPath='data/thicctable/wikiCrawl_NOVECS',
                 startNum=0,
                 endNum=None)

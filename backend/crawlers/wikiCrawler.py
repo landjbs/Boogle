@@ -1,14 +1,15 @@
 from math import inf
 from time import time
+from tqdm import tqdm
 from termcolor import colored
 
-from dataStructures.objectSaver import load, save, delete_folder, make_folder
-from dataStructures.scrapingStructures import Simple_List
 from models.ranking.baseRanker import calc_base_score
 from models.processing.cleaner import clean_text
 # from models.binning.docVecs import vectorize_doc
 from models.knowledge.knowledgeFinder import score_divDict
 from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
+from dataStructures.scrapingStructures import Simple_List
+from dataStructures.objectSaver import load, save, safe_make_folder
 
 
 def make_wiki_url(title):
@@ -66,8 +67,7 @@ def crawl_wiki_data(inPath, outPath, startNum=None, endNum=None):
     and saves page data to files under outPath
     """
 
-    delete_folder(outPath)
-    make_folder(outPath)
+    safe_make_folder(outPath)
 
     # load freqDict
     print(colored('Loading Freq Dict', 'red'), end='\r')
@@ -87,7 +87,7 @@ def crawl_wiki_data(inPath, outPath, startNum=None, endNum=None):
         endNum = inf
 
     with open(inPath, 'r') as wikiFile:
-        for i, line in enumerate(wikiFile):
+        for i, line in enumerate(tqdm(wikiFile)):
             if i > endNum:
                 break
             if i >= startNum:
@@ -101,7 +101,8 @@ def crawl_wiki_data(inPath, outPath, startNum=None, endNum=None):
                     save(scrapeList.data, f'{outPath}/{i}.sav')
                     scrapeList.clear()
 
-                print(f'Pages Analyzed: {i}', end='\r')
+    if (scrapeList.data != []):
+        save(scrapeList.data, f'{outPath}/{i}.sav')
 
     print('\n\nScraping Complete\n')
     return True
