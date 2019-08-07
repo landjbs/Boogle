@@ -8,4 +8,4 @@ counter = 0
 while len(resultList) < 20:
     for data in dataList:
         print(data[counter])
-    counter +=1
+    counter += 1

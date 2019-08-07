@@ -1,25 +1,26 @@
-from models.knowledge.knowledgeBuilder import build_token_relationships, build_corr_dict, build_knowledgeProcessor, vector_update_corrDict
+from dataStructures.objectSaver import load
+from models.knowledge.knowledgeBuilder import (build_token_relationships,
+                                                build_corr_dict,
+                                                build_knowledgeProcessor,
+                                                vector_update_corrDict)
 
-vecDict = build_token_relationships('data/inData/wikipedia_utf8_filtered_20pageviews.csv',
-                                    outPath='data/outData/knowledge/relationshipDictTEST.sav')
+FREQ_PATH = 'data/outData/knowledge/freqDict.sav'
+WIKI_PATH = 'data/inData/wikipedia_utf8_filtered_20pageviews.csv'
 
-# p = multiprocessing.Process(target=process_item, args=)
-# p.start()
-# p.join()
+freqDict = load(FREQ_PATH)
+myTokens = ['coffee', 'starbucks', 'dunkin donuts', 'joe and the juice',
+            'wood', 'cabin', 'logs', 'residue', 'espresso']
+myFreqs = {token:val for token, val in freqDict.items() if token in myTokens}
 
 
-# from models.knowledge.knowledgeBuilder import build_corr_dict, build_knowledgeProcessor
-# from dataStructures.objectSaver import load
-#
-# freqDict = load('data/outData/knowledge/freqDict.sav')
-# knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
-# # knowledgeProcessor = build_knowledgeProcessor({'harvard', 'college', 'university', 'classes', 'james', 'john', 'door'})
-#
-# build_corr_dict('data/inData/wikipedia_utf8_filtered_20pageviews.csv',
-#                 knowledgeProcessor=knowledgeProcessor,
-#                 freqDict=freqDict,
-#                 outPath='data/outData/knowledge/corrDict.sav')
-#
-#
-# # for key,val in (load('data/outData/knowledge/corrDict.sav')).items():
-# #     print(f'{key}\n\t{val}')
+corrDict = build_corr_dict(WIKI_PATH, myFreqs)
+print(corrDict)
+
+while True:
+    s = input('S: ')
+    try:
+        print(f'\t{s}')
+        for elt in d[s]:
+            print(f'\t\t{elt[0]}> {elt[1]}')
+    except Exception as e:
+        print(f'ERROR: {e}')

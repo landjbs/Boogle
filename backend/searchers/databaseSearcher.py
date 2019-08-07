@@ -25,6 +25,7 @@ def single_search(token, database, n=20):
     # ranking isn't necessary because it was completed during indexing
     return (numResults, resultList[:n])
 
+
 def and_search(tokenList, database, n=20):
     """
     Preforms an AND search for the intersection multiple search tokens.
@@ -65,7 +66,7 @@ def or_search(tokenList, database, n=20):
                     for token in tokenList]
     # combine bucketLists into a single, sorted list
     sortedResults = list(chain.from_iterable(bucketLists))
-    sortedResults.sort(reverse=True) # key=(lambda result:result[0]),
+    sortedResults.sort(reverse=True, key=(lambda result:result[0])) 
     resultList = [pageElt[1].display(tokenList)
                     for i, pageElt in enumerate(sortedResults) if i < n]
     return resultList
@@ -95,7 +96,7 @@ def weighted_and_search(tokenScores, database, n=20):
     # find number of pages before filtering to n
     numResults = len(rankedPages)
     # return top n pages and disregard their scores
-    resultList = [pageElt[1] for i, pageElt in enumerate(rankedPages) if i < n]
+    resultList = [pageElt[1] for pageElt in rankedPages[:n]]
     return (numResults, resultList)
 
 

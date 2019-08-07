@@ -223,43 +223,43 @@ def build_corr_dict(filePath, freqDict, freqCutoff=0.0007, bufferSize=40000,
                 os.remove(f'{TEMP_FOLDER_PATH}/{file}')
             os.rmdir(TEMP_FOLDER_PATH)
 
-    # # create temp folder for to hold tablets of tokenDict
-    # delete_temp_folder()
-    # os.mkdir(TEMP_FOLDER_PATH)
-    #
-    # # iterate over each article in filePath
-    # curTokenDict = emptyTokenDict.copy()
-    # with open(filePath, 'r') as wikiFile:
-    #     for i, page in enumerate(tqdm(wikiFile)):
-    #         # build counter of token numbers on page and normalize counts by frequency
-    #         pageTokens = Counter(knowledgeProcessor.extract_keywords(page))
-    #         numWords = len(page.split())
-    #         normedTokens = norm_pageTokens(pageTokens, numWords)
-    #         # update the related tokens of each token on the page with others
-    #         for token in normedTokens.keys():
-    #             curTokenCounter = normedTokens.copy()
-    #             curTokenVal = curTokenCounter.pop(token)
-    #             curTokenCounter = {otherToken : (otherVal * curTokenVal)
-    #                                 for otherToken, otherVal
-    #                                 in curTokenCounter.items()}
-    #             curTokenDict[token].update(curTokenCounter)
-    #         # save to temp folder if i is at buffer size
-    #         if (i % bufferSize == 0):
-    #             if i > 0:
-    #                 # clean empty tokens from curTokenDict
-    #                 cleanTokenDict = {token : counts
-    #                                 for token, counts in curTokenDict.items()
-    #                                 if counts.values() != []}
-    #                 del curTokenDict
-    #                 # save cleaned token dict in temp folder and delete from ram
-    #                 save(cleanTokenDict, f'{TEMP_FOLDER_PATH}/tokenDict{i}.sav')
-    #                 del cleanTokenDict
-    #                 # reinitialize curTokenDict
-    #                 curTokenDict = emptyTokenDict.copy()
-    #
-    # # delete some big objects we won't need to conserve RAM
-    # del knowledgeProcessor
-    # del freqDict
+    # create temp folder for to hold tablets of tokenDict
+    delete_temp_folder()
+    os.mkdir(TEMP_FOLDER_PATH)
+
+    # iterate over each article in filePath
+    curTokenDict = emptyTokenDict.copy()
+    with open(filePath, 'r') as wikiFile:
+        for i, page in enumerate(tqdm(wikiFile)):
+            # build counter of token nums on page and norm counts by frequency
+            pageTokens = Counter(knowledgeProcessor.extract_keywords(page))
+            numWords = len(page.split())
+            normedTokens = norm_pageTokens(pageTokens, numWords)
+            # update the related tokens of each token on the page with others
+            for token in normedTokens.keys():
+                curTokenCounter = normedTokens.copy()
+                curTokenVal = curTokenCounter.pop(token)
+                curTokenCounter = {otherToken : (otherVal * curTokenVal)
+                                    for otherToken, otherVal
+                                    in curTokenCounter.items()}
+                curTokenDict[token].update(curTokenCounter)
+            # save to temp folder if i is at buffer size
+            if (i % bufferSize == 0):
+                if i > 0:
+                    # clean empty tokens from curTokenDict
+                    cleanTokenDict = {token : counts
+                                    for token, counts in curTokenDict.items()
+                                    if counts.values() != []}
+                    del curTokenDict
+                    # save cleaned token dict in temp folder and delete from ram
+                    save(cleanTokenDict, f'{TEMP_FOLDER_PATH}/tokenDict{i}.sav')
+                    del cleanTokenDict
+                    # reinitialize curTokenDict
+                    curTokenDict = emptyTokenDict.copy()
+
+    # delete some big objects we won't need to conserve RAM
+    del knowledgeProcessor
+    del freqDict
 
     curTokenDict = emptyTokenDict.copy()
 
@@ -445,13 +445,13 @@ def build_token_relationships(filePath, freqDict=None, corrWeight=0.6,
                                 corrNum=20,
                                 freqCutoff=0.00000001,
                                 bufferSize=400,
-                                outPath=None)
+                                outPath='data/outData/knowledge/corrDict.sav')
 
     vectoredCorrDict = vector_update_corrDict(filePath=filePath,
                                                 corrDict=corrDict,
                                                 corrWeight=corrWeight,
                                                 tokenWeight=tokenWeight,
                                                 textWeight=textWeight,
-                                                outPath=None)
+                                                outPath=outPath)
 
     return vectoredCorrDict
