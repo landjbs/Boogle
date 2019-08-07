@@ -8,21 +8,29 @@ import numpy as np
 from time import time
 from keras.models import load_model
 
+from dataStructures.objectSaver import load
 from dataStructures.resultObj import ResultObject
 import searchers.databaseSearcher as databaseSearcher
 from searchers.querySentiment import score_token_importance
 from searchers.spellingCorrector import correct
 from models.processing.cleaner import clean_search
 from models.knowledge.knowledgeFinder import find_rawTokens
+from crawlers.crawlLoader import load_crawled_pages
+
+
+database, uniqueWords, searchProcessor = load_crawled_pages('data/thicctable/wikiCrawl4', n=10)
+freqDict = load('data/outData/knowledge/freqDict.sav')
 
 n = 20
 
 # paraModel = load_model('backend/data/outData/searchAnalysis/paragraphAnswering2.sav')
 
-def topSearch(rawSearch, database, uniqueWords, knowledgeProcessor, freqDict):
+def topSearch(rawSearch, user):
     """
     Highest level search analyzer that takes in a raw search and decides
     which search function to employ.
+        -rawSearch:     Unedited string of the search
+        -user:          IP of the user who initiated the search
     """
     timeStart = time()
 
@@ -97,7 +105,7 @@ def topSearch(rawSearch, database, uniqueWords, knowledgeProcessor, freqDict):
                             numResults=numResults, correction=correctionDisplay,
                             invertedResult=invertedResult, questionAnswer=None,
                             resultList=displayResultList, searchTime=timeStart,
-                            user=None)
+                            user=user)
 
     return resultObj
     # return (correctionDisplay, numResults, invertedResult, displayResultList)
