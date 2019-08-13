@@ -3,25 +3,36 @@ Parses a raw search string and employs a search algorithm from
 searchers.databaseSearcher depending on lexical understanding of the query
 """
 
+# load crawl materials first
+from dataStructures.objectSaver import load
+from crawlers.crawlLoader import load_crawled_pages
+database, uniqueWords, searchProcessor = load_crawled_pages('backend/data/thicctable/wikiCrawl_NOVECS')
+freqDict = load('backend/data/outData/knowledge/freqDict.sav')
+# delete loading functions to free up a little space
+for o in dir():
+    if not o in ['__annotations__', '__builtins__', '__cached__', '__doc__',
+                '__file__', '__loader__', '__name__', '__package__', '__spec__',
+                '__warningregistry__', 'database', 'uniqueWords',
+                'searchProcessor', 'freqDict']:
+        del o
+
+# external imports
 import re
-import numpy as np
 from time import time
 from keras.models import load_model
 
-from dataStructures.objectSaver import load
+# data structures
 from dataStructures.resultObj import ResultObject
-import searchers.databaseSearcher as databaseSearcher
-from searchers.querySentiment import score_token_importance
-from searchers.spellingCorrector import correct
+# models
 from models.processing.cleaner import clean_search
 from models.knowledge.knowledgeFinder import find_rawTokens
-from crawlers.crawlLoader import load_crawled_pages
+# searching
+from searchers.spellingCorrector import correct
+import searchers.databaseSearcher as databaseSearcher
+from searchers.querySentiment import score_token_importance
 
 
-database, uniqueWords, searchProcessor = load_crawled_pages('data/thicctable/wikiCrawl4', n=10)
-freqDict = load('data/outData/knowledge/freqDict.sav')
-
-n = 20
+n = 10
 
 # paraModel = load_model('backend/data/outData/searchAnalysis/paragraphAnswering2.sav')
 
@@ -40,7 +51,7 @@ def topSearch(rawSearch, user):
                                 for token in cleanedSearch.split()])
     correctionDisplay = None if (cleanedSearch==correctedSearch) else (correctedSearch, cleanedSearch)
     # find greedy tokens only for the first search
-    tokenSet = set(knowledgeProcessor.extract_keywords(correctedSearch))
+    tokenSet = set(searchProcessor.extract_keywords(correctedSearch))
 
     ### SEARCHING ###
     numResults, resultList = 0, []
@@ -60,7 +71,7 @@ def topSearch(rawSearch, user):
             words = topToken.split()
             numWords = len(words)
             if (numWords > 1):
-                tokenSet.update(find_rawTokens(cleanedSearch, knowledgeProcessor))
+                tokenSet.update(find_rawTokens(cleanedSearch, searchProcessor))
                 tokenScores, searchVec, queryType = score_token_importance(cleanedSearch, words, freqDict)
                 andResults = databaseSearcher.weighted_and_search(tokenScores, database, (n-numResults))
                 # andResults = databaseSearcher.weighted_vector_search(tokenScores, database, searchVec, n)
@@ -91,7 +102,7 @@ def topSearch(rawSearch, user):
     # determine if an inverted result should be shown
     invertedResult = None
     for i, page in enumerate(resultList[:5]):
-        if (((page.title).lower().strip())==(correctedSearch)):
+        if ((correctedSearch) in (page.title.lower()).strip()):
             invertedResult = resultList.pop(i).display_inverted(tokenSet)
 
     # get display obejcts of each page in resultList
@@ -108,4 +119,3 @@ def topSearch(rawSearch, user):
                             user=user)
 
     return resultObj
-    # return (correctionDisplay, numResults, invertedResult, displayResultList)

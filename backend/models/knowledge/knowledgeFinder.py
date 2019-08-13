@@ -24,18 +24,18 @@ divMultipiers = {'url':         5,
                 'all':          1}
 
 
-def count_token(token, pageText):
-    """
-    Uses regexp to return number of times a token is used in pageText.
-    Matches for tokens that are not parts of larger, uninterrupted words.
-    Does not require a knowledgeProcessor.
-    """
-    return len(re.findall(f"(?<![a-zA-Z]){token}(?![a-zA-Z])", pageText, flags=re.IGNORECASE))
+# def count_token(token, pageText):
+#     """
+#     Uses regexp to return number of times a token is used in pageText.
+#     Matches for tokens that are not parts of larger, uninterrupted words.
+#     Does not require a knowledgeProcessor.
+#     """
+#     return len(re.findall(f"(?<![a-zA-Z]){token}(?![a-zA-Z])", pageText, flags=re.IGNORECASE))
 
 
-def url_count_token(token, url):
-    """ Like count_token but no trailing non-chars neccessary """
-    return len(re.findall(token, url, flags=re.IGNORECASE))
+# def url_count_token(token, url):
+#     """ Like count_token but no trailing non-chars neccessary """
+    # return len(re.findall(token, url, flags=re.IGNORECASE))
 
 
 def find_rawTokens(inStr, knowledgeProcessor):
@@ -60,11 +60,11 @@ def find_rawTokens(inStr, knowledgeProcessor):
     return allTokens
 
 
-def find_weighted_tokenCounts(inStr, knowledgeProcessor):
+def _DEPRECATED_find_weighted_tokenCounts(inStr, knowledgeProcessor):
     """
+    DEPRECATED
     Finds dict mapping tokens used in inStr to number of times used.
     Does not normalize by length, div, or average frequency.
-    Subtokens should be given 0.7 the weighting of full tokens
     """
     # get multi-occurence list of the greedy tokens in inStr
     greedyTokens = knowledgeProcessor.extract_keywords(inStr)
@@ -84,18 +84,61 @@ def find_weighted_tokenCounts(inStr, knowledgeProcessor):
     return countedTokens
 
 
-def score_token(token, tokenFreq, multiplier):
+def find_weighted_tokenCounts(text, knowledgeProcessor, maxChunkSize=5):
     """
-    Scores individual token in a div by frequency, multiplier, and (soon) distribution
+    Finds dict mapping tokens used in inStr to number of times used.
+    Does not normalize by length, div, or average frequency.
+    Sub-tokens are weighted by the fraction of the greedy-token they take up
+    Args:
+        -text:                      Raw text of the div
+        -knowledgeProcessor:        Greedy-first flashtext processor
+        -maxChunkSize:              Highest number of " "-split words to allow
+                                        in a sub-token chunk. Greedy, top-tokens
+                                        will be added, no matter the length.
+    Returns:
+        Counter() of greedy tokens and subtokens. Greedy-tokens are mapped to
+        their raw count in the text; sub-tokens are mapped to their occurence
+        in the text times the fraction of the greedy token they take up.
+    """
+    # find list of greedy tokens in text
+    greedyTokens = Counter(knowledgeProcessor.extract_keywords(text))
+    subTokens = {}
+    # iterate over greedy list
+    for greedyToken, greedyCount in greedyTokens.items():
+        greedyWords = greedyToken.split()
+        wordNum = len(greedyWords)
+        # if multiple words in cur topToken, recursively look for sub tokens
+        if wordNum > 1:
+            # init chunk is 1 smaller than wordNum but capped at maxChunkSize
+            chunkSize = min(maxChunkSize, (wordNum - 1))
+            # iterate over greedy tokens, analyzing smaller chunks at a time
+            while chunkSize > 0:
+                for i in range(wordNum):
+                    chunkWords = greedyWords[i : i+chunkSize]
+                    textChunk = ' '.join(chunkWords)
+                    if textChunk in knowledgeProcessor:
+                        subTokens.update({textChunk :
+                                            (greedyCount * (len(chunkWords) / wordNum))})
+                chunkSize -= 1
+
+    greedyTokens.update(subTokens)
+
+    return greedyTokens
+
+
+def score_token(token, observedTokenFreq, multiplier, freqDict):
+    """
+    Scores individual token in a div by frequency, multiplier, and distribution
     """
     ### NORMALIZE TOKEN FREQUENCY ###
     # get term and document frequency of token in freqDict built on scraped data
     try:
-        termFreq, docFreq = freqDict[token]
+        termFreq, inverseDocFreq = freqDict[token]
+        print(f'{token} : {termFreq}')
     except:
         termFreq, inverseDocFreq = 0, 0
     # normalize tokenFreq using a tf-idf schema
-    normedFreq = tokenFreq - (1.2 * termFreq)
+    normedFreq = observedTokenFreq - (1.2 * termFreq)
     # tokens with negative normedFreq will automatically have scores of 0
     if normedFreq <= 0:
         return 0
@@ -111,17 +154,21 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
     dict.
     Returns: Dict of tokens in divText mapping to score assigned by score_token
     """
-    # find number of words in divText or (if its a url) number chars/(avg word length=5)
-    if div=='url':
-        divLen = len(divText) / 5
-    else:
-        divLen = len(divText.split())
 
     # find multiplier related to div
     divMultipier = divMultipiers[div]
 
     # use knowledgeProcessor to extract weighted token counts from divText
     weightedTokenCounts = find_weighted_tokenCounts(divText, knowledgeProcessor)
+
+    # find number of words in divText or (if its a url) number chars/(avg word length=5)
+    if div=='url':
+        divLen = len(divText) / 5
+        # remove URL_STOPWORDS from weightedTokenCounts
+
+    else:
+        divLen = len(divText.split())
+
     multiplier = divMultipier
     # apply div specific scoring
     # if (div=='all'):
@@ -142,8 +189,9 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
 
     # create dict mapping tokens to scores as function of frequency
     tokenScores = {token:score_token(token=token,
-                                    tokenFreq=(weightedCount/divLen),
-                                    multiplier=multiplier)
+                                    observedTokenFreq=(weightedCount/divLen),
+                                    multiplier=multiplier,
+                                    freqDict=freqDict)
                     for token, weightedCount in weightedTokenCounts.items()}
     # filter scores below cuoff
     filteredScores = {token: score for token, score in tokenScores.items()

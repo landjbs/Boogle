@@ -1,5 +1,5 @@
-import sys
-sys.path.append("/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend")
+from sys import path
+path.append("/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend")
 
 from flask import Flask, render_template, request
 from searchers.searchLexer import topSearch
@@ -19,7 +19,6 @@ def result():
             return render_template('index.html')
         # perform search and gather searchStats
         else:
-            # correctionDisplay, numResults, invertedResult, resultList = topSearch(rawSearch, database, uniqueWords, searchProcessor, freqDict)
             resultObj = topSearch(rawSearch=rawSearch,
                                     user=request.remote_addr)
 
@@ -27,6 +26,7 @@ def result():
 
             # return search info
             return render_template('result.html', resultObj=resultObj)
+
     elif request.method == 'GET':
         ## Fix to render the page that was clicked on and save the info ##
         pass

@@ -7,15 +7,15 @@ locational/temporal tokens
 
 import numpy as np
 from math import exp
+import tensorflow as tf
+from scipy.special import softmax
 from collections import Counter
 from keras.models import load_model
-from scipy.special import softmax
-import tensorflow as tf
-from models.binning.docVecs import vectorize_doc
-from dataStructures.objectSaver import load
-from keras.models import load_model
 
-# list of words to remove from queryFormat == question
+from dataStructures.objectSaver import load
+from models.binning.docVecs import vectorize_doc
+
+# list of words to remove from question queryFormat
 QUESTION_STOP_WORDS = ['what', 'who', 'why', 'when', 'how', 'in', 'the',
                         'a', 'is', 'was', 'did', 'will']
 
@@ -24,8 +24,7 @@ formatModel = load_model('backend/data/outData/searchAnalysis/queryFormatModel.h
 global graph
 graph = tf.get_default_graph()
 
-# calc_score_activation = lambda freq : exp(freq) / (exp(freq) + 1)
-calc_score_activation = lambda freq : (1/freq)
+calc_score_activation = lambda freq : (1 / freq)
 
 def score_token_importance(cleanedSearch, tokenSet, freqDict):
     """
@@ -39,10 +38,10 @@ def score_token_importance(cleanedSearch, tokenSet, freqDict):
     if queryFormat == 'question':
         tokenSet = {token for token in tokenSet
                     if not token in QUESTION_STOP_WORDS}
-        print(tokenSet)
 
     tokenScores = {token : calc_score_activation(freqDict[token][0])
                     for token in tokenSet}
+    print(tokenScores)
 
     # normalize token scores
     # tokenScores = softmax(tokenScores.values())

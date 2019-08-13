@@ -1,10 +1,11 @@
 """
-Generates set of knowledge tokens, which comprize the keys in the topDict of
-the key-val store described in dataStructures.thicctable. These tokens
-represent the extent of top-level lookup buckets avaiable to users and, as
-such, follow the philosophy of comprehensive concision. There should be enough
-knowledge tokens that any reasonable search can be answered by the contents of
-a lookup bucket, but not so many as to take up redundant space.
+Generates set of knowledge tokens, which comprize the keys in the
+invertedIndex of the key-val store described in dataStructures.thicctable.
+These tokens represent the extent of top-level lookup buckets avaiable to users
+and, as such, follow the philosophy of comprehensive concision.
+There should be enough knowledge tokens that any reasonable search can be
+answered by the contents of a lookup bucket, but not so many as to take up
+redundant space.
 Knowledge tokens are only permitted to be words and phrases; tokens comprised
 soley of non-alpha chars will be mapped to the English representation of the
 token (eg. & -> ampersand).
@@ -16,7 +17,7 @@ knowledgeFinder.
 
 import os
 import re
-from numpy import log
+from numpy import log, dot, sum
 from tqdm import tqdm
 from collections import Counter
 from flashtext import KeywordProcessor
@@ -25,13 +26,14 @@ from scipy.spatial.distance import cosine
 from models.processing.cleaner import clean_text, clean_wiki
 import models.knowledge.knowledgeFinder as knowledgeFinder
 from dataStructures.objectSaver import (save,
-                                        load, 
+                                        load,
                                         safe_make_folder,
                                         delete_folder)
 
 
-## Functions ##
-def build_knowledgeSet(knowledgeFile, additionalTokens=None, numberRange=None, outPath=None):
+## Knowledge Set Functions ##
+def build_knowledgeSet(knowledgeFile, additionalTokens=None, numberRange=None,
+                        outPath=None):
     """
     Args: \n delimited knowledgeFile of phrases to treat as knowledge tokens
     (tokens for strict word search), additionalTokens set of tokens not in
@@ -51,7 +53,7 @@ def build_knowledgeSet(knowledgeFile, additionalTokens=None, numberRange=None, o
 
     # add integers between first and last elt of numberRange tuple
     if numberRange:
-        assert isinstance(numberRange, tuple), "numberRange must be a tuple of integers"
+        assert isinstance(numberRange, tuple), "numberRange must be tuple"
         for num in range(numberRange[0], numberRange[1]):
             knowledgeSet.add(str(num))
 
@@ -64,6 +66,7 @@ def build_knowledgeSet(knowledgeFile, additionalTokens=None, numberRange=None, o
     return knowledgeSet
 
 
+### Knowledge Processor Functions ###
 def build_knowledgeProcessor(knowledgeSet, outPath=None):
     """ Builds flashtext matcher for words in knowledgeSet iterable """
     # initialize flashtext KeywordProcessor
@@ -78,7 +81,7 @@ def build_knowledgeProcessor(knowledgeSet, outPath=None):
         save(knowledgeProcessor, outPath)
     return knowledgeProcessor
 
-
+### Freq Dict Functions ###
 def fredDict_from_wikiFile(filePath, knowledgeProcessor, outPath=None):
     """
     Args: filePath to wikiFile containing lines of articles from which to read,
@@ -129,7 +132,7 @@ def fredDict_from_folderPath(folderPath, knowledgeProcessor, outPath=None):
     Returns: dict mapping knowledge tokens to tuple of (termFreq, docFreq)
     observed in documents.
         termFreq = (number of times a token is used) / (number of words used)
-        docFreq = log ((number of documents) / (number of documents in which a token appears))
+        docFreq = log ((num of documents) / (num of documents with token))
     """
     # initialize counter to map knowledge tokens to raw number of occurences
     tokenCounts = Counter()
@@ -145,7 +148,8 @@ def fredDict_from_folderPath(folderPath, knowledgeProcessor, outPath=None):
             # read in the current file
             text = FileObj.read()
             # find both greedy and subtokens in text
-            tokensFound = list(knowledgeFinder.find_rawTokens(text, knowledgeProcessor))
+            tokensFound = list(knowledgeFinder.find_rawTokens(text,
+                                                            knowledgeProcessor))
             # add tokens counts to tokenCounts counter
             tokenCounts.update(tokensFound)
             # add single appearance for each token found
@@ -169,7 +173,7 @@ def fredDict_from_folderPath(folderPath, knowledgeProcessor, outPath=None):
 
     return freqDict
 
-
+### Corr Dict Functions ###
 def build_corr_dict(filePath, freqDict, freqCutoff=0.0007, bufferSize=40000,
                     corrNum=50, outPath=None):
     """
@@ -201,12 +205,11 @@ def build_corr_dict(filePath, freqDict, freqCutoff=0.0007, bufferSize=40000,
         """ Helper determines if token corr should be taken """
         return False if (freqTuple[0]>freqCutoff) or (token.isdigit()) else True
 
-    # dictionary mapping tokens with frequency below freqCutoff to empty counters
-    # aways remains empty as a template for tablets, which will be saved and merged
+    # dict mapping tokens with frequency below freqCutoff to empty counters
     emptyTokenDict = {token:Counter() for token, freqTuple in freqDict.items()
                         if corrable(token, freqTuple)}
 
-    print(len(emptyTokenDict))
+    print(f'{len(emptyTokenDict)} valid tokens found.')
 
     # build knowledgeProcessor from just tokens to recieve corr scores
     knowledgeProcessor = build_knowledgeProcessor(emptyTokenDict.keys())
@@ -217,14 +220,13 @@ def build_corr_dict(filePath, freqDict, freqCutoff=0.0007, bufferSize=40000,
         and cuts those that are below freqCutoff
         """
         return {token : ((rawCount / numWords) / freqDict[token][0])
-                for token, rawCount in pageTokens.items()
-                if token in emptyTokenDict}
+                for token, rawCount in pageTokens.items()}
 
     # create temp folder for to hold tablets of tokenDict
     safe_make_folder(TEMP_FOLDER_PATH)
 
     # iterate over each article in filePath
-    curTokenDict = emptyTokenDict.copy()
+    curTokenDict = {}
     with open(filePath, 'r') as wikiFile:
         for i, page in enumerate(tqdm(wikiFile)):
             # build counter of token nums on page and norm counts by frequency
@@ -235,52 +237,68 @@ def build_corr_dict(filePath, freqDict, freqCutoff=0.0007, bufferSize=40000,
             for token in normedTokens.keys():
                 curTokenCounter = normedTokens.copy()
                 curTokenVal = curTokenCounter.pop(token)
-                curTokenCounter = {otherToken : (otherVal * curTokenVal)
+                curTokenCounter = Counter({otherToken : round(otherVal)
                                     for otherToken, otherVal
-                                    in curTokenCounter.items()}
-                curTokenDict[token].update(curTokenCounter)
+                                    in curTokenCounter.items()})
+                if token in curTokenDict:
+                    curTokenDict[token].update(curTokenCounter)
+                else:
+                    curTokenDict.update({token : curTokenCounter})
             # save to temp folder if i is at buffer size
-            if (i % bufferSize == 0):
-                if i > 0:
-                    # clean empty tokens from curTokenDict
-                    cleanTokenDict = {token : counts
-                                    for token, counts in curTokenDict.items()
-                                    if counts.values() != []}
-                    del curTokenDict
-                    # save cleaned token dict in temp folder and delete from ram
-                    save(cleanTokenDict, f'{TEMP_FOLDER_PATH}/tokenDict{i}.sav')
-                    del cleanTokenDict
-                    # reinitialize curTokenDict
-                    curTokenDict = emptyTokenDict.copy()
+            if (i % bufferSize == 0) and (i > 0):
+                # clean empty tokens from curTokenDict
+                cleanTokenDict = {token : counts
+                                for token, counts in curTokenDict.items()
+                                if counts.values() != []}
+                # save cleaned token dict in temp folder and delete from RAM
+                save(cleanTokenDict, f'{TEMP_FOLDER_PATH}/tokenDict{i}.sav')
+                del cleanTokenDict
+                # reinitialize curTokenDict
+                curTokenDict = {}
 
     # delete some big objects we won't need to conserve RAM
     del knowledgeProcessor
     del freqDict
-
-    curTokenDict = emptyTokenDict.copy()
 
     # use last, unsaved curTokenDict as accumulator to fold saved tokenDicts
     print('Folding tokenDict')
     for file in tqdm(os.listdir(TEMP_FOLDER_PATH)):
         try:
             loadedTokenDict = load(f'{TEMP_FOLDER_PATH}/{file}')
-            curTokenDict.update(loadedTokenDict)
+            for token, tokenCounter in loadedTokenDict.items():
+                if token in curTokenDict:
+                    curTokenDict[token].update(tokenCounter)
+                else:
+                    curTokenDict.update({token : tokenCounter})
             del loadedTokenDict
         except Exception as e:
             print(f'ERROR: {e}')
 
-    # minScore is min score that tokens need to qualify for topTokens
-    minScore = 0
+    def score_to_fraction(tokenTuple, scoreSum):
+        """
+        Helper converts tokenTuples with rawScores to tokenTuples with
+        scores as fractions of topTokens
+        """
+        return (round((tokenTuple[0] / scoreSum), ndigits=3), tokenTuple[1])
+
+
     # build corrDict of top corrNum tokens for each token in tokenDict
     print('Building topTokens')
     corrDict = {}
-    for token, counter in tqdm(emptyTokenDict.items()):
+    for token, counter in tqdm(curTokenDict.items()):
         corrList = [(score, otherToken)
                     for otherToken, score in counter.items()]
         if corrList != []:
             corrList.sort(reverse=True)
-            topTokens = [tokenTuple for tokenTuple in corrList[:corrNum]
-                            if tokenTuple[0] > minScore]
+
+            topTokens = corrList[:corrNum]
+            # take sum of scores across top 50 tokens to normalize top scores
+            scoreSum = sum([tokenTuple[0] for tokenTuple in corrList[:50]])
+
+            fraction_lambda = lambda tokenTuple : score_to_fraction(tokenTuple,
+                                                                    scoreSum)
+
+            topTokens = list(map(fraction_lambda, topTokens))
             corrDict.update({token : topTokens})
 
     # delete the temporary folder and emptyTokenDict
@@ -304,6 +322,7 @@ def vector_update_corrDict(filePath, corrDict, corrWeight=0.6,
     which each token is the title.
     Setup:
         -Run:           bert-serving-start -model_dir /Users/landonsmith/Desktop/shortBert -num_worker=2 -max_seq_len=400
+        FIND OUT HOW TO SPAWN AND KILL BERT PROCESSES FROM SCRIPT FOR max_seq_len 400 -> 20
     Args:
         -filePath:      Path to csv of wiki texts
         -corrDict:      Dictionary mapping each token to a scored list of
@@ -328,7 +347,7 @@ def vector_update_corrDict(filePath, corrDict, corrWeight=0.6,
     def analyze_wiki_line(wikiLine):
         """
         Helper pulls title and text out of a line in the wikiFile csv and
-        returns tuple of title, tileVec, and textVec if the title is a key
+        returns tuple of (cleanTitle, textVec) if the title is a key
         in corrDict
         """
         # get everything after the first comma
@@ -339,29 +358,31 @@ def vector_update_corrDict(filePath, corrDict, corrWeight=0.6,
         title = rawText[:titleEnd]
         cleanTitle = clean_text(title)
         # title is cleaned for checking but text isn't for better vectorization
-        if cleanTitle in corrDict:
-            print(cleanTitle)
-            textVec = bc.encode([rawText])[0]
-            tokenVec = bc.encode([cleanTitle])[0]
-            return (cleanTitle, tokenVec, textVec)
+        if (cleanTitle in corrDict) and (rawText != ''):
+            return (cleanTitle, bc.encode([rawText])[0])
         else:
             return None
 
+    print('Vectorizing article texts')
     # iterate over wikiFile texts, vectorizing if title is in corrDict
     with open(filePath, 'r') as wikiFile:
-        vecList = [analyze_wiki_line(line) for line in tqdm(wikiFile)]
+        paraVecList = [analyze_wiki_line(line) for line in tqdm(wikiFile)]
 
-    # convert vec list into dict mapping tokens from corrDict to their article's
-    # vectors (tokenVec, textVec)
-    vecDict = {tokenTuple[0]:(tokenTuple[1], tokenTuple[2]) for tokenTuple
-                in vecList if not tokenTuple==None}
-    del vecList
+    # convert vec list into dict mapping corrDict tokens to their article's vec
+    paraVecDict = {tokenTuple[0] : tokenTuple[1] for tokenTuple
+                    in paraVecList if not tokenTuple==None}
+    del paraVecList
+
+    print('Vectorizing tokens')
+    # build dict mapping tokens in corrDict to their vector
+    tokenVecDict = {token : (bc.encode([token])[0])
+                        for token in tqdm(corrDict.keys())}
+
 
     def score_similarity(relatedToken, relatedScore, baseTokenVec, baseTextVec):
         """
         Helper returns updated score for related token based on vector
-        similarity if relatedToken has associated vector, otherwise returns the
-        same score
+        similarity of paragraph and token
         Args:
             relatedToken:   Token from relatedTokens list of baseToken
             relatedScore:   Weighted co-occurence score of relatedToken
@@ -371,34 +392,39 @@ def vector_update_corrDict(filePath, corrDict, corrWeight=0.6,
         Returns:
             scoreTuple:     (updatedScore, relatedToken)
         """
-        # only update score if relatedToken has associated vector
-        if relatedToken in vecDict:
-            relatedTokenVec, relatedTextVec = vecDict[relatedToken]
-            tokenSimilarity     =   (1 - cosine(relatedTokenVec, baseTokenVec))
-            textSimilarity      =   (1 - cosine(relatedTextVec, baseTextVec))
-            # create new score according to weights
-            updatedScore = ((corrWeight * relatedScore)
-                            + (tokenWeight * tokenSimilarity)
-                            + (textWeight * textSimilarity))
-            return (updatedScore, relatedToken)
+        # score tokens based on vector similarity
+        tokenSim =   1 - cosine(baseTokenVec, tokenVecDict[relatedToken])
+
+        # update score with paragraph vec if avaiable; otherwise just boost
+        # impact of tokenSim
+        if relatedToken in paraVecDict:
+            textSim =   1 - cosine(baseTextVec, paraVecDict[relatedToken])
         else:
-            return (relatedScore, relatedToken)
+            textSim = tokenSim
+
+        # create new score aggregating sims by weights and round to 3 digits
+        updatedScore = ((corrWeight * relatedScore)
+                        + (tokenWeight * tokenSim)
+                        + (textWeight * textSim))
+        roundedScore = round(updatedScore, ndigits=3)
+
+        return (roundedScore, relatedToken)
 
 
     # iterate over corrDict, updating the scores of each token's related tokens
     # by vector similarity
     for baseToken, relatedTokens in corrDict.items():
-        if baseToken in vecDict:
+        if baseToken in paraVecDict:
             # cache vectors of current baseToken
-            baseTokenVec, baseTextVec = vecDict[baseToken]
-            # update the scores of related tokens using helper
+            baseTextVec     =    paraVecDict[baseToken]
+            baseTokenVec    =    tokenVecDict[baseToken]
+            # update the scores of related tokenDict using helper
             rescoredRelatedTokens = [score_similarity(relatedToken,
                                                         relatedScore,
                                                         baseTokenVec,
                                                         baseTextVec)
                                         for relatedScore, relatedToken
                                         in relatedTokens]
-            print(baseToken)
             # rerank relatedTokens according to new scores and update corrDict
             rescoredRelatedTokens.sort(reverse=True)
             corrDict[baseToken] = rescoredRelatedTokens
