@@ -6,8 +6,16 @@ searchers.databaseSearcher depending on lexical understanding of the query
 # load crawl materials first
 from dataStructures.objectSaver import load
 from crawlers.crawlLoader import load_crawled_pages
-database, uniqueWords, searchProcessor = load_crawled_pages('backend/data/thicctable/wikiCrawl_NOVECS')
+
+(
+    database,
+    uniqueWords,
+    searchProcessor
+) = load_crawled_pages('backend/data/thicctable/wikiCrawl_NOVECS',
+                        n=100, loadProcessor=False)
+
 freqDict = load('backend/data/outData/knowledge/freqDict.sav')
+
 # delete loading functions to free up a little space
 for o in dir():
     if not o in ['__annotations__', '__builtins__', '__cached__', '__doc__',
@@ -34,14 +42,21 @@ from searchers.querySentiment import score_token_importance
 
 n = 10
 
+# bert-serving-start -model_dir /Users/landonsmith/Desktop/shortBert -num_worker=1 -max_seq_len=20
 # paraModel = load_model('backend/data/outData/searchAnalysis/paragraphAnswering2.sav')
+
+
+class SearchError(Exception):
+    """ Class for errors during searching """
+    pass
+
 
 def topSearch(rawSearch, user):
     """
     Highest level search analyzer that takes in a raw search and decides
     which search function to employ.
         -rawSearch:     Unedited string of the search
-        -user:          IP of the user who initiated the search
+        -user:          User() object of the user who initiated the search
     """
     timeStart = time()
 
@@ -49,7 +64,7 @@ def topSearch(rawSearch, user):
     cleanedSearch = clean_search(rawSearch)
     correctedSearch = " ".join([correct(token, uniqueWords) if not (token.startswith('"') and token.endswith('"')) else token[1:-1]
                                 for token in cleanedSearch.split()])
-    correctionDisplay = None if (cleanedSearch==correctedSearch) else (correctedSearch, cleanedSearch)
+    correctionDisplay = None if (cleanedSearch==correctedSearch) else correctedSearch
     # find greedy tokens only for the first search
     tokenSet = set(searchProcessor.extract_keywords(correctedSearch))
 
@@ -59,7 +74,7 @@ def topSearch(rawSearch, user):
     if (len(tokenSet) == 1):
         print('TOP: SINGLE')
         topToken = list(tokenSet)[0]
-        # query database for single token bucket. error means it's empty
+        # query database for single token bucket
         try:
             singleResults = databaseSearcher.single_search(topToken, database)
             numResults += singleResults[0]
@@ -72,7 +87,7 @@ def topSearch(rawSearch, user):
             numWords = len(words)
             if (numWords > 1):
                 tokenSet.update(find_rawTokens(cleanedSearch, searchProcessor))
-                tokenScores, searchVec, queryType = score_token_importance(cleanedSearch, words, freqDict)
+                tokenScores, searchVec, queryType = score_token_importance(cleanedSearch, words, database, freqDict)
                 andResults = databaseSearcher.weighted_and_search(tokenScores, database, (n-numResults))
                 # andResults = databaseSearcher.weighted_vector_search(tokenScores, database, searchVec, n)
                 numResults += andResults[0]
@@ -88,7 +103,7 @@ def topSearch(rawSearch, user):
     elif (len(tokenSet) > 1):
         print('TOP: AND')
         # score the importance of each token and perform intersectional weighted search
-        tokenScores, searchVec, queryType = score_token_importance(cleanedSearch, tokenSet, freqDict)
+        tokenScores, searchVec, queryType = score_token_importance(cleanedSearch, tokenSet, database, freqDict)
         # andResults = databaseSearcher.weighted_vector_search(tokenScores, searchVec, database, n)
         andResults = databaseSearcher.weighted_and_search(tokenScores, database, n)
 
@@ -97,12 +112,12 @@ def topSearch(rawSearch, user):
         resultList += andResults[1]
 
     else:
-        print(f"WARNING: No tokens found in search {cleanedSearch}")
+        raise SearchError(f'Your search {rawSearch} returned no results.')
 
     # determine if an inverted result should be shown
     invertedResult = None
     for i, page in enumerate(resultList[:5]):
-        if ((correctedSearch) in (page.title.lower()).strip()):
+        if ((correctedSearch) == (page.title.lower()).strip()):
             invertedResult = resultList.pop(i).display_inverted(tokenSet)
 
     # get display obejcts of each page in resultList

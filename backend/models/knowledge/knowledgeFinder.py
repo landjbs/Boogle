@@ -23,7 +23,6 @@ divMultipiers = {'url':         5,
                 'videoSRCs':    2,
                 'all':          1}
 
-
 # def count_token(token, pageText):
 #     """
 #     Uses regexp to return number of times a token is used in pageText.
@@ -102,7 +101,7 @@ def find_weighted_tokenCounts(text, knowledgeProcessor, maxChunkSize=5):
     """
     # find list of greedy tokens in text
     greedyTokens = Counter(knowledgeProcessor.extract_keywords(text))
-    subTokens = {}
+    subTokens = Counter()
     # iterate over greedy list
     for greedyToken, greedyCount in greedyTokens.items():
         greedyWords = greedyToken.split()
@@ -116,13 +115,17 @@ def find_weighted_tokenCounts(text, knowledgeProcessor, maxChunkSize=5):
                 for i in range(wordNum):
                     chunkWords = greedyWords[i : i+chunkSize]
                     textChunk = ' '.join(chunkWords)
+                    # if the chunk is a token in the knowledgeProcessor,
+                    # add its count tokenCounts after norming by fraction
+                    # of larger token and multiplying by larger token's count
+                    # (becuase you're iterating over a set)
                     if textChunk in knowledgeProcessor:
                         subTokens.update({textChunk :
-                                            (greedyCount * (len(chunkWords) / wordNum))})
+                                            (greedyCount * (len(chunkWords)
+                                                            / wordNum))})
                 chunkSize -= 1
 
     greedyTokens.update(subTokens)
-
     return greedyTokens
 
 
@@ -134,7 +137,6 @@ def score_token(token, observedTokenFreq, multiplier, freqDict):
     # get term and document frequency of token in freqDict built on scraped data
     try:
         termFreq, inverseDocFreq = freqDict[token]
-        print(f'{token} : {termFreq}')
     except:
         termFreq, inverseDocFreq = 0, 0
     # normalize tokenFreq using a tf-idf schema
@@ -149,10 +151,14 @@ def score_token(token, observedTokenFreq, multiplier, freqDict):
 
 def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
     """
-    Args: Text of division being analyzed, name of division, processor to find
-    tokens, dict of average word frequencies, score cutoff to include token in
-    dict.
-    Returns: Dict of tokens in divText mapping to score assigned by score_token
+    Args:
+        divText:                Text of division being analyzed
+        div:                    Name of division being analyzed
+        knowledgeProcessor:     Greedy-first flashtext processor
+        freqDict:               Dict of average word frequencies
+        cutoff:                 Score cutoff to include token in dict
+    Returns:
+        Dict of tokens in divText mapping to score assigned by score_token
     """
 
     # find multiplier related to div
@@ -164,12 +170,11 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
     # find number of words in divText or (if its a url) number chars/(avg word length=5)
     if div=='url':
         divLen = len(divText) / 5
-        # remove URL_STOPWORDS from weightedTokenCounts
-
     else:
         divLen = len(divText.split())
 
     multiplier = divMultipier
+
     # apply div specific scoring
     # if (div=='all'):
     #     ### TOKEN DISTRIBUTION SCORING ###

@@ -92,7 +92,9 @@ def crawl_wiki_data(inPath, outPath, startNum=None, endNum=None):
                 break
             if i >= startNum:
                 try:
-                    pageDict = scrape_wiki_page(line, knowledgeProcessor, freqDict)
+                    pageDict = scrape_wiki_page(line,
+                                                knowledgeProcessor,
+                                                freqDict)
                     scrapeList.add(pageDict)
                 except Exception as e:
                     print(f"ERROR: {e}")

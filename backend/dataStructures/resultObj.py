@@ -32,4 +32,4 @@ class ResultObject():
 
     def log(self):
         """ Logs information about the search to the command line """
-        print(f'{self.rawSearch}\n\tTime: {self.searchTime}\n\tUser: {self.user}')
+        print(f'{self.rawSearch}\n\tTime: {self.searchTime}\n\tUser: {self.user.ip}')

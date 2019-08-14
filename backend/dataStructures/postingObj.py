@@ -12,6 +12,7 @@ get_pageObj = lambda pageTuple : pageTuple[1]
 # get pageObj from pageTuple and apply .describe method
 display_pageTuple = lambda pageTuple : pageTuple[1].display(tokenList)
 
+
 class Posting():
 
     def __init__(self, relatedTokens=[]):

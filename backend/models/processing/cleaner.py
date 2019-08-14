@@ -27,7 +27,7 @@ wikiMatcher = re.compile(r"(disambiguation)")
 # matches \t \r and \n in titles
 slashMatcher = re.compile(r".\r|.\n|.\t")
 # matches for special parts of url
-urlMatcher = re.compile(r"https|http|www|com|org|edu")
+urlMatcher = re.compile(r"https|http|www|com|org|edu|.en")
 # matches for the end of files
 fileMatcher = re.compile(r"\.\S+")
 # matcher for search spacing; identical to spaceMatcher, but " are preserved

@@ -2,7 +2,9 @@ from sys import path
 path.append("/Users/landonsmith/Desktop/DESKTOP/Code/personal-projects/search-engine/backend")
 
 from flask import Flask, render_template, request
+
 from searchers.searchLexer import topSearch
+from dataStructures.userObj import User
 
 app = Flask(__name__)
 
@@ -19,8 +21,9 @@ def result():
             return render_template('index.html')
         # perform search and gather searchStats
         else:
+            user = User(ip=request.remote_addr)
             resultObj = topSearch(rawSearch=rawSearch,
-                                    user=request.remote_addr)
+                                    user=user)
 
             resultObj.log()
 

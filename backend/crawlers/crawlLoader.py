@@ -13,7 +13,8 @@ from dataStructures.pageObj import Page
 from dataStructures.thicctable import Thicctable
 from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
 
-def load_crawled_pages(filePath, n=inf):
+
+def load_crawled_pages(filePath, n=inf, loadProcessor=True):
     """
     Loads crawled pages under filePath into a Thicctable().
     Returns:
@@ -75,8 +76,10 @@ def load_crawled_pages(filePath, n=inf):
     print(colored('Complete: Finding Unique Words', 'cyan'))
     # flashtext processor to find keywords in search
     print(colored('Loading Processor', 'red'), end='\r')
-    # searchProcessor = build_knowledgeProcessor(uniqueWords)
-    searchProcessor = load('backend/data/outData/knowledge/knowledgeProcessor.sav')
+    if loadProcessor:
+        searchProcessor = load('backend/data/outData/knowledge/knowledgeProcessor.sav')
+    else:
+        searchProcessor = build_knowledgeProcessor(uniqueWords)
     print(colored('Complete: Loading Processor', 'cyan'))
 
     return(database, uniqueWords, searchProcessor)

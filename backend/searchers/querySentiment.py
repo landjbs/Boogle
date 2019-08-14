@@ -26,19 +26,38 @@ graph = tf.get_default_graph()
 
 calc_score_activation = lambda freq : (1 / freq)
 
-def score_token_importance(cleanedSearch, tokenSet, freqDict):
+
+def get_token_relevances(tokenSet, database):
+    """
+    Queries Posting() object for each token in token set to build dict
+    mapping tokens to their relevance
+    Args:
+        -tokenSet:      Set of tokens found in the search
+        -database:      Thicctable() object storing search database
+    Returns:
+        Dictionary mapping tokens in tokenSet to their relevance.
+    """
+    return {token : database.invertedIndex[token].relevance
+                for token in tokenSet}
+
+
+def score_token_importance(cleanedSearch, tokenSet, database, freqDict):
     """
     Attempts to find the importance of a token to a search by leveraging
     ML models, token frequency, and posting list lengths
     """
+    # vectorize the query
     searchVec = vectorize_doc(cleanedSearch)
+    # use ML model to predict type of query
     with graph.as_default():
         formatPrediction = formatModel.predict(np.expand_dims(searchVec, axis=0))
     queryFormat = 'question' if (formatPrediction > 0.4) else 'keyword'
     if queryFormat == 'question':
+        # remove common question stopwords for question types
         tokenSet = {token for token in tokenSet
                     if not token in QUESTION_STOP_WORDS}
 
+    print(get_token_relevances(tokenSet, database))
     tokenScores = {token : calc_score_activation(freqDict[token][0])
                     for token in tokenSet}
     print(tokenScores)

@@ -11,14 +11,14 @@ class Page():
     """
     def __init__(self, pageDict):
         """ Initialize page object with pageList of features """
-        self.url =              pageDict['url']
-        self.title =            pageDict['title']
-        self.knowledgeTokens =  pageDict['knowledgeTokens']
-        self.pageVec =          pageDict['pageVec']
-        self.linkList =         pageDict['linkList']
-        self.loadDate =         pageDict['loadDate']
-        self.baseScore =        pageDict['baseScore']
-        self.windowText =       pageDict['windowText']
+        self.url                    =   pageDict['url']
+        self.title                  =   pageDict['title']
+        self.knowledgeTokens        =   pageDict['knowledgeTokens']
+        self.pageVec                =   pageDict['pageVec']
+        self.linkList               =   pageDict['linkList']
+        self.loadDate               =   pageDict['loadDate']
+        self.baseScore              =   pageDict['baseScore']
+        self.windowText             =   pageDict['windowText']
 
     def display(self, tokenList):
         """
@@ -30,4 +30,4 @@ class Page():
         """
         Returns the parts of the page that would be displayed an inverted result
         """
-        return (self.url, self.title, f"{(self.windowText)[:1000]}...")
+        return (self.url, self.title, f"{(self.windowText)[:15000]}...")

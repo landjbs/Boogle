@@ -1,6 +1,5 @@
-import operator
 import re
-
+import operator
 
 def bold_and_window(tokenList, text, windowSize=400):
     """ Gets relevant window from pageText and bolds search tokens """

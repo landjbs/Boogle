@@ -102,11 +102,13 @@ class Thicctable():
                 pageTuple = (pageScore, pageObj)
                 # insert tuple of score and pageObj into appropriate bin
                 self.insert_pageTuple(key=token, pageTuple=pageTuple)
-            except Exception as e:
-                print(f"BUCKETING ERROR: {e}")
+            except KeyError as key:
+                print(f"BUCKETING ERROR: {key}")
                 # if token isn't in index yet, add it and re-call function
                 self.add_key(token)
                 self.bucket_page(pageObj)
+            except Exception as e:
+                print(e)
         return True
 
     ### FUNCTIONS FOR MODIFYING KEY-MAPPED SEARCH COUNTS AND RELEVANCES ###
@@ -129,7 +131,6 @@ class Thicctable():
         Returns list of page objects in key, discarding scores.
         Useful if pages need to be reranked (eg. and_search).
         """
-        print(self.invertedIndex[key].search_pageObj_topPostings(n))
         return self.invertedIndex[key].search_pageObj_topPostings(n)
 
     def search_full(self, key, n):

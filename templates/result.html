@@ -37,6 +37,7 @@
       }
 
       .inverted-result {
+        overflow: auto;
         width: 600px;
         height: 300px;
         position: relative;
@@ -52,10 +53,11 @@
       }
 
       .inverted-text {
-        /* overflow: hidden; */
-        text-overflow: ellipsis;
+        /* text-overflow: scroll; */
         padding-bottom: 25px;
-        overflow: scroll;
+        overflow-y: scroll;
+        overflow-x: scroll;
+        /* overflow: scroll; */
       }
 
       li {
@@ -66,7 +68,7 @@
         padding-left: 5px;
         padding-right: 5px;
         background-color: rgba(240, 240, 237, 0.95);
-        border: 5px solid black;
+        border: 4px solid black;
       }
 
       li:hover {
@@ -86,21 +88,18 @@
       }
 
       .display-url {
-        overflow: hidden;
+        overflow-x: hidden;
         text-overflow: ellipsis;
       }
 
       .display-url a {
-        color: #3be8ff;
+        color: #117fed;
         overflow: hidden;
         text-overflow: ellipsis;
       }
 
       .display-text {
-        overflow: scroll;
-        /* overflow-x: hidden; */
         overflow: hidden;
-        text-overflow: ellipsis;
         padding-bottom: 15px;
       }
 
@@ -111,14 +110,14 @@
      <div class='title-bar'>
        <h1>Boogle</h1>
        <i>{{ resultObj.numResults }} pages returned in {{ resultObj.runTime }} seconds.</i>
-       {% if correctionDisplay %}
+       {% if resultObj.correction %}
           <p>Showing results for <strong>{{ resultObj.correction }}</strong>. Search instead for <strong>{{ resultObj.rawSearch }}</strong>.</p>
        {% else %}
        {% endif %}
      </div>
 
      <div class='search-bar'>
-       <form action = "http://localhost:5000/result" method = "POST">
+       <form action="http://localhost:5000/result" method="POST">
          <input type="text" name="Search" placeholder="Boogle..." />
        </form>
      </div>
