@@ -6,7 +6,8 @@ from functools import reduce
 import matplotlib.pyplot as plt
 
 from keras.models import Sequential
-from keras.layers import Dense, Activation, LSTM, GRU, Bidirectional, ConvLSTM2D, Masking, TimeDistributed, CuDNNGRU
+from keras.layers import (Dense, Activation, LSTM, GRU, Bidirectional,
+                            ConvLSTM2D, Masking, TimeDistributed, CuDNNGRU)
 from keras.utils import plot_model
 
 
@@ -21,7 +22,7 @@ def train_answering_lstm(folderPath, outPath=None):
     # build dataframe form tablets under folderPath
     tabletList = []
     for i, file in enumerate(listdir(folderPath)):
-        if file.endswith('.sav') and i < 1000:
+        if file.endswith('.sav') and i < 8:
             tablet = pd.read_pickle(f'{folderPath}/{file}', compression='gzip')
             tabletList.append(tablet)
 
@@ -48,30 +49,30 @@ def train_answering_lstm(folderPath, outPath=None):
 
     maskArray = np.zeros(featureArray.shape[2])
 
-    import keras
-    from keras_self_attention import SeqSelfAttention
-
-    inputs = keras.layers.Input(shape=[404, 768], name='encodings')
-    lstm_out = keras.layers.Bidirectional(keras.layers.LSTM(units=80, return_sequences=True))(inputs)
-    # attn = SeqSelfAttention(attention_activation='relu')(lstm_out)
-    output = keras.layers.Dense(units=1, activation='softmax')(attn)
-    output = keras.layers.Reshape([404])(output)
-
-    model = keras.models.Model(inputs=inputs, outputs=output)
-    model.compile(optimizer='adam', loss='categorical_crossentropy')
-
-    # # model architecture
-    # model = Sequential()
-    # model.add(Masking(mask_value=maskArray))
-    # model.add(Bidirectional(LSTM(200), input_shape=(featureArray.shape[1],
-    #                                             featureArray.shape[2])))
-    # model.add(Dense(targetArray.shape[1]))
-    # model.add(Activation('softmax'))
+    # import keras
+    # from keras_self_attention import SeqSelfAttention
     #
-    # # model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
-    # model.compile(loss='categorical_crossentropy',
-    #                 optimizer='adam',
-    #                 metrics=['accuracy'])
+    # inputs = keras.layers.Input(shape=[404, 768], name='encodings')
+    # lstm_out = keras.layers.Bidirectional(keras.layers.LSTM(units=80, return_sequences=True))(inputs)
+    # # attn = SeqSelfAttention(attention_activation='relu')(lstm_out)
+    # output = keras.layers.Dense(units=1, activation='softmax')(attn)
+    # output = keras.layers.Reshape([404])(output)
+    #
+    # model = keras.models.Model(inputs=inputs, outputs=output)
+    # model.compile(optimizer='adam', loss='categorical_crossentropy')
+
+    # model architecture
+    model = Sequential()
+    model.add(Masking(mask_value=maskArray))
+    model.add(Bidirectional(LSTM(200), input_shape=(featureArray.shape[1],
+                                                featureArray.shape[2])))
+    model.add(Dense(targetArray.shape[1]))
+    model.add(Activation('softmax'))
+
+    # model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
+    model.compile(loss='categorical_crossentropy',
+                    optimizer='adam',
+                    metrics=['accuracy'])
 
     # model training
     model.fit(featureArray, targetArray, batch_size=20,
