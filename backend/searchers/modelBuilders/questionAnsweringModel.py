@@ -9,7 +9,7 @@ from keras.models import Sequential
 from keras.layers import (Dense, Activation, LSTM, GRU, Bidirectional,
                             ConvLSTM2D, Masking, TimeDistributed, CuDNNGRU)
 from keras.utils import plot_model
-
+print(f'Imports: {dir()}')
 
 def train_answering_lstm(folderPath, outPath=None):
     """
@@ -25,6 +25,7 @@ def train_answering_lstm(folderPath, outPath=None):
         if file.endswith('.sav') and i < 10:
             tablet = pd.read_pickle(f'{folderPath}/{file}', compression='gzip')
             tabletList.append(tablet)
+            print(f'Tableting: {i}')
 
     dataframe = pd.concat(tabletList)
 
