@@ -9,7 +9,6 @@ from termcolor import colored
 
 from dataStructures.objectSaver import load, save
 from dataStructures.pageObj import Page
-# from dataStructures.thicctable import Thicctable
 from dataStructures.thicctable import Thicctable
 from models.knowledge.knowledgeBuilder import build_knowledgeProcessor
 
