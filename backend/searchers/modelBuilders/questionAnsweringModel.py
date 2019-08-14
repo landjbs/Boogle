@@ -22,7 +22,7 @@ def train_answering_lstm(folderPath, outPath=None):
     # build dataframe form tablets under folderPath
     tabletList = []
     for i, file in enumerate(listdir(folderPath)):
-        if file.endswith('.sav') and i < 8:
+        if file.endswith('.sav') and i < 10:
             tablet = pd.read_pickle(f'{folderPath}/{file}', compression='gzip')
             tabletList.append(tablet)
 
