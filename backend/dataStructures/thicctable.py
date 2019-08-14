@@ -104,9 +104,9 @@ class Thicctable():
                 self.insert_pageTuple(key=token, pageTuple=pageTuple)
             except KeyError as key:
                 print(f"BUCKETING ERROR: {key}")
-                # if token isn't in index yet, add it and re-call function
+                # if token isn't in index yet, add it and insert pageTuple
                 self.add_key(token)
-                self.bucket_page(pageObj)
+                self.insert_pageTuple(key=token, pageTuple=pageTuple)
             except Exception as e:
                 print(e)
         return True

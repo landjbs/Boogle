@@ -120,9 +120,12 @@ def topSearch(rawSearch, user):
                                                     resultList,
                                                     n=5)
 
-    # get display obejcts of each page
+    # if invertedResult found, convert it to display and decrement numResults
     if invertedResult:
         invertedResult = invertedResult.display_inverted(tokenSet)
+        numResults -= 1
+
+    # convert result list into list of display tuples
     displayResultList = [pageObj.display(tokenSet) for pageObj in resultList]
 
     # calculate length of search time

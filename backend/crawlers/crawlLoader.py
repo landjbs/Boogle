@@ -24,7 +24,8 @@ def load_crawled_pages(filePath, n=inf, loadProcessor=True):
     """
     # initialize database with knowledgeSet buckets and corrDict relatedTokens
     print(colored('Loading Knowledge Set', 'red'), end='\r')
-    knowledgeSet = load('backend/data/outData/knowledge/knowledgeSet.sav')
+    # knowledgeSet = load('backend/data/outData/knowledge/knowledgeSet.sav')
+    knowledgeSet = {}
     print(colored('Complete: Loading Knowledge Set', 'cyan'))
 
     print(colored('Loading Corr Dict', 'red'), end='\r')
