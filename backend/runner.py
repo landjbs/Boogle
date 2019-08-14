@@ -5,7 +5,8 @@ Modified pageRank testing
 from searchers.modelBuilders.questionAnsweringModel import train_answering_lstm
 
 
-train_answering_lstm(folderPath=None, outPath='questionAnsweringModel.sav')
+train_answering_lstm(folderPath='data/outData/searchAnalysis/squadDataframes',
+                    outPath='questionAnsweringModel.sav')
 
 
 # import numpy as np

@@ -38,6 +38,7 @@ from models.knowledge.knowledgeFinder import find_rawTokens
 from searchers.spellingCorrector import correct
 import searchers.databaseSearcher as databaseSearcher
 from searchers.querySentiment import score_token_importance
+from searchers.invertedSelector import selected_inverted
 
 
 n = 10
@@ -115,12 +116,13 @@ def topSearch(rawSearch, user):
         raise SearchError(f'Your search {rawSearch} returned no results.')
 
     # determine if an inverted result should be shown
-    invertedResult = None
-    for i, page in enumerate(resultList[:5]):
-        if ((correctedSearch) == (page.title.lower()).strip()):
-            invertedResult = resultList.pop(i).display_inverted(tokenSet)
+    invertedResult, resultList = selected_inverted(correctedSearch,
+                                                    resultList,
+                                                    n=5)
 
-    # get display obejcts of each page in resultList
+    # get display obejcts of each page
+    if invertedResult:
+        invertedResult = invertedResult.display_inverted()
     displayResultList = [pageObj.display(tokenSet) for pageObj in resultList]
 
     # calculate length of search time
