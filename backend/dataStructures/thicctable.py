@@ -102,9 +102,8 @@ class Thicctable():
                 pageTuple = (pageScore, pageObj)
                 # insert tuple of score and pageObj into appropriate bin
                 self.insert_pageTuple(key=token, pageTuple=pageTuple)
+            # if token isn't in index yet, add it and insert pageTuple
             except KeyError as key:
-                print(f"BUCKETING ERROR: {key}")
-                # if token isn't in index yet, add it and insert pageTuple
                 self.add_key(token)
                 self.insert_pageTuple(key=token, pageTuple=pageTuple)
             except Exception as e:
@@ -167,6 +166,10 @@ class Thicctable():
         return {key:(posting.len_posting())
                 for key, posting in self.invertedIndex.items()
                 if not ((len(key.split())==1) and not (posting.is_empty()))}
+
+    def key_relevance(self, key):
+        """ Get relevance of Posting() object mapped by key """
+        return self.invertedIndex[key].relevance
 
     def all_relevances(self):
         """

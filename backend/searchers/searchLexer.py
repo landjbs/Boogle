@@ -12,7 +12,7 @@ from crawlers.crawlLoader import load_crawled_pages
     uniqueWords,
     searchProcessor
 ) = load_crawled_pages('backend/data/thicctable/wikiCrawl_NOVECS',
-                        n=100, loadProcessor=False)
+                        n=1000000, loadProcessor=False)
 
 freqDict = load('backend/data/outData/knowledge/freqDict.sav')
 
@@ -41,7 +41,7 @@ from searchers.querySentiment import score_token_importance
 from searchers.invertedSelector import selected_inverted
 
 
-n = 10
+n = 15
 
 # bert-serving-start -model_dir /Users/landonsmith/Desktop/shortBert -num_worker=1 -max_seq_len=20
 # paraModel = load_model('backend/data/outData/searchAnalysis/paragraphAnswering2.sav')
@@ -77,11 +77,11 @@ def topSearch(rawSearch, user):
         topToken = list(tokenSet)[0]
         # query database for single token bucket
         try:
-            singleResults = databaseSearcher.single_search(topToken, database)
+            singleResults = databaseSearcher.single_search(topToken, database, n)
             numResults += singleResults[0]
             resultList += singleResults[1]
-        except:
-            pass
+        except Exception as e:
+            print(f'ERROR: {e}')
         if numResults < n:
             print(f'AND After {numResults}')
             words = topToken.split()

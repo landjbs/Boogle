@@ -57,11 +57,13 @@ def score_token_importance(cleanedSearch, tokenSet, database, freqDict):
         tokenSet = {token for token in tokenSet
                     if not token in QUESTION_STOP_WORDS}
 
-    print(get_token_relevances(tokenSet, database))
     tokenScores = {token : calc_score_activation(freqDict[token][0])
                     for token in tokenSet}
-    print(tokenScores)
+    tokenSum = np.sum([score for score in tokenScores.values()])
+    normedScores = {token : (rawScore / tokenSum)
+                    for token, rawScore in tokenScores.items()}
+    print(normedScores)
 
     # normalize token scores
     # tokenScores = softmax(tokenScores.values())
-    return (tokenScores, searchVec, queryFormat)
+    return (normedScores, searchVec, queryFormat)
