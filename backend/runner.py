@@ -1,57 +1,21 @@
 """
 Modified pageRank testing
 """
-import numpy as np
-from time import time
-from operator import itemgetter
 
-# bucket_1 = [(2, 'a'), (1, 'b')]
-# bucket_2 = [(3, 'c'), (0, 'd')]
-# bucket_3 = [(10, 'l'), (5,'z')]
-# bucket_4 = [(1000, 'v')]
-#
-# bucketList = [bucket_1, bucket_2, bucket_3, bucket_4]
+from models.knowledge.knowledgeNetwork import build_corr_dict
 
+corrDict = (build_corr_dict('data/thicctable/wikiCrawl_SHADOW_NOVECS', outPath='data/outData/knowledge/corrDict_NEW.sav'))
 
-def make_list(c, top=100, listLength=1000000):
-    l =  list(zip(np.random.randint(0, top, size=listLength), [c for _ in range(listLength)]))
-    l.sort(reverse=True, key=itemgetter(0))
-    return l
+while True:
+    s = input('search: ')
+    try:
+        rL = corrDict[s]
+        print('\t', s)
+        for elt in rL:
+            print(f'<{elt[0]}> {elt[1]}')
+    except Exception as e:
+        print(f'ERROR: {e}')
 
-bucket_1 = make_list('a')
-bucket_2 = make_list('b', top=1000)
-bucket_3 = make_list('c')
-bucket_4 = make_list('d')
-
-bucketList = [bucket_1, bucket_2, bucket_3, bucket_4]
-
-
-def merge_lists(bucketList, maxResultNum):
-    s = time()
-    resultNum = min(maxResultNum, np.sum([len(bucket) for bucket in bucketList]))
-    resultList = []
-    for _ in range(resultNum):
-        topList = []
-        for index, bucket in enumerate(bucketList):
-            try:
-                topList.append((bucket[0][0], index))
-            except:
-                pass
-
-        maxLoc = max(topList)[1]
-        nextAddition = bucketList[maxLoc].pop(0)
-        resultList.append(nextAddition)
-
-    return resultList
-
-timeList = []
-for i in range(100):
-    stime = time()
-    print(merge_lists(bucketList, maxResultNum=10), end='\r')
-    timeList.append((time() - stime))
-    print(f'iterating: {i}', end='\r')
-
-print(np.mean(timeList))
 
 # from searchers.modelBuilders.questionAnsweringModel import train_answering_lstm
 #

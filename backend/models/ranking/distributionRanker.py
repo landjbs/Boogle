@@ -6,6 +6,7 @@ will have higher scores for the same token frequency than less diverse documents
 from numpy import mean
 from scipy.spatial.distance import cosine, euclidean
 
+
 def rank_distribution(baseVec, vecMatrix, n=5):
     """
     Args: baseVector of entire document, vecMatrix of vectorize_n_split(document)

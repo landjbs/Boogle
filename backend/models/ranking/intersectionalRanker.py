@@ -9,13 +9,14 @@ def score_token_intersection(pageObj, tokenWeights):
     pageTokens = pageObj.knowledgeTokens
     knowledgeScore = 0
 
-    for curToken, curWeight in tokenWeights.items():
-        if curToken in pageTokens:
-            knowledgeScore += curWeight * pageTokens[curToken]
-        else:
-            knowledgeScore -= curWeight
+    for curToken, tokenWeight in tokenWeights.items():
+        try:
+            knowledgeScore += tokenWeight * pageTokens[curToken]
+        except KeyError:
+            knowledgeScore -= tokenWeight
 
     aggregateScore = baseScore + knowledgeScore
+
     return aggregateScore
 
 

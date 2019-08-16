@@ -50,3 +50,5 @@ def safe_make_folder(folderPath):
         else:
             print("Must input either 'y' or 'n'.")
             safe_make_folder(folderPath)
+    else:
+        os.mkdir(folderPath)

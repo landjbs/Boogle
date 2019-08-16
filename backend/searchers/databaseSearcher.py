@@ -71,7 +71,7 @@ def or_search(tokenList, database, n):
 
 
 ### Weight Search Algorithms ###
-def _weighted_and_search(tokenScores, database, n):
+def weighted_and_search(tokenScores, database, n):
     """
     Performs AND search for intersection of multiple tokens where tokens are
     each given ranking of importance in the search
@@ -98,18 +98,24 @@ def _weighted_and_search(tokenScores, database, n):
     return (numResults, resultList)
 
 
-def weighted_and_search(tokenScores, database, n):
+def _weighted_and_search(tokenScores, database, n):
     bucketList = [database.search_full(key=token, n=100000)
                     for token in tokenScores]
+    # get number of pages avaliable to return
+    avaliableResults = 0
+    for bucket in bucketList:
+        avaliableResults += len(bucket)
     # actual number of results to find
-    resultNum = min(n, sum([len(bucket) for bucket in bucketList]))
+    resultNum = min(n, avaliableResults)
     # list to hold ~sorted Page() objects of results
     resultList = []
+    # iterate over number of results to show
     for i in range(resultNum):
         topList = []
         for index, bucket in enumerate(bucketList):
             try:
-                pageScore = score_token_intersection(bucket[0][1], tokenScores)
+                pageObject = bucket[0][1]
+                pageScore = score_token_intersection(pageObject, tokenScores)
                 topList.append((pageScore, index))
             except:
                 pass

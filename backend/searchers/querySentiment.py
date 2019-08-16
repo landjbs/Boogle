@@ -65,5 +65,4 @@ def score_token_importance(cleanedSearch, tokenSet, database, freqDict):
     print(normedScores)
 
     # normalize token scores
-    # tokenScores = softmax(tokenScores.values())
     return (normedScores, searchVec, queryFormat)

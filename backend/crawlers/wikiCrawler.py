@@ -2,6 +2,7 @@ from math import inf
 from time import time
 from tqdm import tqdm
 from termcolor import colored
+from collections import Counter
 
 from models.ranking.baseRanker import calc_base_score
 from models.processing.cleaner import clean_text
@@ -19,7 +20,25 @@ def make_wiki_url(title):
     return url
 
 
-def scrape_wiki_page(line, knowledgeProcessor, freqDict):
+def add_shadow_tokens(knowledgeTokens, corrDict, cutoff=0.2):
+    """
+    UNDER DEVELOPMENT: Adds shadow tokens to knowlegeTokens by merging
+    related token lists
+    """
+    relCounts = Counter()
+    for knowledgeToken, knowledgeScore in knowledgeTokens.items():
+        if knowledgeToken in corrDict:
+            relatedTokens = corrDict[knowledgeToken]
+            for relatedScore, relatedToken in relatedTokens:
+                weightedScore = knowledgeScore * relatedScore
+                if weightedScore > cutoff:
+                    relCounts.update({relatedToken : weightedScore})
+    # update knowledgeTokens
+    knowledgeCounter = Counter(knowledgeTokens)
+    return knowledgeCounter
+
+
+def scrape_wiki_page(line, knowledgeProcessor, freqDict, corrDict):
     """ Scrapes line (page) from wikipedia csv and returns pageDict """
     # number of days since June 29 2019 when page was loaded
     loadDate = int(time() / (86400)) - 18076
@@ -41,6 +60,7 @@ def scrape_wiki_page(line, knowledgeProcessor, freqDict):
                 'h3':       title,
                 'all':      cleanedText}
     knowledgeTokens = score_divDict(divDict, knowledgeProcessor, freqDict)
+    knowledgeTokens = add_shadow_tokens(knowledgeTokens, corrDict, cutoff=0.2)
     # vectorize the article text
     # pageVec = vectorize_doc(articleText)
     pageVec = {}
@@ -73,6 +93,10 @@ def crawl_wiki_data(inPath, outPath, startNum=None, endNum=None):
     print(colored('Loading Freq Dict', 'red'), end='\r')
     freqDict = load('data/outData/knowledge/freqDict.sav')
     print(colored('Complete: Loading Freq Dict', 'cyan'))
+    # load corrDict
+    print(colored('Loading Corr Dict', 'red'), end='\r')
+    corrDict = load('data/outData/knowledge/relationshipDict.sav')
+    print(colored('Complete: Loading Corr Dict', 'cyan'))
     # load knowledgeProcessor
     print(colored('Loading Knowledge Processor', 'red'), end='\r')
     knowledgeProcessor = load('data/outData/knowledge/knowledgeProcessor.sav')
@@ -94,7 +118,8 @@ def crawl_wiki_data(inPath, outPath, startNum=None, endNum=None):
                 try:
                     pageDict = scrape_wiki_page(line,
                                                 knowledgeProcessor,
-                                                freqDict)
+                                                freqDict,
+                                                corrDict)
                     scrapeList.add(pageDict)
                 except Exception as e:
                     print(f"ERROR: {e}")

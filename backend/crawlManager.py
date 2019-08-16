@@ -16,6 +16,6 @@ from crawlers.wikiCrawler import crawl_wiki_data
 # print([elt for elt in dir()])
 
 crawl_wiki_data(inPath='data/inData/wikipedia_utf8_filtered_20pageviews.csv',
-                outPath='data/thicctable/wikiCrawl_NOVECS',
+                outPath='data/thicctable/wikiCrawl_SHADOW_NOVECS',
                 startNum=0,
                 endNum=None)

@@ -11,7 +11,7 @@ from crawlers.crawlLoader import load_crawled_pages
     database,
     uniqueWords,
     searchProcessor
-) = load_crawled_pages('backend/data/thicctable/wikiCrawl_NOVECS',
+) = load_crawled_pages('backend/data/thicctable/wikiCrawl_SHADOW_NOVECS',
                         n=1000000, loadProcessor=False)
 
 freqDict = load('backend/data/outData/knowledge/freqDict.sav')
