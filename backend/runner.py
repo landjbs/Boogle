@@ -4,7 +4,7 @@ Modified pageRank testing
 
 from models.knowledge.knowledgeNetwork import build_corr_dict
 
-corrDict = (build_corr_dict('data/thicctable/wikiCrawl_SHADOW_NOVECS', outPath='data/outData/knowledge/corrDict_NEW.sav'))
+corrDict = (build_corr_dict('data/thicctable/wikiCrawl_SHADOW_NOVECS', freqDict={}, outPath='data/outData/knowledge/corrDict_NEW.sav'))
 
 while True:
     s = input('search: ')

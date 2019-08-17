@@ -14,7 +14,7 @@ from dataStructures.objectSaver import (save,
                                         delete_folder)
 
 
-def build_corr_dict(pageFolderPath, freqDict, freqCutoff=0.0007,
+def build_corr_dict(pageFolderPath, freqDict=None, freqCutoff=0.0007,
                     bufferSize=10000, corrNum=20, outPath=None):
     """
     Builds dict mapping tokens to the ranked list of corrNum tokens with the
@@ -24,6 +24,8 @@ def build_corr_dict(pageFolderPath, freqDict, freqCutoff=0.0007,
         -pageFolderPath:        Path to the folder in which pages are stored
                                     as pickeled lists of pageDicts
         -freqDict:              Dictionary of freq tuples for observed tokens
+                                    If no argument is passed, freqDict will be
+                                    loaded from default path.
         -freqCutoff:            Upper frequency that a token can have and
                                     still be analyzed.
         -bufferSize:            Number of files to analyze in RAM at one time.
@@ -40,53 +42,60 @@ def build_corr_dict(pageFolderPath, freqDict, freqCutoff=0.0007,
         corrNum relatedTokens with scores as floats in range (0, 1].
     """
 
+    # number of iterations during which to filter out low tokens during fold
+    FILTER_BUFFER = 1
+    # default freqDict path
+    FREQ_PATH = 'data/outData/knolwedge/freqDict.sav'
     # set of words to exclude from corrableTokens, no matter what
     STOP_WORDS = {'wiki', 'wikipedia', 'en', 'https', 'http', 'org'}
-
     # build temporary folder to hold tablets of corrDict for RAM safety
     TEMP_FOLDER_PATH = 'corrDictTablets_NEW'
-    safe_make_folder(TEMP_FOLDER_PATH)
 
-    # iterate over freqDict, building set of tokens qualifing for correlations
-    def corrable(token, freqTuple):
-        """ Helper determines if token corr should be taken """
-        return False if (freqTuple[0]>freqCutoff)
-                        or (token.isdigit())
-                        or (token in STOP_WORDS) else True
+    # if not freqDict:
+    #     freqDict = load(FREQ_PATH)
 
-    corrableTokens = {token for token, freqTuple in freqDict.items()
-                        if corrable(token, freqTuple)}
+    # safe_make_folder(TEMP_FOLDER_PATH)
+    #
+    # # iterate over freqDict, building set of tokens qualifing for correlations
+    # def corrable(token, freqTuple):
+    #     """ Helper determines if token corr should be taken """
+    #     return False if (freqTuple[0]>freqCutoff)
+    #                     or (token.isdigit())
+    #                     or (token in STOP_WORDS) else True
+    #
+    # corrableTokens = {token for token, freqTuple in freqDict.items()
+    #                     if corrable(token, freqTuple)}
 
     # initialize first empty corrDict
     curCorrTablet = {}
-    for i, file in enumerate(tqdm(os.listdir(pageFolderPaths))):
-        try:
-            pageList = load(f'{pageFolder}/{file}')
-            for pageDict in pageList:
-                # pull counter of knowledgeTokens from pageDict
-                pageTokens = pageDict['knowledgeTokens']
-                corrablePageTokens = {token : score
-                                        for token, score in pageTokens.items()
-                                        if token in corrableTokens}
-                for curToken, curFreq in corrablePageTokens.items():
-                    curCounter = Counter({otherToken : (otherFreq * curFreq)
-                                            for otherToken, otherFreq
-                                            in corrablePageTokens.items()
-                                            if (otherToken != curToken)})
-                    if curToken in curCorrTablet:
-                        curCorrTablet[curToken].update(curCounter)
-                    else:
-                        curCorrTablet.update({curToken : curCounter})
-        except Exception as e:
-            print(f'ERROR: {e}')
-        finally:
-            if (i % bufferSize == 0) and (i > 0):
-                save(curCorrTablet, f'{TEMP_FOLDER_PATH}/corrTablet{i}.sav')
-                curCorrTablet = {}
+    # for i, file in enumerate(tqdm(os.listdir(pageFolderPaths))):
+    #     try:
+    #         pageList = load(f'{pageFolder}/{file}')
+    #         for pageDict in pageList:
+    #             # pull counter of knowledgeTokens from pageDict
+    #             pageTokens = pageDict['knowledgeTokens']
+    #             corrablePageTokens = {token : score
+    #                                     for token, score in pageTokens.items()
+    #                                     if token in corrableTokens}
+    #             for curToken, curFreq in corrablePageTokens.items():
+    #                 curCounter = Counter({otherToken : (otherFreq * curFreq)
+    #                                         for otherToken, otherFreq
+    #                                         in corrablePageTokens.items()
+    #                                         if (otherToken != curToken)})
+    #                 if curToken in curCorrTablet:
+    #                     curCorrTablet[curToken].update(curCounter)
+    #                 else:
+    #                     curCorrTablet.update({curToken : curCounter})
+    #     except Exception as e:
+    #         print(f'ERROR: {e}')
+    #     finally:
+    #         if (i % bufferSize == 0) and (i > 0):
+    #             save(curCorrTablet, f'{TEMP_FOLDER_PATH}/corrTablet{i}.sav')
+    #             curCorrTablet = {}
 
     # folder saved corrTablets onto most recent corrTablet
     print('Folding tokenDict')
-    for file in tqdm(os.listdir(TEMP_FOLDER_PATH)):
+    for i, file in enumerate(tqdm(os.listdir(TEMP_FOLDER_PATH))):
         try:
             loadedCorrTablet = load(f'{TEMP_FOLDER_PATH}/{file}')
             for token, tokenCounter in loadedCorrTablet.items():
@@ -97,6 +106,24 @@ def build_corr_dict(pageFolderPath, freqDict, freqCutoff=0.0007,
             del loadedCorrTablet
         except Exception as e:
             print(f'ERROR: {e}')
+        finally:
+            if ((i % FILTER_BUFFER) == 0):
+                print(f'Cleaning corrTablet at {i}:', end='\r')
+                for token, tokenCounter in tqdm(curCorrTablet.items(), leave=False):
+                    counterValues = tokenCounter.values()
+                    # if a token has more than corrNum related tokens, filter
+                    # the counter down to corrNum and relace larger counter in
+                    # curCorrTablet
+                    if len(counterValues) > corrNum:
+                        sortedValues = [scalar for scalar in counterValues]
+                        sortedValues.sort(reverse=True)
+                        minScore = sortedValues[corrNum-1]
+                        filteredCounter = Counter({relToken : relVal
+                                                    for relToken, relVal
+                                                    in tokenCounter.items()
+                                                    if relVal >= minScore})
+                        # print(f'\t{tokenCounter}\n\t{filteredCounter}')
+                        curCorrTablet.update({token : filteredCounter})
 
 
     def score_to_fraction(tokenTuple, scoreSum):
