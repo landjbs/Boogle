@@ -3,8 +3,13 @@ Modified pageRank testing
 """
 
 from models.knowledge.knowledgeNetwork import build_corr_dict
+from models.knowledge.knowledgeBuilder import vector_update_corrDict
 
-corrDict = (build_corr_dict('data/thicctable/wikiCrawl_SHADOW_NOVECS', freqDict={}, outPath='data/outData/knowledge/corrDict_NEW.sav'))
+from dataStructures.objectSaver import load
+
+# corrDict = (build_corr_dict('data/thicctable/wikiCrawl_SHADOW_NOVECS', freqDict={}, outPath='data/outData/knowledge/corrDict_NEW.sav'))
+
+corrDict = load('data/outData/knowledge/corrDict_NEW.sav')
 
 while True:
     s = input('search: ')

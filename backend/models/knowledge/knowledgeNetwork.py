@@ -45,53 +45,55 @@ def build_corr_dict(pageFolderPath, freqDict=None, freqCutoff=0.0007,
     # number of iterations during which to filter out low tokens during fold
     FILTER_BUFFER = 1
     # default freqDict path
-    FREQ_PATH = 'data/outData/knolwedge/freqDict.sav'
+    FREQ_PATH = 'data/outData/knowledge/freqDict.sav'
     # set of words to exclude from corrableTokens, no matter what
     STOP_WORDS = {'wiki', 'wikipedia', 'en', 'https', 'http', 'org'}
     # build temporary folder to hold tablets of corrDict for RAM safety
     TEMP_FOLDER_PATH = 'corrDictTablets_NEW'
 
-    # if not freqDict:
-    #     freqDict = load(FREQ_PATH)
+    if not freqDict:
+        freqDict = load(FREQ_PATH)
 
-    # safe_make_folder(TEMP_FOLDER_PATH)
-    #
-    # # iterate over freqDict, building set of tokens qualifing for correlations
-    # def corrable(token, freqTuple):
-    #     """ Helper determines if token corr should be taken """
-    #     return False if (freqTuple[0]>freqCutoff)
-    #                     or (token.isdigit())
-    #                     or (token in STOP_WORDS) else True
-    #
-    # corrableTokens = {token for token, freqTuple in freqDict.items()
-    #                     if corrable(token, freqTuple)}
+    safe_make_folder(TEMP_FOLDER_PATH)
+
+    # iterate over freqDict, building set of tokens qualifing for correlations
+    def corrable(token, freqTuple):
+        """ Helper determines if token corr should be taken """
+        return False if ((freqTuple[0]>freqCutoff)
+                        or (token.isdigit())
+                        or (token in STOP_WORDS)) else True
+
+    corrableTokens = {token for token, freqTuple in freqDict.items()
+                        if corrable(token, freqTuple)}
+
+    corrableTokens = {'battle', 'axe', 'film', 'movie', 'star'}
 
     # initialize first empty corrDict
     curCorrTablet = {}
-    # for i, file in enumerate(tqdm(os.listdir(pageFolderPaths))):
-    #     try:
-    #         pageList = load(f'{pageFolder}/{file}')
-    #         for pageDict in pageList:
-    #             # pull counter of knowledgeTokens from pageDict
-    #             pageTokens = pageDict['knowledgeTokens']
-    #             corrablePageTokens = {token : score
-    #                                     for token, score in pageTokens.items()
-    #                                     if token in corrableTokens}
-    #             for curToken, curFreq in corrablePageTokens.items():
-    #                 curCounter = Counter({otherToken : (otherFreq * curFreq)
-    #                                         for otherToken, otherFreq
-    #                                         in corrablePageTokens.items()
-    #                                         if (otherToken != curToken)})
-    #                 if curToken in curCorrTablet:
-    #                     curCorrTablet[curToken].update(curCounter)
-    #                 else:
-    #                     curCorrTablet.update({curToken : curCounter})
-    #     except Exception as e:
-    #         print(f'ERROR: {e}')
-    #     finally:
-    #         if (i % bufferSize == 0) and (i > 0):
-    #             save(curCorrTablet, f'{TEMP_FOLDER_PATH}/corrTablet{i}.sav')
-    #             curCorrTablet = {}
+    for i, file in enumerate(tqdm(os.listdir(pageFolderPath))):
+        try:
+            pageList = load(f'{pageFolderPath}/{file}')
+            for pageDict in pageList:
+                # pull counter of knowledgeTokens from pageDict
+                pageTokens = pageDict['knowledgeTokens']
+                corrablePageTokens = {token : score
+                                        for token, score in pageTokens.items()
+                                        if token in corrableTokens}
+                for curToken, curFreq in corrablePageTokens.items():
+                    curCounter = Counter({otherToken : (otherFreq * curFreq)
+                                            for otherToken, otherFreq
+                                            in corrablePageTokens.items()
+                                            if (otherToken != curToken)})
+                    if curToken in curCorrTablet:
+                        curCorrTablet[curToken].update(curCounter)
+                    else:
+                        curCorrTablet.update({curToken : curCounter})
+        except Exception as e:
+            print(f'ERROR: {e}')
+        finally:
+            if (i % bufferSize == 0) and (i > 0):
+                save(curCorrTablet, f'{TEMP_FOLDER_PATH}/corrTablet{i}.sav')
+                curCorrTablet = {}
 
     # folder saved corrTablets onto most recent corrTablet
     print('Folding tokenDict')
