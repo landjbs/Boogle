@@ -20,4 +20,11 @@ def add_shadow_tokens(knowledgeTokens, relationshipDict):
     """
     relatedCounts = Counter()
     for knowledgeToken, knowledgeScore in knowledgeTokens.items():
-        
+        if knowledgeToken in relationshipDict:
+            relatedTokens = corrDict[knowledgeToken]
+            for relatedScore, relatedToken in relatedTokens:
+                weightedScore = knowledgeScore * relatedScore
+                if weightedScore > cutoff:
+                    relatedCounts.update({relatedToken : weightedScore})
+    knowledgeCounter = Counter(knowledgeTokens)
+    knowledgeCounter.update(relatedCounts)
