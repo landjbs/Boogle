@@ -19,3 +19,5 @@ def add_shadow_tokens(knowledgeTokens, relationshipDict):
                                     knowledgeRelations.
     """
     relatedCounts = Counter()
+    for knowledgeToken, knowledgeScore in knowledgeTokens.items():
+        
