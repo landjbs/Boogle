@@ -71,7 +71,7 @@ def train_answering_lstm(folderPath, outPath=None):
     model.add(Activation('softmax'))
 
     # model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
-    model.compile(loss='categorical_crossentropy',
+    model.compile(loss='binary_crossentropy',
                     optimizer='adam',
                     metrics=['accuracy'])
 
