@@ -24,21 +24,7 @@ formatModel = load_model('backend/data/outData/searchAnalysis/queryFormatModel.h
 global graph
 graph = tf.get_default_graph()
 
-calc_score_activation = lambda freq : (1 / freq)
-
-
-def get_token_relevances(tokenSet, database):
-    """
-    Queries Posting() object for each token in token set to build dict
-    mapping tokens to their relevance
-    Args:
-        -tokenSet:      Set of tokens found in the search
-        -database:      Thicctable() object storing search database
-    Returns:
-        Dictionary mapping tokens in tokenSet to their relevance.
-    """
-    return {token : database.invertedIndex[token].relevance
-                for token in tokenSet}
+calc_token_importance = lambda freq : (1 / freq)
 
 
 def score_token_importance(cleanedSearch, tokenSet, database, freqDict):

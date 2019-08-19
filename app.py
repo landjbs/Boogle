@@ -9,9 +9,15 @@ from dataStructures.userObj import User
 app = Flask(__name__)
 
 # test
-@app.route("/")
+@app.route('/')
 def index():
     return render_template('index.html')
+
+
+@app.route('/about')
+def about():
+    return render_template('about.HTML')
+
 
 @app.route('/result', methods = ['POST', 'GET'])
 def result():

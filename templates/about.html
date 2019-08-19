@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
-  <meta name="description" content="Homepage for Boogle, a ground-up search engine.">
+  <meta name="description" content="About page for Boogle, a ground-up search engine.">
   <meta name="author" content="Landon Smith">
 
   <title>Boogle</title>
@@ -68,30 +68,6 @@
       border-color: rgba(0, 0, 0, 0);
     }
 
-    .home-search input {
-      background-color: rgba(0, 0, 0, 0.4);
-    }
-
-    .home-search input:hover {
-      background-color: rgba(0, 0, 0, 0.5);
-    }
-
-    .home-search input:focus {
-      background-color: rgba(0, 0, 0, 0.7);
-      outline: none;
-    }
-
-    .home-search input::placeholder {
-      text-align: left; /* placeholder aligned in center */
-      color: rgb(240,240,240); /* placeholder is grey */
-    }
-
-    .home-search input:focus::placeholder {
-      color: rgba(0, 0, 0, 0);
-    }
-
-
-
     .switch {
       position: relative;
       display: inline-block;
@@ -154,6 +130,17 @@
       border-radius: 50%;
     }
 
+    .about-box {
+      display: inline-grid;
+      position: relative;
+      width: 60%;
+      height: 800px;
+      background-color: rgba(240, 240, 237, 0.95);
+      border: 4px solid black;
+      text-align: center;
+      text-overflow: hidden;
+      text-overflow: scroll;
+    }
 
   </style>
 
@@ -162,9 +149,9 @@
 <body>
   <div class="nav-bar">
     <ul>
-      <li><a class="special" action="/">Boogle</a></li>
-      <li><a action='/about'>About</a></li>
-      <li><a action='/contact'>Contact</a></li>
+      <li><a class="special" href="#">Boogle</a></li>
+      <li><a href="#news">About</a></li>
+      <li><a href="#contact">Contact</a></li>
       <li style="float:right">
         <label class="switch">
           <input type="checkbox">
@@ -173,11 +160,14 @@
       </li>
     </ul>
   </div>
-  <br><br><br>
-  <div class="home-search">
-  <form action="http://localhost:5000/result" method="POST">
-    <input type="text" name="Search" placeholder="Boogle...                                🔍"/>
-  </form>
+  <br><br>
+  <div class="about-box">
+    <p>
+      <h1>About Boogle</h1>
+      Boogle (noun. portmanteau of 'better' and 'google') was built
+    </p>
+  </div>
+
 </div>
 
 </body>

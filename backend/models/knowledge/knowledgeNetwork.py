@@ -66,7 +66,7 @@ def build_corr_dict(pageFolderPath, freqDict=None, freqCutoff=0.0007,
     corrableTokens = {token for token, freqTuple in freqDict.items()
                         if corrable(token, freqTuple)}
 
-    corrableTokens = {'battle', 'axe', 'film', 'movie', 'star'}
+    print(corrableTokens)
 
     # initialize first empty corrDict
     curCorrTablet = {}

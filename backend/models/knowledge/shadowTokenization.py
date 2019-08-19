@@ -8,7 +8,7 @@ of a page during preprocessing/crawling.
 
 from collections import Counter
 
-def add_shadow_tokens(knowledgeTokens, relationshipDict):
+def add_shadow_tokens(knowledgeTokens, relationshipDict, cutoff=0):
     """
     Adds shadow tokens to the knowledgeTokens of page
     Args:
@@ -21,10 +21,12 @@ def add_shadow_tokens(knowledgeTokens, relationshipDict):
     relatedCounts = Counter()
     for knowledgeToken, knowledgeScore in knowledgeTokens.items():
         if knowledgeToken in relationshipDict:
-            relatedTokens = corrDict[knowledgeToken]
+            relatedTokens = relationshipDict[knowledgeToken]
             for relatedScore, relatedToken in relatedTokens:
                 weightedScore = knowledgeScore * relatedScore
                 if weightedScore > cutoff:
                     relatedCounts.update({relatedToken : weightedScore})
     knowledgeCounter = Counter(knowledgeTokens)
     knowledgeCounter.update(relatedCounts)
+    # convert counter back into dict and return
+    return {token : count for token, count in knowledgeCounter.items()}

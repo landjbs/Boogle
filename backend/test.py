@@ -6,7 +6,6 @@ from dataStructures.objectSaver import load
 from models.knowledge.knowledgeNetwork import build_corr_dict
 from models.knowledge.knowledgeBuilder import vector_update_corrDict
 
-
 wikiPath = 'data/thicctable/wikiCrawl_SHADOW_NOVECS'
 
 freqDict = load('data/outData/knowledge/freqDict.sav')
