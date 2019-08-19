@@ -14,6 +14,10 @@ from keras.models import load_model
 
 from dataStructures.objectSaver import load
 from models.binning.docVecs import vectorize_doc
+from models.knowledge.shadowTokenization import add_shadow_tokens
+
+relationshipDict = load('backend/data/outData/knowledge/corrDict_NEW.sav')
+print(relationshipDict)
 
 # list of words to remove from question queryFormat
 QUESTION_STOP_WORDS = ['what', 'who', 'why', 'when', 'how', 'in', 'the',
@@ -43,8 +47,10 @@ def score_token_importance(cleanedSearch, tokenSet, database, freqDict):
         tokenSet = {token for token in tokenSet
                     if not token in QUESTION_STOP_WORDS}
 
-    tokenScores = {token : calc_score_activation(freqDict[token][0])
+    tokenScores = {token : calc_token_importance(freqDict[token][0])
                     for token in tokenSet}
+    tokenScores = add_shadow_tokens(tokenScores, relationshipDict)
+    print(tokenScores)
     tokenSum = np.sum([score for score in tokenScores.values()])
     normedScores = {token : (rawScore / tokenSum)
                     for token, rawScore in tokenScores.items()}

@@ -2,6 +2,9 @@
 Modified pageRank testing
 """
 
+from os import listdir
+from tqdm import tqdm
+
 from models.knowledge.knowledgeNetwork import build_corr_dict
 from models.knowledge.knowledgeBuilder import vector_update_corrDict
 from models.knowledge.tokenGraphRank import rank_token_graph
@@ -9,14 +12,12 @@ from models.knowledge.shadowTokenization import add_shadow_tokens
 
 from dataStructures.objectSaver import load
 
-# corrDict = (build_corr_dict('data/thicctable/wikiCrawl_SHADOW_NOVECS', freqDict={}, outPath='data/outData/knowledge/corrDict_NEW.sav'))
+
+wikiPath = 'data/thicctable/wikiCrawl_SHADOW_NOVECS'
 
 corrDict = load('data/outData/knowledge/corrDict_NEW.sav')
 
-knowledgeTokens = {'axe':1, 'battle':0.5}
 
-# rank_token_graph(knowledgeTokens, corrDict, 1)
-print(add_shadow_tokens(knowledgeTokens, corrDict))
 
 
 # import numpy as np
