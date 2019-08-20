@@ -43,6 +43,10 @@ from searchers.invertedSelector import selected_inverted
 
 n = 15
 
+# set upper boundaries on search lengths
+MAX_WORD_COUNT = 15
+MAX_CHAR_COUNT = 80
+
 # bert-serving-start -model_dir /Users/landonsmith/Desktop/shortBert -num_worker=1 -max_seq_len=20
 # paraModel = load_model('backend/data/outData/searchAnalysis/paragraphAnswering2.sav')
 
@@ -61,9 +65,17 @@ def topSearch(rawSearch, user):
     """
     timeStart = time()
 
+    # validate query in length range
+    if ((len(rawSearch.split()) > MAX_WORD_COUNT)
+        or (len(rawSearch) > MAX_CHAR_COUNT)):
+        raise SearchError('Search exceeds length limits')
+
     ### QUERY PROCESSING ###
     cleanedSearch = clean_search(rawSearch)
-    correctedSearch = " ".join([correct(token, uniqueWords) if not (token.startswith('"') and token.endswith('"')) else token[1:-1]
+    correctedSearch = " ".join([correct(token, uniqueWords)
+                                if not (token.startswith('"')
+                                        and token.endswith('"'))
+                                else token[1:-1]
                                 for token in cleanedSearch.split()])
     correctionDisplay = None if (cleanedSearch==correctedSearch) else correctedSearch
     # find greedy tokens only for the first search

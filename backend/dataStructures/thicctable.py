@@ -44,7 +44,6 @@ class Thicctable():
         """ Faster version of kill_smalls(n=1) to kill empty keys """
         emptyKeys = [key for key, posting in self.invertedIndex.items()
                         if posting.is_empty()]
-        print(f'Num Empty: {len(emptyKeys)}')
         for key in emptyKeys:
             del self.invertedIndex[key]
         return True

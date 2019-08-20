@@ -74,7 +74,6 @@ class Posting():
         Useful if pages need to be reranked (eg. and_search).
         """
         self.increment_search_count(i=1)
-        print(f'Related Objects:\n\t{self.relatedTokens}')
         resultList = list(map(get_pageObj, self.postingList[:n]))
         return resultList
 
