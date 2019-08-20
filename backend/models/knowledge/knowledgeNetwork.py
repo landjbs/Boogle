@@ -54,19 +54,25 @@ def build_corr_dict(pageFolderPath, freqDict=None, freqCutoff=0.0007,
     if not freqDict:
         freqDict = load(FREQ_PATH)
 
-    safe_make_folder(TEMP_FOLDER_PATH)
+    # common names are uesd as stop words as well
+    with open('data/inData/commonNames.txt', 'r') as nameFile:
+        STOP_WORDS.update([line.strip().lower() for line in nameFile])
 
     # iterate over freqDict, building set of tokens qualifing for correlations
     def corrable(token, freqTuple):
         """ Helper determines if token corr should be taken """
-        return False if ((freqTuple[0]>freqCutoff)
+        return  False if ((freqTuple[0]>freqCutoff)
                         or (token.isdigit())
-                        or (token in STOP_WORDS)) else True
+                        or (token in STOP_WORDS)
+                        or (len(token) <= 2)
+                        or len(token.split()) > 1) else True
 
     corrableTokens = {token for token, freqTuple in freqDict.items()
                         if corrable(token, freqTuple)}
 
-    print(corrableTokens)
+    # print(corrableTokens)
+
+    safe_make_folder(TEMP_FOLDER_PATH)
 
     # initialize first empty corrDict
     curCorrTablet = {}
@@ -76,9 +82,12 @@ def build_corr_dict(pageFolderPath, freqDict=None, freqCutoff=0.0007,
             for pageDict in pageList:
                 # pull counter of knowledgeTokens from pageDict
                 pageTokens = pageDict['knowledgeTokens']
+                # title tokens of a page will be dampened to avoid distortion
+                pageTitle = pageDict['title'].lower().strip()
                 corrablePageTokens = {token : score
                                         for token, score in pageTokens.items()
-                                        if token in corrableTokens}
+                                        if (token in corrableTokens
+                                        and token not in pageTitle)}
                 for curToken, curFreq in corrablePageTokens.items():
                     curCounter = Counter({otherToken : (otherFreq * curFreq)
                                             for otherToken, otherFreq

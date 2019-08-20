@@ -1,32 +1,51 @@
 from os import listdir
 from numpy import dot
 from tqdm import tqdm
+import matplotlib.pyplot as plt
 
 from dataStructures.objectSaver import load
 from models.knowledge.knowledgeNetwork import build_corr_dict
 from models.knowledge.knowledgeBuilder import vector_update_corrDict
+from models.knowledge.shadowTokenization import add_shadow_tokens
 
-corrDict = load('data/outData/knowledge/corrDict_NEW.sav')
-print(corrDict.keys())
+filePath = 'data/thicctable/wikiCrawl_SHADOW_NOVECS'
 
-while True:
-    s = input('search: ')
+corrDict = load('data/outData/knowledge/corrDict_SINGLE_WORD.sav')
+
+for i, file in enumerate((listdir(filePath))):
     try:
-        for elt in corrDict[s]:
-            print(f'\t<{elt[0]}> {elt[1]}')
-    except KeyError:
-        print('\tToken not found.')
+        pageList = load(f'{filePath}/{file}')
+        for pageDict in pageList:
+            print(pageDict['title'])
+            knowledgeTokens = pageDict['knowledgeTokens']
+            shadowTokens = add_shadow_tokens(knowledgeTokens.copy(), corrDict, cutoff=0.1)
+            for token, score in shadowTokens.items():
+                if not token in knowledgeTokens:
+                    print(f'\t<{score}> {token}')
+                else:
+                    print(f'IS: {token}')
+            # plt.bar(tokens.keys(), tokens.values())
+            # plt.title(pageDict['title'])
+            # plt.show()
+    except Exception as e:
+        print(f'{e} at "{file}".')
 
-
-# wikiPath = 'data/thicctable/wikiCrawl_SHADOW_NOVECS'
+# relationshipDict = vector_update_corrDict('wikipedia_utf8_filtered_20pageviews.csv',
+#     corrDict, outPath='data/outData/knowledge/relationshipDict.sav')
 #
+# print(relationshipDict.keys())
+#
+# while True:
+#     s = input('search: ')
+#     try:
+#         for elt in relationshipDict[s]:
+#             print(f'\t<{elt[0]}> {elt[1]}')
+#     except KeyError:
+#         print('\tToken not found.')
+
+
 # freqDict = load('data/outData/knowledge/freqDict.sav')
 #
-# with open('data/inData/commonWords.txt', 'r') as wordsFile:
-#     tokenFreqs = {line.strip():(freqDict[line.strip()]) for line in tqdm(wordsFile)
-#                     if line.strip() in freqDict}
-# print(len(tokenFreqs))
-#
 # corrDict = (build_corr_dict('data/thicctable/wikiCrawl_SHADOW_NOVECS',
-#                 freqDict=tokenFreqs,
-#                 outPath='data/outData/knowledge/corrDict_NEW.sav'))
+#                 freqDict=freqDict,
+#                 outPath='data/outData/knowledge/corrDict_SINGLE_WORD.sav'))
