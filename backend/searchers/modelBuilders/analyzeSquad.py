@@ -4,7 +4,7 @@ from math import inf
 from tqdm import tqdm, trange
 from nltk.tokenize import word_tokenize
 
-# from dataStructures.objectSaver import safe_make_folder
+from dataStructures.objectSaver import safe_make_folder
 
 class TrainingPadding(object):
     """ Pads training data to be a multiple of batch size. """
@@ -20,7 +20,6 @@ class TrainingInstance(object):
 
         """
 
-SQUAD_PATH = '../../data/inData/squad/train-v2.0.json'
 
 class LanguageConfig(object):
     """
@@ -176,13 +175,13 @@ def squad_to_training_data(squadPath, config, outFolder=None):
                                     targetArray[1, observation, endLoc] = 1
                     observation += 1
 
+    import matplotlib.pyplot as plt
+
+    plt.imshow(targetArray[0])
+
     if outFolder:
         safe_make_folder(outFolder)
         np.save(featureArray, f'outFolder/{featureArray}')
         np.save(targetArray, f'outFolder/{targetArray}')
 
     return feature, targetArray
-
-squadConfig = LanguageConfig(name='squadConfig', questionLength=15, contextLength=500, tokenizer=word_tokenize)
-squadConfig.initialize_from_squad(SQUAD_PATH)
-squad_to_training_data(SQUAD_PATH, squadConfig, outFolder=)
