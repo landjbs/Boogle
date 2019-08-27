@@ -75,7 +75,7 @@ class LanguageConfig(object):
                         clean_tokenize_and_add(question['question'])
                         if not question['is_impossible']:
                             try:
-                                answerList = question['anwers']
+                                answerList = question['answers']
                             except KeyError:
                                 answerList = question['plausible_answers']
                             answerText = answerList[0]['text']
@@ -135,6 +135,9 @@ def squad_to_training_data(squadPath, config, outFolder=None):
     targetArray = np.zeros(shape=(2, observationNum, contextLength))
     print(featureArray.shape)
     print(targetArray.shape)
+    # feature array segment_ids will always be the same for every example
+    featureArray[3, :, 0:questionLength] = 0
+    featureArray[3, :, questionLength:] = 1
     # iterate over squad file, filling feature and target arrays
     observation = 0
     with open(squadPath, 'r') as squadFile:
@@ -164,10 +167,6 @@ def squad_to_training_data(squadPath, config, outFolder=None):
                         assert (len(answerList) == 1), f'{len(answerList)}'
                         answerText = answerList[0]['text']
                         # find answer span of answerText
-                        try:
-                            answerIds = config.raw_text_to_id_list(answerText)
-                        except KeyError as newWord:
-                            print(newWord)
                         spanLen = len(answerIds)
                         for idLoc, firstId in enumerate(paragraphIds):
                             if (firstId == answerIds[0]):
@@ -177,8 +176,13 @@ def squad_to_training_data(squadPath, config, outFolder=None):
                                     targetArray[1, observation, endLoc] = 1
                     observation += 1
 
-    # if outFolder:
+    if outFolder:
+        safe_make_folder(outFolder)
+        np.save(featureArray, f'outFolder/{featureArray}')
+        np.save(targetArray, f'outFolder/{targetArray}')
 
-squadConfig = LanguageConfig(name='squadConfig', questionLength=15, contextLength=1000, tokenizer=word_tokenize)
+    return feature, targetArray
+
+squadConfig = LanguageConfig(name='squadConfig', questionLength=15, contextLength=500, tokenizer=word_tokenize)
 squadConfig.initialize_from_squad(SQUAD_PATH)
-squad_to_training_data(SQUAD_PATH, squadConfig)
+squad_to_training_data(SQUAD_PATH, squadConfig, outFolder=)
