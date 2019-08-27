@@ -47,6 +47,10 @@ class LanguageConfig(object):
                 f"VOCAB_SIZE={self.vocabSize} "
                 f"OBSERVATION_NUM={self.observationNum}>")
 
+    def clean_text(self, rawText):
+        """ Built-in method to ensure uniform text cleaning """
+        return rawText.strip().lower()
+
     def initialize_from_squad(self, squadPath):
         """ Reads squad file to initialize Language attributes """
         # set for storing unique tokens
@@ -54,7 +58,7 @@ class LanguageConfig(object):
         # helper for building token set
         def clean_tokenize_and_add(rawString):
             """ Cleans and tokenizess raw string and adds tokens to tokenSet """
-            cleanString = rawString.strip().lower()
+            cleanString = self.clean_text(rawString)
             textTokens = self.tokenizer(cleanString)
             for token in textTokens:
                 tokenSet.add(token)
@@ -89,9 +93,9 @@ class LanguageConfig(object):
         to_id_lambda = lambda token : self.token_to_id(token)
         return list(map(to_id_lambda, tokenIds))
 
-    def raw_text_to_id_list(self, rawText):
+    def raw_text_to_id_list(self, rawText, lengthCap=None):
         """ Uses tokenizer to tokenize raw text and convert to id list """
-        textTokens = self.tokenizer(rawText.strip().lower())
+        textTokens = self.tokenizer(self.clean_text(rawText))
         return self.token_list_to_id_list(textTokens)
 
 
@@ -158,25 +162,10 @@ def squad_to_training_data(squadPath, config, outFolder=None):
                                     targetArray[observation, idLoc, 0] = 1
                                     targetArray[observation, endLoc, 1] = 1
                     observation += 1
+                    print(targetArray[0:observation])
 
-    if outFolder:
+    # if outFolder:
 
-
-
-with open(SQUAD_PATH, 'r') as squadFile:
-    for category in tqdm(json.load(squadFile)['data']):
-        for paragraph in category['paragraphs']:
-            paragraphText = paragraph['context']
-            for question in paragraph['qas']:
-                questionText = question['question']
-                if question['is_impossible']:
-                    pass
-                else:
-                    # not sure why but answer and plausible_answers are
-                    # used interchangably across squad
-                    try:
-                        answerList = question['answers']
-                    except KeyError:
-                        answerList = question['plausible_answers']
-                    answerText = answerList[0]['text']
-                    print(answerText)
+squadConfig = LanguageConfig(name='squadConfig', questionLength=15, contextLength=1000, tokenizer=word_tokenize)
+squadConfig.initialize_from_squad(SQUAD_PATH)
+squad_to_training_data(SQUAD_PATH, squadConfig)
