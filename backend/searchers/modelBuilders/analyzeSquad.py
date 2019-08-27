@@ -89,13 +89,13 @@ class LanguageConfig(object):
         to_id_lambda = lambda token : self.token_to_id(token)
         return list(map(to_id_lambda, tokenIds))
 
-    def text_to_id_list(self, rawText):
+    def raw_text_to_id_list(self, rawText):
         """ Uses tokenizer to tokenize raw text and convert to id list """
         textTokens = self.tokenizer(rawText.strip().lower())
         return self.token_list_to_id_list(textTokens)
 
 
-def squad_to_training_data(squadPath, config):
+def squad_to_training_data(squadPath, config, outFolder=None):
     """
     Converts data from squadPath to...
     A 3rd rank feature tensor of shape:
@@ -126,10 +126,10 @@ def squad_to_training_data(squadPath, config):
         for category in tqdm(json.load(squadFile)['data']):
             for paragraph in category['paragraphs']:
                 paragraphText = paragraph['context']
-                paragraphIds = config.text_to_id_list(paragraphTokens)
+                paragraphIds = config.raw_text_to_id_list(paragraphTokens)
                 for question in paragraph['qas']:
                     questionText = question['question']
-                    questionIds = config.text_to_id_list(questionText)
+                    questionIds = config.raw_text_to_id_list(questionText)
                     # pack question and paragraph ids
                     packedIds = questionIds + paragraphIds
                     packLength = len(packedIds)
@@ -149,7 +149,7 @@ def squad_to_training_data(squadPath, config):
                             answerList = question['plausible_answers']
                         answerText = answerList[0]['text']
                         # find answer span of answerText
-                        answerIds = config.text_to_id_list(answerText)
+                        answerIds = config.raw_text_to_id_list(answerText)
                         spanLen = len(answerIds)
                         for idLoc, firstId in enumerate(paragraphIds):
                             if (firstId == answerIds[0]):
@@ -158,6 +158,9 @@ def squad_to_training_data(squadPath, config):
                                     targetArray[observation, idLoc, 0] = 1
                                     targetArray[observation, endLoc, 1] = 1
                     observation += 1
+
+    if outFolder:
+
 
 
 with open(SQUAD_PATH, 'r') as squadFile:
