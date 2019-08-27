@@ -4,6 +4,8 @@ from math import inf
 from tqdm import tqdm, trange
 from nltk.tokenize import word_tokenize
 
+# from dataStructures.objectSaver import safe_make_folder
+
 class TrainingPadding(object):
     """ Pads training data to be a multiple of batch size. """
 
@@ -71,6 +73,13 @@ class LanguageConfig(object):
                     clean_tokenize_and_add(paragraph['context'])
                     for question in paragraph['qas']:
                         clean_tokenize_and_add(question['question'])
+                        if not question['is_impossible']:
+                            try:
+                                answerList = question['anwers']
+                            except KeyError:
+                                answerList = question['plausible_answers']
+                            answerText = answerList[0]['text']
+                            clean_tokenize_and_add(answerText)
                         observationNum += 1
         # build word id index and store vocab size and observation num
         wordIdx = {word : i for i, word in enumerate(tokenSet)}
@@ -122,15 +131,17 @@ def squad_to_training_data(squadPath, config, outFolder=None):
     observationNum = config.observationNum
     packedLength = questionLength + contextLength
     # instantiate zero arrays for features and targets
-    featureArray = np.zeros(shape=(observationNum, packedLength, 3))
-    targetArray = np.zeros(shape=(observationNum, contextLength, 2))
+    featureArray = np.zeros(shape=(3, observationNum, packedLength))
+    targetArray = np.zeros(shape=(2, observationNum, contextLength))
+    print(featureArray.shape)
+    print(targetArray.shape)
     # iterate over squad file, filling feature and target arrays
     observation = 0
     with open(squadPath, 'r') as squadFile:
         for category in tqdm(json.load(squadFile)['data']):
             for paragraph in category['paragraphs']:
                 paragraphText = paragraph['context']
-                paragraphIds = config.raw_text_to_id_list(paragraphTokens)
+                paragraphIds = config.raw_text_to_id_list(paragraphText)
                 for question in paragraph['qas']:
                     questionText = question['question']
                     questionIds = config.raw_text_to_id_list(questionText)
@@ -138,31 +149,33 @@ def squad_to_training_data(squadPath, config, outFolder=None):
                     packedIds = questionIds + paragraphIds
                     packLength = len(packedIds)
                     # update input_id dimension of featureArray
-                    featureArray[observation, 0:packLength, 0] = packedIds
+                    featureArray[0, observation, 0:packLength] = packedIds
                     # update input_mask dimension of featureArray
-                    featureArray[curObservation, 0:packLength, 1] = 1
+                    featureArray[1, observation, 0:packLength] = 1
                     # impossible questions have only 0s in targets
                     if question['is_impossible']:
                         pass
                     else:
-                        # not sure why but answer and plausible_answers are
-                        # used interchangably across squad
+                        # supports answers and plausible_answers interchangably
                         try:
                             answerList = question['answers']
                         except KeyError:
                             answerList = question['plausible_answers']
+                        assert (len(answerList) == 1), f'{len(answerList)}'
                         answerText = answerList[0]['text']
                         # find answer span of answerText
-                        answerIds = config.raw_text_to_id_list(answerText)
+                        try:
+                            answerIds = config.raw_text_to_id_list(answerText)
+                        except KeyError as newWord:
+                            print(newWord)
                         spanLen = len(answerIds)
                         for idLoc, firstId in enumerate(paragraphIds):
                             if (firstId == answerIds[0]):
                                 endLoc = idLoc + spanLen
-                                if paragraphIds[idLoc : endLoc] == answerIds:
-                                    targetArray[observation, idLoc, 0] = 1
-                                    targetArray[observation, endLoc, 1] = 1
+                                if (paragraphIds[idLoc : endLoc] == answerIds):
+                                    targetArray[0, observation, idLoc] = 1
+                                    targetArray[1, observation, endLoc] = 1
                     observation += 1
-                    print(targetArray[0:observation])
 
     # if outFolder:
 
