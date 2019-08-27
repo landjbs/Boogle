@@ -2,6 +2,7 @@ import keras
 import numpy as np
 import tensorflow as tf
 import tensorflow_hub as hub
+from tqdm import tqdm, trange
 
 class BertLayer(tf.keras.layers.Layer):
     def __init__(
@@ -25,6 +26,7 @@ class BertLayer(tf.keras.layers.Layer):
 
 
     def build(self, input_shape):
+        print('building')
         self.bert = hub.Module(
             self.bert_path, trainable=self.trainable, name=f"{self.name}_module"
         )
@@ -32,7 +34,7 @@ class BertLayer(tf.keras.layers.Layer):
         # Remove unused layers
         trainable_vars = self.bert.variables
         if self.pooling == "first":
-            trainable_vars = [var for var in trainable_vars if not "/cls/" in var.name]
+            trainable_vars = [var for var in tqdm(trainable_vars) if not "/cls/" in var.name]
             trainable_layers = ["pooler/dense"]
 
         elif self.pooling == "mean":
@@ -99,17 +101,19 @@ class BertLayer(tf.keras.layers.Layer):
 
 
 def build_model(max_seq_length):
+    print('1')
     in_id = tf.keras.layers.Input(shape=(max_seq_length,), name="input_ids")
     in_mask = tf.keras.layers.Input(shape=(max_seq_length,), name="input_masks")
     in_segment = tf.keras.layers.Input(shape=(max_seq_length,), name="segment_ids")
     bert_inputs = [in_id, in_mask, in_segment]
-
+    print('2')
     bert_output = BertLayer(n_fine_tune_layers=3, pooling="first")(bert_inputs)
     dense = tf.keras.layers.Dense(256, activation='relu')(bert_output)
     pred = tf.keras.layers.Dense(1, activation='sigmoid')(dense)
-
+    print('3')
     model = tf.keras.models.Model(inputs=bert_inputs, outputs=pred)
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    print('4')
     model.summary()
     return model
 
