@@ -6,20 +6,6 @@ from nltk.tokenize import word_tokenize
 
 from dataStructures.objectSaver import safe_make_folder
 
-class TrainingPadding(object):
-    """ Pads training data to be a multiple of batch size. """
-
-
-class TrainingInstance(object):
-    """ Instance of question and answer span upon which to train """
-    def __init__(self, qId, cId, answerable):
-        """
-        qId:            Unique string id of question
-        cId:            Unique int id of context paragraph
-        answerable:     Boolean; whether the question is answerable
-
-        """
-
 
 class LanguageConfig(object):
     """
@@ -121,6 +107,11 @@ def squad_to_training_data(squadPath, config, outFolder=None):
     (observation_num, context_length, 2) where 2 is the number of target arrays.
     Both target arrays are binary one-hot vectors encoding start location and
     end location of answer span respectively.
+    Args:
+        squadPath:          Path to squad file containing unprocessed train data
+        config:             LanguageConfig() object storing information for
+                                processing
+        outFolder:          Optional folder to save features and targets
     """
     assert isinstance(config, LanguageConfig), f'config expected type LanguageConfig but got type {type(config)}'
 
@@ -128,15 +119,15 @@ def squad_to_training_data(squadPath, config, outFolder=None):
     questionLength = config.questionLength
     contextLength = config.contextLength
     observationNum = config.observationNum
-    packedLength = questionLength + contextLength
+    maxPackedLength = questionLength + contextLength
     # instantiate zero arrays for features and targets
-    featureArray = np.zeros(shape=(3, observationNum, packedLength))
+    featureArray = np.zeros(shape=(3, observationNum, maxPackedLength))
     targetArray = np.zeros(shape=(2, observationNum, contextLength))
     print(featureArray.shape)
     print(targetArray.shape)
     # feature array segment_ids will always be the same for every example
-    featureArray[3, :, 0:questionLength] = 0
-    featureArray[3, :, questionLength:] = 1
+    featureArray[2, :, 0:questionLength] = 0
+    featureArray[2, :, questionLength:] = 1
     # iterate over squad file, filling feature and target arrays
     observation = 0
     with open(squadPath, 'r') as squadFile:
@@ -148,7 +139,7 @@ def squad_to_training_data(squadPath, config, outFolder=None):
                     questionText = question['question']
                     questionIds = config.raw_text_to_id_list(questionText)
                     # pack question and paragraph ids
-                    packedIds = questionIds + paragraphIds
+                    packedIds = (questionIds + paragraphIds)[:maxPackedLength]
                     packLength = len(packedIds)
                     # update input_id dimension of featureArray
                     featureArray[0, observation, 0:packLength] = packedIds
@@ -165,7 +156,8 @@ def squad_to_training_data(squadPath, config, outFolder=None):
                             answerList = question['plausible_answers']
                         assert (len(answerList) == 1), f'{len(answerList)}'
                         answerText = answerList[0]['text']
-                        # find answer span of answerText
+                        answerIds = config.raw_text_to_id_list(answerText)
+                        # find span of answerText in paragraph
                         spanLen = len(answerIds)
                         for idLoc, firstId in enumerate(paragraphIds):
                             if (firstId == answerIds[0]):
@@ -175,13 +167,9 @@ def squad_to_training_data(squadPath, config, outFolder=None):
                                     targetArray[1, observation, endLoc] = 1
                     observation += 1
 
-    import matplotlib.pyplot as plt
-
-    plt.imshow(targetArray[0])
-
     if outFolder:
         safe_make_folder(outFolder)
-        np.save(featureArray, f'outFolder/{featureArray}')
-        np.save(targetArray, f'outFolder/{targetArray}')
+        np.save(f'{outFolder}/featureArray', featureArray)
+        np.save(f'{outFolder}/targetArray', targetArray)
 
-    return feature, targetArray
+    return featureArray, targetArray
