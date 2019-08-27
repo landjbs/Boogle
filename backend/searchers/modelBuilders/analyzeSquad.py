@@ -1,5 +1,6 @@
 import json
 import numpy as np
+from math import inf
 from tqdm import tqdm, trange
 from nltk.tokenize import word_tokenize
 
@@ -24,28 +25,20 @@ class LanguageConfig(object):
     Class storing information about the language such as wordId index,
     vocabulary size, and maximum sequence lengths.
     """
-    def __init__(self, name, questionLength, contextLength, tokenizer,
-                observationNum=0):
+    def __init__(self, name, questionLength, contextLength, tokenizer):
         # assertions
-        assert (isinstance(name, str),
-                f'name expected type string, but found type {type(name)}')
-        assert (isinstance(questionLength, int),
-                ('questionLength expected type int'
-                f'but found type {type(name)}'))
-        assert (isinstance(contextLength, int),
-                f'contextLength expected type int, but found type {type(name)}')
+        assert isinstance(name, str), f'name expected type string, but found type {type(name)}'
+        assert isinstance(questionLength, int), f'questionLength expected type int but found type {type(name)}'
+        assert isinstance(contextLength, int), f'contextLength expected type int, but found type {type(name)}'
         assert callable(tokenizer), f'tokenize must be callable'
-        assert (isinstance(observationNum, int),
-                ('observationNum expected type int'
-                f'but found type {type(observationNum)}'))
         # initializations
         self.name = name
         self.questionLength = questionLength
         self.contextLength = contextLength
         self.tokenizer = tokenizer
         self.wordIdx = None
-        self.vocabSize =
-        self.observationNum = observationNum
+        self.vocabSize = 0
+        self.observationNum = 0
 
     def __repr__(self):
         return (f"<LanguageObject NAME={self.name} "
@@ -57,7 +50,6 @@ class LanguageConfig(object):
     def initialize_from_squad(self, squadPath):
         """ Reads squad file to initialize Language attributes """
         tokenSet = set()
-        observationNum = 0
 
         def clean_tokenize_and_add(rawString):
             """ Cleans and tokenizess raw string and adds tokens to tokenSet """
@@ -66,6 +58,7 @@ class LanguageConfig(object):
             for token in textTokens:
                 tokenSet.add(token)
 
+        observationNum = 0
         with open(squadPath, 'r') as squadFile:
             for category in tqdm(json.load(squadFile)['data']):
                 clean_tokenize_and_add(category['title'])
@@ -91,52 +84,45 @@ class LanguageConfig(object):
 
     def token_list_to_id_list(self, tokenIds):
         """ Uses token_to_id dict to map a token list into an id list """
-        return list(map(self.token_to_id()), tokenIds)
+        to_id_lambda = lambda token : self.token_to_id(token)
+        return list(map(to_id_lambda, tokenIds))
 
     def text_to_id_list(self, rawText):
         """ Uses tokenizer to tokenize raw text and convert to id list """
-        textTokens = self.tokenize(rawText.strip().lower())
-        return token_list_to_id_list(textTokens)
-
-e = LanguageConfig('bert', 10, 'hi', word_tokenize)
-e.initialize_from_squad(SQUAD_PATH)
-
-text = 'the man runs'
-print(e.text_to_id_list(text))
+        textTokens = self.tokenizer(rawText.strip().lower())
+        return self.token_list_to_id_list(textTokens)
 
 
+def squad_to_training_data(squadPath, config):
+    """
+    Converts data from squadPath to...
+    A 3rd rank feature tensor of shape:
+    (observation_num, (question_length + context_length), 3) where 3 is the
+    number of features for each token in an observation (input_ids, input_masks,
+    segment_ids) and input_ids are scalar token ids for each token, input_masks
+    are binary indicators of whether a token should be analyzed, and
+    segment_ids are binary indicators of whether a token belongs to the question
+    or context in packed sequence.
+    And to a 3rd rank target tensor of shape:
+    (observation_num, context_length, 2) where 2 is the number of target arrays.
+    Both target arrays are binary one-hot vectors encoding start location and
+    end location of answer span respectively.
+    """
+    assert isinstance(config, LanguageConfig), f'config expected type LanguageConfig but got type {type(config)}'
 
-# def squad_to_training_data(squadPath, config):
-#     """
-#     Converts data from squadPath to...
-#     A 3rd rank feature tensor of shape:
-#     (observation_num, (question_length + context_length), 3) where 3 is the
-#     number of features for each token in an observation (input_ids, input_masks,
-#     segment_ids) and input_ids are scalar token ids for each token, input_masks
-#     are binary indicators of whether a token should be analyzed, and
-#     segment_ids are binary indicators of whether a token belongs to the question
-#     or context in packed sequence.
-#     And to a 3rd rank target tensor of shape:
-#     (observation_num, context_length, 2) where 2 is the number of target arrays.
-#     Both target arrays are binary one-hot vectors encoding start location and
-#     end location of answer span respectively.
-#     """
-#     assert (isinstance(config, LanguageConfig),
-#             f'config expected type LanguageConfig but got type {type(config)}')
-#
-#     # cache config info
-#     questionLength = config.questionLength
-#     contextLength = config.contextLength
-#     observationNum = config.observationNum
-#     packedLength = questionLength + contextLength
-#     # instantiate zero arrays for features and targets
-#     featureArray = np.zeros(shape=(observationNum, packedLength, 3))
-#     targetArray = np.zeros(shape=(observationNum, contextLength, 2))
-#     # iterate over squad file, filling feature and target arrays
-#     curObservation = 0
-#     with open(squadPath, 'r') as squadFile:
-#         for category in tqdm(json.load(squadFile)['data']):
-#             for paragraph in category['paragraphs']:
-#                 paragraphText = paragraph['context']
-#                 paragraphIds = config.token_list_to_id_list(paragraphTokens)
-#                 featureArray
+    # cache config info
+    questionLength = config.questionLength
+    contextLength = config.contextLength
+    observationNum = config.observationNum
+    packedLength = questionLength + contextLength
+    # instantiate zero arrays for features and targets
+    featureArray = np.zeros(shape=(observationNum, packedLength, 3))
+    targetArray = np.zeros(shape=(observationNum, contextLength, 2))
+    # iterate over squad file, filling feature and target arrays
+    curObservation = 0
+    with open(squadPath, 'r') as squadFile:
+        for category in tqdm(json.load(squadFile)['data']):
+            for paragraph in category['paragraphs']:
+                paragraphText = paragraph['context']
+                paragraphIds = config.token_list_to_id_list(paragraphTokens)
+                featureArray
