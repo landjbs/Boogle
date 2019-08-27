@@ -120,6 +120,8 @@ def initialize_vars(sess):
     sess.run(tf.tables_initializer())
     K.set_session(sess)
 
+print('defs')
+
 MAX_LEN = 10
 text = 'hi how are you today'
 idxDict = {word : (i + 1) for i, word in enumerate(set(text.split()))}
@@ -129,7 +131,9 @@ textSegments = [0 for _ in range(MAX_LEN)]
 trainSegments = [0, 1] + [0 for _ in range(MAX_LEN - 2)]
 
 model = build_model(MAX_LEN)
+print(model.summary())
 initialize_vars(sess)
+print('init')
 model.fit(
     [textIds, textMasks, textSegments],
     train_labels,
