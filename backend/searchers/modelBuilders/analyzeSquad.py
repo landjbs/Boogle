@@ -76,6 +76,7 @@ class LanguageConfig(object):
         return True
 
     def reverse_idx(self):
+        """ Builds reverse index for word lookup from id """
         self.reverseIdx = {i : word for word, i  in self.wordIdx.items()}
         return True
 
@@ -120,10 +121,59 @@ def squad_to_training_data(squadPath, config):
     featureArray = np.zeros(shape=(observationNum, packedLength, 3))
     targetArray = np.zeros(shape=(observationNum, contextLength, 2))
     # iterate over squad file, filling feature and target arrays
-    curObservation = 0
+    observation = 0
     with open(squadPath, 'r') as squadFile:
         for category in tqdm(json.load(squadFile)['data']):
             for paragraph in category['paragraphs']:
                 paragraphText = paragraph['context']
                 paragraphIds = config.text_to_id_list(paragraphTokens)
-                for question in
+                for question in paragraph['qas']:
+                    questionText = question['question']
+                    questionIds = config.text_to_id_list(questionText)
+                    # pack question and paragraph ids
+                    packedIds = questionIds + paragraphIds
+                    packLength = len(packedIds)
+                    # update input_id dimension of featureArray
+                    featureArray[observation, 0:packLength, 0] = packedIds
+                    # update input_mask dimension of featureArray
+                    featureArray[curObservation, 0:packLength, 1] = 1
+                    # impossible questions have only 0s in targets
+                    if question['is_impossible']:
+                        pass
+                    else:
+                        # not sure why but answer and plausible_answers are
+                        # used interchangably across squad
+                        try:
+                            answerList = question['answers']
+                        except KeyError:
+                            answerList = question['plausible_answers']
+                        answerText = answerList[0]['text']
+                        # find answer span of answerText
+                        answerIds = config.text_to_id_list(answerText)
+                        spanLen = len(answerIds)
+                        for idLoc, firstId in enumerate(paragraphIds):
+                            if (firstId == answerIds[0]):
+                                endLoc = idLoc + spanLen
+                                if paragraphIds[idLoc : endLoc] == answerIds:
+                                    targetArray[observation, idLoc, 0] = 1
+                                    targetArray[observation, endLoc, 1] = 1
+                    observation += 1
+
+
+with open(SQUAD_PATH, 'r') as squadFile:
+    for category in tqdm(json.load(squadFile)['data']):
+        for paragraph in category['paragraphs']:
+            paragraphText = paragraph['context']
+            for question in paragraph['qas']:
+                questionText = question['question']
+                if question['is_impossible']:
+                    pass
+                else:
+                    # not sure why but answer and plausible_answers are
+                    # used interchangably across squad
+                    try:
+                        answerList = question['answers']
+                    except KeyError:
+                        answerList = question['plausible_answers']
+                    answerText = answerList[0]['text']
+                    print(answerText)
