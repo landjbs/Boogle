@@ -49,15 +49,16 @@ class LanguageConfig(object):
 
     def initialize_from_squad(self, squadPath):
         """ Reads squad file to initialize Language attributes """
+        # set for storing unique tokens
         tokenSet = set()
-
+        # helper for building token set
         def clean_tokenize_and_add(rawString):
             """ Cleans and tokenizess raw string and adds tokens to tokenSet """
             cleanString = rawString.strip().lower()
             textTokens = self.tokenizer(cleanString)
             for token in textTokens:
                 tokenSet.add(token)
-
+        # read squad file, gathering number of observations and unique words
         observationNum = 0
         with open(squadPath, 'r') as squadFile:
             for category in tqdm(json.load(squadFile)['data']):
@@ -67,7 +68,7 @@ class LanguageConfig(object):
                     for question in paragraph['qas']:
                         clean_tokenize_and_add(question['question'])
                         observationNum += 1
-
+        # build word id index and store vocab size and observation num
         wordIdx = {word : i for i, word in enumerate(tokenSet)}
         self.vocabSize = len(wordIdx)
         self.wordIdx = wordIdx
@@ -124,5 +125,5 @@ def squad_to_training_data(squadPath, config):
         for category in tqdm(json.load(squadFile)['data']):
             for paragraph in category['paragraphs']:
                 paragraphText = paragraph['context']
-                paragraphIds = config.token_list_to_id_list(paragraphTokens)
-                featureArray
+                paragraphIds = config.text_to_id_list(paragraphTokens)
+                for question in
