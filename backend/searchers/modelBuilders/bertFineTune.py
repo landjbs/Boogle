@@ -2,7 +2,22 @@ import keras
 import numpy as np
 
 def build_data(sampleNum=10000):
-    
+    features = []
+    targets = []
+    for _ in range(sampleNum):
+        numVec = np.random.randint(0,100, size=10)
+        targetVec = np.zeros(shape=(10))
+        try:
+            targetVec[list(numVec).index(5)] = 1
+        except ValueError:
+            pass
+        features.append(numVec)
+        targets.append(targetVec)
+    return np.array(features), np.array(targets)
+
+features, targets = build_data()
+print(features.shape)
+print(targets.shape)
 
 def build_model():
     """ Builds QA model to optimize start and end vectors """
@@ -30,3 +45,5 @@ def build_model():
     print(model.summary())
 
 build_model()
+
+import tensorflow as tf

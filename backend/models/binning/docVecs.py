@@ -14,7 +14,7 @@ import appscript
 from bert_serving.client import BertClient # to assign document vectors
 import matplotlib.pyplot as plt
 
-# bert-serving-start -model_dir /Users/landonsmith/Desktop/uncased_L-24_H-1024_A-16 -num_worker=1
+# bert-serving-start -model_dir /Users/landonsmith/Desktop/shortBert -num_worker=1
 
 
 bc = BertClient(check_length=False)
