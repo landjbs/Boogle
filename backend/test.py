@@ -12,12 +12,26 @@ database = {'dirt':make_random() ,'cowboy':make_random()}
 def score_token_intersection(pageTup):
     return pageTup[0]
 
+def initialize_result_list(tokenScores, database, n):
+    # get most important token
+    importantToken = max(tokenScores, key=(lambda elt:tokenScores[elt]))
+    importantBucket = database[importantToken]
+    otherTokens = tokenScores.pop(importantToken)
+    resultList = importantBucket[:n]
+    resultLen = len(resultList)
+
+    
+
+
 def weighted_and_search(tokenScores, database, n):
     # get most important token
     importantToken = max(tokenScores, key=(lambda elt:tokenScores[elt]))
     importantBucket = database[importantToken]
     # initialize result list
+    resultList = importantBucket[:n]
+    if len(resultList) < n:
 
+    importantBucket = importantBucket[n:]
     otherTokens = tokenScores.copy()
     _ = otherTokens.pop(importantToken)
     bucketList = [database[token] for token in otherTokens]
