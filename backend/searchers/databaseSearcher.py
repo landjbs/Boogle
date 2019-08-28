@@ -98,6 +98,13 @@ def weighted_and_search(tokenScores, database, n):
     return (numResults, resultList)
 
 
+def weighted_and_search(tokenSscores, database, n):
+    """ Searches database using new algorithm """
+    bucketList = [database.search_pageObj(key=token, n=100000)
+                    for token in tokenScores]
+    for bucketList 
+
+
 def _weighted_and_search(tokenScores, database, n):
     bucketList = [database.search_full(key=token, n=100000)
                     for token in tokenScores]
