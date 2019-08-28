@@ -1,18 +1,37 @@
 config_file = '/Users/landonsmith/Desktop/shortBert/bert_config.json'
 checkpoint_file = '/Users/landonsmith/Desktop/shortBert/bert_model.ckpt'
 
-
+import keras
 from keras_bert.bert import get_model
 from keras_bert.loader import load_trained_model_from_checkpoint
-from keras.optimizers import Adam
-adam = Adam(lr=2e-5,decay=0.01)
+
 maxlen = 50
-print('begin_build')
 
-model = load_trained_model_from_checkpoint(config_file, checkpoint_file, training=True,seq_len=maxlen)
-model.summary(line_length=120)
+model = load_trained_model_from_checkpoint(config_file, checkpoint_file,
+                                        training=True, seq_len=maxlen)
 
 
+# get cls layer from bert model
+seq_out = model.layers[-6].output
+pool_out = keras.layers.Dense(units=1, activation='sigmoid')(seq_out)
+fineModel = keras.models.Model(inputs=model.input, outputs=pool_out)
+adam = keras.optimizers.Adam(lr=2e-5,decay=0.01)
+fineModel.compile(optimizer=adam, loss='binary_crossentropy')
+print(fineModel.summary())
+
+def convert_lines(example, max_seq_length,tokenizer):
+    max_seq_length -=2
+    all_tokens = []
+    longer = 0
+    for i in range(example.shape[0]):
+      tokens_a = tokenizer.tokenize(example[i])
+      if len(tokens_a)>max_seq_length:
+        tokens_a = tokens_a[:max_seq_length]
+        longer += 1
+      one_token = tokenizer.convert_tokens_to_ids(["[CLS]"]+tokens_a+["[SEP]"])+[0] * (max_seq_length - len(tokens_a))
+      all_tokens.append(one_token)
+    print(longer)
+    return np.array(all_tokens)
 
 
 # import tensorflow as tf

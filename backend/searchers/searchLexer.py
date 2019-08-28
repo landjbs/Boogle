@@ -12,7 +12,7 @@ from crawlers.crawlLoader import load_crawled_pages
     uniqueWords,
     searchProcessor
 ) = load_crawled_pages('backend/data/thicctable/wikiCrawl_SHADOW_NOVECS',
-                        n=1000000000, loadProcessor=False)
+                        n=1000000000, loadProcessor=True)
 
 freqDict = load('backend/data/outData/knowledge/freqDict.sav')
 
