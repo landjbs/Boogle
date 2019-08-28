@@ -98,11 +98,15 @@ def weighted_and_search(tokenScores, database, n):
     return (numResults, resultList)
 
 
-def weighted_and_search(tokenSscores, database, n):
+def weighted_and_search(tokenScores, database, n):
     """ Searches database using new algorithm """
     bucketList = [database.search_pageObj(key=token, n=100000)
                     for token in tokenScores]
-    for bucketList 
+    # pop top page of first bucket list for initializing resultList
+    firstResult = bucketList[0].pop(0)
+    curMin = score_token_intersection(firstResult, tokenScores)
+    rankedPages = [(curMin, firstResult)]
+    
 
 
 def _weighted_and_search(tokenScores, database, n):

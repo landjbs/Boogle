@@ -13,7 +13,14 @@ def score_token_intersection(pageTup):
     return pageTup[0]
 
 def weighted_and_search(tokenScores, database, n):
-    bucketList = [database[token] for token in tokenScores]
+    # get most important token
+    importantToken = max(tokenScores, key=(lambda elt:tokenScores[elt]))
+    importantBucket = database[importantToken]
+    # initialize result list
+
+    otherTokens = tokenScores.copy()
+    _ = otherTokens.pop(importantToken)
+    bucketList = [database[token] for token in otherTokens]
     # initialize result list
     firstResult = bucketList[0].pop(0)
     curMin = score_token_intersection(firstResult)
@@ -29,8 +36,8 @@ def weighted_and_search(tokenScores, database, n):
                 scoreList.append(score)
                 if len(resultList) > n:
                     minIndex = scoreList.index(curMin)
-                    _ = resultList.pop(minIndex)
-                    _ = scoreList.pop(minIndex)
+                    resultList.remove(minIndex)
+                    scoreList.remove(minIndex)
                     curMin = min(resultList, key=itemgetter(0))[0]
 
     resultList.sort(reverse=True, key=itemgetter(0))
