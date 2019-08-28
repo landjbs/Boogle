@@ -23,7 +23,7 @@ def train_answering_lstm(folderPath, outPath=None):
     # build dataframe form tablets under folderPath
     tabletList = []
     for i, file in enumerate(listdir(folderPath)):
-        if file.endswith('.sav') and i < 1:
+        if file.endswith('.sav') and i < 10:
             tablet = pd.read_pickle(f'{folderPath}/{file}', compression='gzip')
             tabletList.append(tablet)
             print(f'Tableting: {i}')
@@ -55,13 +55,19 @@ def train_answering_lstm(folderPath, outPath=None):
     from keras_self_attention import SeqSelfAttention
     #
     inputs = keras.layers.Input(shape=[404, 768], name='encodings')
-    # lstm_out = keras.layers.Bidirectional(keras.layers.LSTM(units=80, return_sequences=True))(inputs)
+    # gru_out = keras.layers.Bidirectional(keras.layers.GRU(units=768, return_sequences=True))(inputs)
+    lstm_in = keras.layers.LSTM(units=768, return_sequences=True)(inputs)
+    # dense = keras.layers.TimeDistributed(keras.layers.Dense(units=1, activation='softmax'))(dense)
+    flat = keras.layers.Flatten()(lstm_in)
+    output = keras.layers.Dense(units=404, activation='softmax')(flat)
+
     # gru_out = (keras.layers.SimpleRNN(units=80, return_sequences=True))(inputs)
-    attn = SeqSelfAttention(attention_activation='relu')(inputs)
-    output = keras.layers.Dense(units=1, activation='softmax')(attn)
-    output = keras.layers.Reshape([404])(output)
+    # attn = SeqSelfAttention(attention_activation='relu')(inputs)
+    # output = keras.layers.Dense(units=1, activation='softmax')(attn)
+    # output = keras.layers.Reshape([404])(output)
 
     model = keras.models.Model(inputs=inputs, outputs=output)
+    print(model.summary())
     model.compile(optimizer='adam', metrics=['accuracy'],
                     loss='categorical_crossentropy')
 

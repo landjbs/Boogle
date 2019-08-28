@@ -1,5 +1,6 @@
 config_file = '/Users/landonsmith/Desktop/shortBert/bert_config.json'
 checkpoint_file = '/Users/landonsmith/Desktop/shortBert/bert_model.ckpt'
+vocab_file = '/Users/landonsmith/Desktop/shortBert/vocab.txt'
 
 import keras
 import numpy as np
@@ -7,16 +8,21 @@ from os import listdir
 from keras_bert.bert import get_model
 from keras_bert.loader import load_trained_model_from_checkpoint
 
+
 from searchers.modelBuilders.analyzeSquad import *
 from dataStructures.objectSaver import load, save
 from searchers.modelBuilders.bertFineTune import *
 from os import listdir
 
+import searchers.modelBuilders.bertTokenizer as tokenization
+
+tokenizer = tokenization.FullTokenizer(vocab_file=vocab_file, do_lower_case=True)
+
 MAX_LEN = 512
 OUT_LEN = 500
 SQUAD_PATH = 'data/inData/squad/train-v2.0.json'
 
-# squadConfig = LanguageConfig(name='squadConfig', questionLength=12, contextLength=500, tokenizer=word_tokenize)
+# squadConfig = LanguageConfig(name='squadConfig', questionLength=12, contextLength=500, tokenizer=tokenizer)
 # squadConfig.initialize_from_squad(SQUAD_PATH)
 # save(squadConfig, 'squadConfig')
 # squadConfig = load('squadConfig')
