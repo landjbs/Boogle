@@ -163,8 +163,9 @@ def squad_to_training_data(squadPath, config, outFolder=None):
                             if (firstId == answerIds[0]):
                                 endLoc = idLoc + spanLen
                                 if (paragraphIds[idLoc : endLoc] == answerIds):
-                                    targetArray[0, observation, idLoc] = 1
-                                    targetArray[1, observation, endLoc] = 1
+                                    if endLoc <= contextLength:
+                                        targetArray[0, observation, idLoc] = 1
+                                        targetArray[1, observation, endLoc] = 1
                     observation += 1
 
     if outFolder:
