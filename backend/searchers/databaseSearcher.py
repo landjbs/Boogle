@@ -71,7 +71,7 @@ def or_search(tokenList, database, n):
 
 
 ### Weight Search Algorithms ###
-def weighted_and_search(tokenScores, database, n):
+def OLD_weighted_and_search(tokenScores, database, n):
     """
     Performs AND search for intersection of multiple tokens where tokens are
     each given ranking of importance in the search
@@ -98,15 +98,44 @@ def weighted_and_search(tokenScores, database, n):
     return (numResults, resultList)
 
 
+# def intersectional_searcher(tokenScores, database, n):
+#     """
+#     Top level searcher called by searchLexer for any case of
+#     """
+
+
 def weighted_and_search(tokenScores, database, n):
     """ Searches database using new algorithm """
+    importantToken = max(tokenScores, key=(lambda elt:tokenScores[elt]))
+    importantBucket = database.search_pageObj(key=importantToken, n=100000)
+    # initialize result list with top tokens from important bucket
+    rankedPages = [(score_token_intersection(pageObj, tokenScores), pageObj)
+                    for pageObj in importantBucket[:n]]
+    scoreList = list(map(itemgetter(0), rankedPages))
+    minScore = min(scoreList)
+    # combine other tokens and remaining important bucket into bucket list
+    importantBucket = set(importantBucket[:n])
+    otherTokens = tokenScores.copy()
+    otherTokens.pop(importantToken)
     bucketList = [database.search_pageObj(key=token, n=100000)
-                    for token in tokenScores]
-    # pop top page of first bucket list for initializing resultList
-    firstResult = bucketList[0].pop(0)
-    curMin = score_token_intersection(firstResult, tokenScores)
-    rankedPages = [(curMin, firstResult)]
-    
+                    for token in otherTokens]
+    otherBuckets = list(chain.from_iterable(bucketList))
+    interesctionPages = importantBucket.intersection(otherBuckets)
+    # iterate over elements of bucket list, improving rankedPages
+    for pageObj in interesctionPages:
+        score = score_token_intersection(pageObj, tokenScores)
+        if score > minScore:
+            scoreTuple = (score, pageObj)
+            rankedPages.append(scoreTuple)
+            scoreList.append(score)
+            minIndex = scoreList.index(minScore)
+            rankedPages.pop(minIndex)
+            scoreList.pop(minIndex)
+            minScore = min(scoreList)
+    rankedPages.sort(reverse=True, key=itemgetter(0))
+    resultList = [pageElt[1] for pageElt in rankedPages[:n]]
+    return n, resultList
+
 
 
 def _weighted_and_search(tokenScores, database, n):

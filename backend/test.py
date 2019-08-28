@@ -1,5 +1,4 @@
-# config_file = '/Users/landonsmith/Desktop/shortBert/bert_config.json'
-# checkpoint_file = '/Users/landonsmith/Desktop/shortBert/bert_model.ckpt'
+
 import numpy as np
 from operator import itemgetter
 
@@ -12,35 +11,21 @@ database = {'dirt':make_random() ,'cowboy':make_random()}
 def score_token_intersection(pageTup):
     return pageTup[0]
 
-def initialize_result_list(tokenScores, database, n):
-    # get most important token
-    importantToken = max(tokenScores, key=(lambda elt:tokenScores[elt]))
-    importantBucket = database[importantToken]
-    otherTokens = tokenScores.pop(importantToken)
-    resultList = importantBucket[:n]
-    resultLen = len(resultList)
-
-    
-
-
 def weighted_and_search(tokenScores, database, n):
     # get most important token
     importantToken = max(tokenScores, key=(lambda elt:tokenScores[elt]))
     importantBucket = database[importantToken]
     # initialize result list
-    resultList = importantBucket[:n]
-    if len(resultList) < n:
+    resultList = [(score_token_intersection(pageTup), pageTup[1])
+                    for pageTup in importantBucket[:n]]
+    scoreList = [pageTup[0] for pageTup in resultList]
+    curMin = min(scoreList)
 
     importantBucket = importantBucket[n:]
     otherTokens = tokenScores.copy()
-    _ = otherTokens.pop(importantToken)
+    otherTokens.pop(importantToken)
     bucketList = [database[token] for token in otherTokens]
-    # initialize result list
-    firstResult = bucketList[0].pop(0)
-    curMin = score_token_intersection(firstResult)
-    newTup = (curMin, firstResult[1])
-    resultList = [newTup]
-    scoreList = [curMin]
+    bucketList += [importantBucket]
     for bucket in bucketList:
         for pageTup in bucket:
             score = score_token_intersection(pageTup)
@@ -50,9 +35,9 @@ def weighted_and_search(tokenScores, database, n):
                 scoreList.append(score)
                 if len(resultList) > n:
                     minIndex = scoreList.index(curMin)
-                    resultList.remove(minIndex)
-                    scoreList.remove(minIndex)
-                    curMin = min(resultList, key=itemgetter(0))[0]
+                    resultList.pop(minIndex)
+                    scoreList.pop(minIndex)
+                    curMin = min(scoreList)
 
     resultList.sort(reverse=True, key=itemgetter(0))
     return resultList
