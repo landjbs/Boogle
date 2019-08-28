@@ -52,7 +52,7 @@ class LanguageConfig(object):
         # read squad file, gathering number of observations and unique words
         observationNum = 0
         with open(squadPath, 'r') as squadFile:
-            for category in tqdm(json.load(squadFile)['data']):
+            for category in json.load(squadFile)['data']:
                 clean_tokenize_and_add(category['title'])
                 for paragraph in category['paragraphs']:
                     clean_tokenize_and_add(paragraph['context'])
