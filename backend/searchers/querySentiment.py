@@ -47,6 +47,7 @@ def score_token_importance(cleanedSearch, tokenSet, database, freqDict):
 
     tokenScores = {token : calc_token_importance(freqDict[token][0])
                     for token in tokenSet}
+    print(tokenScores)
     tokenSum = np.sum([score for score in tokenScores.values()])
     normedScores = {token : (rawScore / tokenSum)
                     for token, rawScore in tokenScores.items()}

@@ -13,8 +13,7 @@ class Thicctable():
     def __init__(self, keys):
         """
         Initialize branch as key-val store mapping keys to Posting()s
-            -corrDict:  Dictionary mapping ALL tokens to a list of relatedTokens.
-                            If there are no relatedTokens found, maps to empty list.
+            -corrDict:  Dictionary mapping tokens to Posting() of relatedTokens
         """
         self.invertedIndex = {key:Posting(relatedTokens)
                                 for key, relatedTokens in keys.items()}
@@ -68,9 +67,7 @@ class Thicctable():
         return True
 
     def remove_value(self, key, url):
-        """
-        Removes elements with given url from list mapped by key in invertedIndex
-        """
+        """ Removes elts with given url from list mapped by key """
         self.invertedIndex[key].remove_from_postingList(url)
         return True
 
@@ -132,7 +129,7 @@ class Thicctable():
         return self.invertedIndex[key].search_pageObj_topPostings(n)
 
     def search_full(self, key, n):
-        """ Returns the top n pageTuples of the list mapped by key in invertedIndex """
+        """ Returns the top n pageTuples of list mapped by key """
         return self.invertedIndex[key].search_full_topPostings(n)
 
     def search_relatedTokens(self, key, n):
@@ -161,7 +158,7 @@ class Thicctable():
         return self.invertedIndex[key].len_posting()
 
     def all_lengths(self):
-        """ Get length of posting list for each singe-word token in invertedIndex """
+        """ Get len of Posting() for each singe-word token in invertedIndex """
         return {key:(posting.len_posting())
                 for key, posting in self.invertedIndex.items()
                 if not ((len(key.split())==1) and not (posting.is_empty()))}
@@ -183,11 +180,14 @@ class Thicctable():
         keys and print length metrics across all lists.
         """
         # get list of all keys and list of length of values
-        keyList, lengthList = self.invertedIndex.keys(), list(map(lambda posting : posting.len_posting(), self.invertedIndex.values()))
+        keyList = self.invertedIndex.keys()
+        lengthList = list(map(lambda posting : posting.len_posting(),
+                                self.invertedIndex.values()))
         # get metrics of lengthList
         meanLength = np.mean(lengthList)
         minLength, maxLength= min(lengthList), max(lengthList)
-        print(f"Length Metrics:\n\tMean: {meanLength}\n\tMin: {minLength}\n\tMax: {maxLength}")
+        print((f"Length Metrics:\n\tMean: {meanLength}\n\t" \
+                f"Min: {minLength}\n\t Max: {maxLength}"))
         # plot keyList against lengthLis
         plt.bar(keyList, lengthList)
         plt.title("Number of Pages Per Key")
@@ -212,7 +212,8 @@ class Thicctable():
         # get metrics of mappedList
         mappedMean = np.mean(mappedList)
         mappedMin, mappedMax = min(mappedList), max(mappedList)
-        print(f"Metrics:\n\tMean: {mappedMean}\n\tMin: {mappedMin}\n\tMax: {mappedMax}")
+        print((f"Metrics:\n\tMean: {mappedMean}\n\tMin: {mappedMin}\n\t"\
+                f"Max: {mappedMax}"))
         # plot mappedList from head to tail
         plt.plot(mappedList)
         plt.title(f"Indexed Metrics of {key} Key")

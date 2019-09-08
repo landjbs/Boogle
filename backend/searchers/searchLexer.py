@@ -100,8 +100,13 @@ def topSearch(rawSearch, user):
             numWords = len(words)
             if (numWords > 1):
                 tokenSet.update(find_rawTokens(cleanedSearch, searchProcessor))
-                tokenScores, searchVec, queryType = score_token_importance(cleanedSearch, words, database, freqDict)
-                andResults = databaseSearcher.weighted_and_search(tokenScores, database, (n-numResults))
+                (tokenScores,
+                    searchVec,
+                queryType) = score_token_importance(cleanedSearch, words,
+                                                    database, freqDict)
+                andResults = databaseSearcher.weighted_and_search(tokenScores,
+                                                                database,
+                                                                (n-numResults))
                 # andResults = databaseSearcher.weighted_vector_search(tokenScores, database, searchVec, n)
                 numResults += andResults[0]
 

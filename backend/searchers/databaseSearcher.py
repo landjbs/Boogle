@@ -98,12 +98,6 @@ def OLD_weighted_and_search(tokenScores, database, n):
     return (numResults, resultList)
 
 
-# def intersectional_searcher(tokenScores, database, n):
-#     """
-#     Top level searcher called by searchLexer for any case of
-#     """
-
-
 def weighted_and_search(tokenScores, database, n):
     """ Searches database using new algorithm """
     importantToken = max(tokenScores, key=(lambda elt:tokenScores[elt]))
@@ -135,36 +129,6 @@ def weighted_and_search(tokenScores, database, n):
     rankedPages.sort(reverse=True, key=itemgetter(0))
     resultList = [pageElt[1] for pageElt in rankedPages[:n]]
     return n, resultList
-
-
-
-def _weighted_and_search(tokenScores, database, n):
-    bucketList = [database.search_full(key=token, n=100000)
-                    for token in tokenScores]
-    # get number of pages avaliable to return
-    avaliableResults = 0
-    for bucket in bucketList:
-        avaliableResults += len(bucket)
-    # actual number of results to find
-    resultNum = min(n, avaliableResults)
-    # list to hold ~sorted Page() objects of results
-    resultList = []
-    # iterate over number of results to show
-    for i in range(resultNum):
-        topList = []
-        for index, bucket in enumerate(bucketList):
-            try:
-                pageObject = bucket[0][1]
-                pageScore = score_token_intersection(pageObject, tokenScores)
-                topList.append((pageScore, index))
-            except:
-                pass
-        if topList == []:
-            return (len(resultList), resultList)
-        maxLoc = max(topList)[1]
-        nextAddition = (bucketList[maxLoc].pop(0))[1]
-        resultList.append(nextAddition)
-    return (resultNum, resultList)
 
 
 def weighted_or_search(tokenScores, database, n):
