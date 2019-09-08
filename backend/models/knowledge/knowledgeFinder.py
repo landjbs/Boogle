@@ -59,7 +59,7 @@ def find_rawTokens(inStr, knowledgeProcessor):
     return allTokens
 
 
-def _DEPRECATED_find_weighted_tokenCounts(inStr, knowledgeProcessor):
+def DEPRECATED_find_weighted_tokenCounts(inStr, knowledgeProcessor):
     """
     DEPRECATED
     Finds dict mapping tokens used in inStr to number of times used.
@@ -124,7 +124,6 @@ def find_weighted_tokenCounts(text, knowledgeProcessor, maxChunkSize=5):
                                             (greedyCount * (len(chunkWords)
                                                             / wordNum))})
                 chunkSize -= 1
-
     greedyTokens.update(subTokens)
     return greedyTokens
 
@@ -167,7 +166,7 @@ def find_scoredTokens(divText, div, knowledgeProcessor, freqDict, cutoff):
     # use knowledgeProcessor to extract weighted token counts from divText
     weightedTokenCounts = find_weighted_tokenCounts(divText, knowledgeProcessor)
 
-    # find number of words in divText or (if its a url) number chars/(avg word length=5)
+    # find number of words in divText or (if url) number chars/(avg word len)
     if div=='url':
         divLen = len(divText) / 5
     else:

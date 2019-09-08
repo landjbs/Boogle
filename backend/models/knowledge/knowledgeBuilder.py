@@ -89,11 +89,12 @@ def fredDict_from_wikiFile(filePath, knowledgeProcessor, outPath=None):
     Returns: dict mapping knowledge tokens to tuple of (termFreq, docFreq)
     observed in documents.
         termFreq = (number of times a token is used) / (number of words used)
-        docFreq = log ((number of documents) / (number of documents in which a token appears))
+        docFreq = log ((number of documents) / (number of documents in which
+                    sa token appears))
     """
     # initialize counter to map knowledge tokens to raw number of occurences
     tokenCounts = Counter()
-    # initialize counter to map knowledge tokens to number of docs they appear in
+    # initialize counter to map knowledge tokens to number of doc appearances
     tokenAppearances = Counter()
     # initialize variable to keep track of total number of words used
     totalLength = 0
@@ -104,7 +105,8 @@ def fredDict_from_wikiFile(filePath, knowledgeProcessor, outPath=None):
             commaLoc = line.find(',')
             rawText = line[(commaLoc+2):]
             # find the tokens
-            tokensFound = knowledgeFinder.find_weighted_tokenCounts(rawText, knowledgeProcessor)
+            tokensFound = knowledgeFinder.find_weighted_tokenCounts(rawText,
+                                                            knowledgeProcessor)
             tokenCounts.update(tokensFound)
             tokenAppearances.update(set(tokensFound))
             totalLength += len(rawText.split())
@@ -136,7 +138,7 @@ def fredDict_from_folderPath(folderPath, knowledgeProcessor, outPath=None):
     """
     # initialize counter to map knowledge tokens to raw number of occurences
     tokenCounts = Counter()
-    # initialize counter to map knowledge tokens to number of docs they appear in
+    # initialize counter to map knowledge tokens to number of doc appearances
     tokenAppearances = Counter()
     # initialize variable to count total number of words used
     totalLength = 0
@@ -324,7 +326,6 @@ def vector_update_corrDict(filePath, corrDict, corrWeight=0.6,
         -Run:           bert-serving-start
                             -model_dir /Users/landonsmith/Desktop/shortBert
                             -num_worker=2 -max_seq_len=400
-        FIND OUT HOW TO SPAWN AND KILL BERT PROCESSES FROM SCRIPT FOR max_seq_len 400 -> 20
     Args:
         -filePath:      Path to csv of wiki texts
         -corrDict:      Dictionary mapping each token to a scored list of
