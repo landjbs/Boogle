@@ -321,7 +321,9 @@ def vector_update_corrDict(filePath, corrDict, corrWeight=0.6,
     using (weighted) cosine similarity between BERT vectors of page texts of
     which each token is the title.
     Setup:
-        -Run:           bert-serving-start -model_dir /Users/landonsmith/Desktop/shortBert -num_worker=2 -max_seq_len=400
+        -Run:           bert-serving-start
+                            -model_dir /Users/landonsmith/Desktop/shortBert
+                            -num_worker=2 -max_seq_len=400
         FIND OUT HOW TO SPAWN AND KILL BERT PROCESSES FROM SCRIPT FOR max_seq_len 400 -> 20
     Args:
         -filePath:      Path to csv of wiki texts
