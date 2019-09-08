@@ -71,33 +71,6 @@ def or_search(tokenList, database, n):
 
 
 ### Weight Search Algorithms ###
-def OLD_weighted_and_search(tokenScores, database, n):
-    """
-    Performs AND search for intersection of multiple tokens where tokens are
-    each given ranking of importance in the search
-    """
-    # find the most important token and retrive its bucket
-    importantToken = max(tokenScores, key=(lambda elt:tokenScores[elt]))
-    importantBucket = set(database.search_pageObj(key=importantToken, n=100000))
-    # get the buckets of the less important tokens in the search
-    otherTokens = tokenScores.copy()
-    _ = otherTokens.pop(importantToken)
-    bucketList = [database.search_pageObj(key=token, n=100000)
-                    for token in otherTokens]
-    otherBuckets = list(chain.from_iterable(bucketList))
-    # find those pages in that of the most important token and any of the others
-    intersectionPages = importantBucket.intersection(otherBuckets)
-    # rank the pages according to their tokens and sort by ranking
-    rankedPages = [(score_token_intersection(pageObj, tokenScores), pageObj)
-                    for pageObj in intersectionPages]
-    rankedPages.sort(reverse=True, key=itemgetter(0))
-    # find number of pages before filtering to n
-    numResults = len(rankedPages)
-    # return top n pages and disregard their scores
-    resultList = [pageElt[1] for pageElt in rankedPages[:n]]
-    return (numResults, resultList)
-
-
 def weighted_and_search(tokenScores, database, n):
     """ Searches database using new algorithm """
     importantToken = max(tokenScores, key=(lambda elt:tokenScores[elt]))
@@ -131,6 +104,33 @@ def weighted_and_search(tokenScores, database, n):
     return n, resultList
 
 
+def DEPRECATED_weighted_and_search(tokenScores, database, n):
+    """
+    Performs AND search for intersection of multiple tokens where tokens are
+    each given ranking of importance in the search
+    """
+    # find the most important token and retrive its bucket
+    importantToken = max(tokenScores, key=(lambda elt:tokenScores[elt]))
+    importantBucket = set(database.search_pageObj(key=importantToken, n=100000))
+    # get the buckets of the less important tokens in the search
+    otherTokens = tokenScores.copy()
+    _ = otherTokens.pop(importantToken)
+    bucketList = [database.search_pageObj(key=token, n=100000)
+                    for token in otherTokens]
+    otherBuckets = list(chain.from_iterable(bucketList))
+    # find those pages in that of the most important token and any of the others
+    intersectionPages = importantBucket.intersection(otherBuckets)
+    # rank the pages according to their tokens and sort by ranking
+    rankedPages = [(score_token_intersection(pageObj, tokenScores), pageObj)
+                    for pageObj in intersectionPages]
+    rankedPages.sort(reverse=True, key=itemgetter(0))
+    # find number of pages before filtering to n
+    numResults = len(rankedPages)
+    # return top n pages and disregard their scores
+    resultList = [pageElt[1] for pageElt in rankedPages[:n]]
+    return (numResults, resultList)
+
+
 def weighted_or_search(tokenScores, database, n):
     """
     The same as weighted_and_search, but pages do not need to be a max
@@ -148,7 +148,7 @@ def weighted_or_search(tokenScores, database, n):
 
 
 def weighted_vector_search(tokenScores, searchVec, database, n):
-    """ Weighted and search that uses ML on vector """
+    """ Weighted and search that uses ML on vector. NOT YET INCORP """
     # find the most important token and retrive its bucket
     importantToken = max(tokenScores, key=(lambda elt:tokenScores[elt]))
     importantBucket = set(database.search_pageObj(key=importantToken, n=100000))
