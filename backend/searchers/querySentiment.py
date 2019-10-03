@@ -26,7 +26,9 @@ formatModel = load_model('backend/data/outData/searchAnalysis/queryFormatModel.h
 global graph
 graph = tf.get_default_graph()
 
-calc_token_importance = lambda freq : (1 / freq)
+
+def calc_tf_idf(freqTuple, curFreq):
+    return round(((curFreq - freqTuple[0]) * freqTuple[1]), ndigits=4)
 
 
 def score_token_importance(cleanedSearch, tokenSet, database, freqDict):
@@ -45,7 +47,8 @@ def score_token_importance(cleanedSearch, tokenSet, database, freqDict):
         tokenSet = {token for token in tokenSet
                     if not token in QUESTION_STOP_WORDS}
 
-    tokenScores = {token : calc_token_importance(freqDict[token][0])
+    tokenFreq = 1 / len(tokenSet)
+    tokenScores = {token : calc_tf_idf(freqDict[token], tokenFreq)
                     for token in tokenSet}
     print(tokenScores)
     tokenSum = np.sum([score for score in tokenScores.values()])
