@@ -1,18 +1,2 @@
-# search-engine
-Ground-up implementation of search engine to explore page ranking and sorting techniques.
-
-## Structure
-
-### Backend
-The backend is written in a mix of Python, C++, and Go and performs four basic tasks:
-*building a searchable web database*, *tokenizing user queries*, *searching database for tokenized queries*, and *hosting the frontend*. These tasks are delegated to four folders:
-
-####
-
-### Frontend
-The frontend is written in a mix of HTML, CSS, and JavaScript.
-
-
-
-requirements
-gsutil
+# Boogle
+Web search-engine capable of crawling, indexing, and searching millions of webpages almost exclusively in native Python. Uses hash-based wide-column database, multithreaded crawling, token scoring, autocorrection, posting list ranking, and intersectional search algorithms to achieve an empirical upper bound of ~3 sec. raw-text searches across Boogle index of Wikipedia. 
