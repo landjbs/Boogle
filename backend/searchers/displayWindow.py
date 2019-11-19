@@ -10,7 +10,8 @@ def bold_and_window(tokenList, text, windowSize=400):
     tokenString = tokenString[:-1]
 
     # find list of positions of all starting locs of tokens in text
-    startList = [elt.span()[0] for elt in re.finditer(tokenString, text, flags=re.IGNORECASE)]
+    startList = [elt.span()[0] for elt in re.finditer(tokenString, text,
+                                                      flags=re.IGNORECASE)]
 
     def score_loc(loc):
         """ Finds number of tokens that start within windowSize of loc """
