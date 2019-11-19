@@ -16,7 +16,8 @@ def bold_and_window(tokenList, text, windowSize=400):
         """ Finds number of tokens that start within windowSize of loc """
         end = loc + windowSize
         # find number of starts that are in window startin at current start
-        curScore = len([otherStart for otherStart in startList if otherStart in range(loc, end)])
+        curScore = len([otherStart for otherStart in startList
+                        if otherStart in range(loc, end)])
         return curScore
 
     # create dict mapping each starting location to its score
