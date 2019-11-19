@@ -21,7 +21,6 @@ def parsable(url):
     """ Returns true if url follows urlMatcher pattern """
     return True if urlMatcher.fullmatch(url) else False
 
-
 def fix_url(url, rootURL):
     """ Add proper headings URLs for crawler analysis """
     urlString = str(url)
