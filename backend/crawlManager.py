@@ -1,5 +1,11 @@
-from crawlers.wikiCrawler import crawl_wiki_data
-# from dataStructures.objectSaver import load
+# from crawlers.wikiCrawler import crawl_wiki_data
+from models.knowledge.knowledgeBuilder import *
+
+knowledgeFile = 'backend/data/inData/wikipedia_utf8_filtered_20pageviews.csv'
+
+build_knowledgeSet(knowledgeFile, numberRange=1000000)
+
+ # from dataStructures.objectSaver import load
 # from models.knowledge.knowledgeBuilder import build_corr_dict, build_knowledgeProcessor
 
 # urlList = list(map(lambda url:(url[:-4]), listdir('data/outData/dmozProcessed/All')[345:1000]))
@@ -15,7 +21,7 @@ from crawlers.wikiCrawler import crawl_wiki_data
 #
 # print([elt for elt in dir()])
 
-crawl_wiki_data(inPath='data/inData/wikipedia_utf8_filtered_20pageviews.csv',
-                outPath='data/thicctable/wikiCrawl_SHADOW_NOVECS',
-                startNum=0,
-                endNum=None)
+# crawl_wiki_data(inPath='data/inData/wikipedia_utf8_filtered_20pageviews.csv',
+#                 outPath='data/thicctable/wikiCrawl_SHADOW_NOVECS',
+#                 startNum=0,
+#                 endNum=None)
