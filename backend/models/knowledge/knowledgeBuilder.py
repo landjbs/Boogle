@@ -44,7 +44,7 @@ def build_knowledgeSet(knowledgeFile, additionalTokens=None, numberRange=None,
     # open base knowledgeFile
     with open(knowledgeFile) as knowledgeData:
         # build set of cleaned lines in knowledgeData
-        knowledgeSet = {clean_wiki(token) for token in knowledgeData}
+        knowledgeSet = {clean_wiki(token) for token in tqdm(knowledgeData)}
 
     # add tokens from additionalTokens set
     if additionalTokens:

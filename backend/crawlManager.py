@@ -1,9 +1,9 @@
 # from crawlers.wikiCrawler import crawl_wiki_data
 from models.knowledge.knowledgeBuilder import *
 
-knowledgeFile = 'backend/data/inData/wikipedia_utf8_filtered_20pageviews.csv'
+knowledgeFile = 'data/inData/wikipedia_utf8_filtered_20pageviews.csv'
 
-build_knowledgeSet(knowledgeFile, numberRange=1000000)
+build_knowledgeSet(knowledgeFile, numberRange=1000000, outPath='data/outData/knowledgeSet.sav')
 
  # from dataStructures.objectSaver import load
 # from models.knowledge.knowledgeBuilder import build_corr_dict, build_knowledgeProcessor
