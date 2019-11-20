@@ -41,6 +41,8 @@ def build_knowledgeSet(knowledgeFile, additionalTokens=None, numberRange=None,
     outPath to which to save set
     Returns: set (for fast lookup) of cleaned tokens stripped from knowledgeData
     """
+    if numberRange:
+        assert isinstance(numberRange, tuple), "numberRange must be tuple"
     # open base knowledgeFile
     with open(knowledgeFile) as knowledgeData:
         # build set of cleaned lines in knowledgeData
@@ -53,7 +55,6 @@ def build_knowledgeSet(knowledgeFile, additionalTokens=None, numberRange=None,
 
     # add integers between first and last elt of numberRange tuple
     if numberRange:
-        assert isinstance(numberRange, tuple), "numberRange must be tuple"
         for num in range(numberRange[0], numberRange[1]):
             knowledgeSet.add(str(num))
 
